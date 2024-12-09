@@ -12,7 +12,11 @@ import CalendarScreen from './screens/CalendarScreen';
 import ChargesScreen from './screens/ChargesScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
+import AddChargeScreen from './screens/AddChargeScreen';
 
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, Layout, IconRegistry, } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,12 +53,18 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
+    <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider {...eva} theme={eva.light}>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false}} >
       <Stack.Screen name="Home" component={HomeScreen}/>
       <Stack.Screen name="TabNavigator" component={TabNavigator}/>
+      <Stack.Screen name="AddChargeScreen" component={AddChargeScreen}/>
     </Stack.Navigator>
   </NavigationContainer>
+  </ApplicationProvider>
+  </>
   );
 }
 
