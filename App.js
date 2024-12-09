@@ -13,17 +13,27 @@ import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import { default as theme } from './theme.json'; // <-- Import app theme
 import { default as mapping } from './mapping.json'; // <-- Import app mapping
 
-
-//Screens
-import HomeScreen from './screens/HomeScreen';
+import NewAccountScreen from './screens/NewAccountScreen';
 import CalendarScreen from './screens/CalendarScreen';
-import ChargesScreen from './screens/ChargesScreen';
+import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
+
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+
+import user from './reducers/user'
+import NewChargeScreen from './screens/NewChargeScreen';
+
+const store = configureStore({
+  reducer:{user}
+})
 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+//CHanger FontAwesome par Eva Icons
 
 const TabNavigator = () => {
   return (
@@ -33,7 +43,7 @@ const TabNavigator = () => {
 
         if (route.name === "Calendar"){
           iconName= "calendar"
-        } if (route.name === "Charges"){
+        } if (route.name === "List"){
           iconName= "dollar";
         }if (route.name === "Rapport"){
           iconName= "bar-chart";
@@ -48,7 +58,7 @@ const TabNavigator = () => {
       headerShown: false,
     })}> 
       <Tab.Screen name="Calendar" component={CalendarScreen}/>
-      <Tab.Screen name="Charges" component={ChargesScreen}/>
+      <Tab.Screen name="List" component={ListScreen}/>
       <Tab.Screen name="Rapport" component={RapportScreen}/>
       <Tab.Screen name="Paramètres" component={ParametresScreen}/>
     </Tab.Navigator>
@@ -59,21 +69,19 @@ export default function App() {
   return (
     <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
 
-    <NavigationContainer>
+    <Provider store={store}>
+       <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false}} >
-      <Stack.Screen name="Home" component={HomeScreen}/>
+      <Stack.Screen name="NewAccount" component={NewAccountScreen}/>
+      <Stack.Screen name="NewCharge" component={NewChargeScreen}/>
       <Stack.Screen name="TabNavigator" component={TabNavigator}/>
     </Stack.Navigator>
   </NavigationContainer>
+  </Provider>
   </ApplicationProvider>
+    
+   
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
