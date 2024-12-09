@@ -27,8 +27,8 @@ const TabNavigator = () => {
           iconName= "calendar"
         } if (route.name === "Charges"){
           iconName= "dollar";
-        }if (route.name === "bar-chart"){
-          iconName= "rapport";
+        }if (route.name === "Rapport"){
+          iconName= "bar-chart";
         } else if (route.name === "Paramètres"){
           iconName= "cogs";
         }
