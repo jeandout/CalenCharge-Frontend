@@ -13,6 +13,13 @@ import ChargesScreen from './screens/ChargesScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
 
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+
+const store = configureStore({
+  reducer:{user}
+})
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,20 +58,16 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <Provider store={store}>
+       <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false}} >
       <Stack.Screen name="Home" component={HomeScreen}/>
       <Stack.Screen name="TabNavigator" component={TabNavigator}/>
     </Stack.Navigator>
   </NavigationContainer>
+    </Provider>
+   
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
