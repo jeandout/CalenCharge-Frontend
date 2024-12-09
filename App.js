@@ -7,14 +7,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import HomeScreen from './screens/HomeScreen';
+import NewAccountScreen from './screens/NewAccountScreen';
 import CalendarScreen from './screens/CalendarScreen';
-import ChargesScreen from './screens/ChargesScreen';
+import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+
+import user from './reducers/user'
+import NewChargeScreen from './screens/NewChargeScreen';
 
 const store = configureStore({
   reducer:{user}
@@ -34,7 +37,7 @@ const TabNavigator = () => {
 
         if (route.name === "Calendar"){
           iconName= "calendar"
-        } if (route.name === "Charges"){
+        } if (route.name === "List"){
           iconName= "dollar";
         }if (route.name === "Rapport"){
           iconName= "bar-chart";
@@ -49,7 +52,7 @@ const TabNavigator = () => {
       headerShown: false,
     })}> 
       <Tab.Screen name="Calendar" component={CalendarScreen}/>
-      <Tab.Screen name="Charges" component={ChargesScreen}/>
+      <Tab.Screen name="List" component={ListScreen}/>
       <Tab.Screen name="Rapport" component={RapportScreen}/>
       <Tab.Screen name="Paramètres" component={ParametresScreen}/>
     </Tab.Navigator>
@@ -61,7 +64,8 @@ export default function App() {
     <Provider store={store}>
        <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false}} >
-      <Stack.Screen name="Home" component={HomeScreen}/>
+      <Stack.Screen name="NewAccount" component={NewAccountScreen}/>
+      <Stack.Screen name="NewCharge" component={NewChargeScreen}/>
       <Stack.Screen name="TabNavigator" component={TabNavigator}/>
     </Stack.Navigator>
   </NavigationContainer>

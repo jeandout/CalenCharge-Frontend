@@ -8,7 +8,7 @@ export default function Charge(props){
         <View style={styles.container}>
             <View style={styles.chargeDescription}>
             <View style={styles.chargeTitle}>
-            <Text>Nom de la Charge</Text>
+            <Text>{props.name}</Text>
             <Text>Logo Important ?</Text>
             </View>
             <Text>Tous les XXX</Text>
