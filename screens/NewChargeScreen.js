@@ -38,7 +38,7 @@ export default function NewChargeScreen({ navigation }) {
   const [date, setDate] = useState(new Date());
 
   const [checked, setChecked] = useState(false);
-  const onCheckedChange = (isChecked): void => {
+  const onCheckedChange = (isChecked) => {
     setChecked(isChecked);
   };
 
