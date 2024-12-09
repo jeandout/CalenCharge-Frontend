@@ -1,11 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-
+//Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+//FontAwesome
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+//KITTEN UI
+import React from 'react';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
+import { default as theme } from './theme.json'; // <-- Import app theme
+import { default as mapping } from './mapping.json'; // <-- Import app mapping
 
 import NewAccountScreen from './screens/NewAccountScreen';
 import CalendarScreen from './screens/CalendarScreen';
@@ -61,6 +67,8 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
+    <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
+
     <Provider store={store}>
        <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false}} >
@@ -69,7 +77,9 @@ export default function App() {
       <Stack.Screen name="TabNavigator" component={TabNavigator}/>
     </Stack.Navigator>
   </NavigationContainer>
-    </Provider>
+  </Provider>
+  </ApplicationProvider>
+    
    
   );
 }
