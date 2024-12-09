@@ -17,6 +17,8 @@ import RapportScreen from './screens/RapportScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+//CHanger FontAwesome par Eva Icons
+
 const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={({route}) => ({
