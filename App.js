@@ -20,57 +20,52 @@ import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
 
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider, Layout, IconRegistry, } from '@ui-kitten/components';
+import { ApplicationProvider, Layout, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
 import user from './reducers/user'
 import NewChargeScreen from './screens/NewChargeScreen';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Icon } from '@ui-kitten/components';
 
 const store = configureStore({
   reducer: { user }
 })
+// Définition des icônes
+const CalendarIcon = (props) => <Icon {...props} name="calendar-outline" />;
+const ListIcon = (props) => <Icon {...props} name="list-outline" />;
+const ReportIcon = (props) => <Icon {...props} name="bar-chart-outline" />;
+const SettingsIcon = (props) => <Icon {...props} name="settings-outline" />;
 
-
-
-
-
+// création des navigateurs 
+const {Navigator, Screen} = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
 
+// onglets personnalisés
+const BottomTabBar =({navigation, state}) =>(
+  <BottomNavigation 
+  selectedIndex={state.index}
+  onSelect={(index)=> navigation.navigate(state.routeNames[index])}>
+   <BottomNavigationTab title="Calendrier" icon={CalendarIcon}/>
+    <BottomNavigationTab title="Liste" icon={ListIcon}/>
+    <BottomNavigationTab title="Rapport" icon={ReportIcon}/>
+    <BottomNavigationTab title="Paramètres"icon={SettingsIcon} />
+  </BottomNavigation>
+)
 //CHanger FontAwesome par Eva Icons
 
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        let iconName = "";
+// Navigation par onglets
+const TabNavigator = () => (
 
-        if (route.name === "Calendrier") {
-          iconName = "calendar"
-        } if (route.name === "Liste") {
-          iconName = "dollar";
-        } if (route.name === "Rapport") {
-          iconName = "bar-chart";
-        } else if (route.name === "Paramètres") {
-          iconName = "cogs";
-        }
+  <Navigator tabBar={(props) => <BottomTabBar {...props} />}>
+    <Screen name="Calendrier" component={CalendarScreen} />
+    <Screen name="Liste" component={ListScreen} />
+    <Screen name="Rapport" component={RapportScreen} />
+    <Screen name="Paramètres" component={ParametresScreen} />
+  </Navigator>
+);
 
-        return <FontAwesome name={iconName} size={size} color={color} />
-      },
-      tabBarActiveTintColor: "#ec6e5b",
-      tabBarInactiveTintColor: "#335561",
-      headerShown: false,
-    })}>
-      <Tab.Screen name="Calendrier" component={CalendarScreen} />
-      <Tab.Screen name="Liste" component={ListScreen} />
-      <Tab.Screen name="Rapport" component={RapportScreen} />
-      <Tab.Screen name="Paramètres" component={ParametresScreen} />
-    </Tab.Navigator>
-  )
-}
 
 export default function App() {
   return (
@@ -78,20 +73,19 @@ export default function App() {
     <IconRegistry icons={EvaIconsPack} />
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
       <Provider store={store}>
-        <SafeAreaView style={{flex:1}}>
-        <NavigationContainer>
+        <NavigationContainer> // 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
-            <Stack.Screen name="NewCharge" component={NewChargeScreen} />
-            <Stack.Screen name="NewAccount" component={NewAccountScreen} />
+           <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            <Stack.Screen name="NewCharge" component={NewChargeScreen} />
+            
           </Stack.Navigator>
         </NavigationContainer>
-        </SafeAreaView>
       </Provider>
     </ApplicationProvider>
 </>
 
-  );
+  )
 }
 
 

@@ -6,8 +6,8 @@ import { createSlice } from "@reduxjs/toolkit";
 //         google_credentials: null,
 //         settings: {},
 //         token: "",
-//         accounts: [] 
-//     }, 
+//         accounts: []
+//     },
 // };
 
 const initialState = {
@@ -16,33 +16,38 @@ const initialState = {
         google_credentials: null,
         settings: {},
         token: "",
-        accounts: [{name:'Test', charges:[{name:'TestCharge'}]},{name:'Compte joint', charges:[{name:'TestCharge'}]}] 
-    }, 
+        accounts: [{ name: "Test", charges: [{ name: "TestCharge" }] }],
+    },
 };
 
 //account:[{name:Test, charges:[]}, {name:test2, charges:[]}]
 
 export const userSlice = createSlice({
-    name:'user',
+    name: "user",
     initialState,
-    reducers:{
-        addCharge:(state, action) => {
+    reducers: {
+        addCharge: (state, action) => {
             //console.log(action.payload.selectedAccount)
-            // const selectedIndex = state.value.accounts.findIndex(account=>account.name==action.payload.selectedAccount)
+            //   const selectedIndex = state.value.accounts.findIndex(
+            //     (account) => account.name == action.payload.selectedAccount
+            //   );
             const selectedIndex = action.payload.selectedAccount
+                ;
             //console.log(selectedIndex)
-            state.value.accounts[selectedIndex].charges.push(action.payload );
+            state.value.accounts[selectedIndex].charges.push(action.payload);
             //console.log(state.value.accounts[selectedIndex].charges)
-            console.log(action.payload)
-            console.log(state.value.accounts[action.payload.selectedAccount])
         },
-        removeCharge:(state, action) => {
+        removeCharge: (state, action) => {
             //state.value.charges = state.value.charges.filter(e =>e.name  !==action.payload);
-        }, 
-        addAccount: (state,action)=>{
-            state.value.accounts.push({name:action.payload, charges:[]})
-        }      
+        },
+        addAccount: (state, action) => {
+            state.value.accounts.push({
+                name: action.payload.accountInput,
+                icon: action.payload.iconInput,
+                charges: [],
+            });
+        },
     },
 });
- export const { addCharge, removeCharge, addAccount} = userSlice.actions;
- export default userSlice.reducer;
+export const { addCharge, removeCharge, addAccount } = userSlice.actions;
+export default userSlice.reducer;

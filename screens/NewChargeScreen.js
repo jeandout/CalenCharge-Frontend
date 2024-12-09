@@ -31,7 +31,7 @@ export default function NewChargeScreen({ navigation }) {
   const [date, setDate] = useState(new Date());
 
   // const pour le toggle
-  const [checked, setChecked] = useState(false); 
+  const [checked, setChecked] = useState(false);
   const onCheckedChange = (isChecked) => {
     setChecked(isChecked);
   };
@@ -48,24 +48,24 @@ export default function NewChargeScreen({ navigation }) {
     <SelectItem title={title} />
   );
 
-   //variables pour l'affichage du composant select pour la récurrence
-   const recurrence = [
+  //variables pour l'affichage du composant select pour la récurrence
+  const recurrence = [
     'Hebdomadaire',
     'Logement',
     'Enfants',
     'Autre',
   ];
-  const displayRecurrenceValue = recurrence[selectedRecurrence.row]; 
+  const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => (
     <SelectItem title={title} />
   );
 
-// called when add button is pressed
+  // called when add button is pressed
   function handleSubmit() {
-    dispatch(addCharge({ name, selectedAccount:selectedAccount.row,recurence:selectedRecurrence.row,chargeType:selectedChargeType.row, date:date.toISOString(), priority:checked, amount  }));
+    dispatch(addCharge({ name, selectedAccount: selectedAccount.row, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
     setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
-  
+
   }
 
   return (
@@ -93,7 +93,7 @@ export default function NewChargeScreen({ navigation }) {
       >
         {type.map(renderType)}
       </Select>
-       <Select
+      <Select
         placeholder='Default'
         value={displayRecurrenceValue}
         selectedIndex={selectedRecurrence}
