@@ -14,7 +14,7 @@ export default function ListScreen({navigation}){
     const accountObj = user.accounts.find(account=>account.name===selectedAccount);
 
     const charges = accountObj.charges?.map((charge, i)=>{
-        console.log(charge)
+        // console.log(charge)
        return <Charge key={i} name={charge.name}/>
     })
 

@@ -27,6 +27,7 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import user from './reducers/user'
 import NewChargeScreen from './screens/NewChargeScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const store = configureStore({
   reducer: { user }
@@ -77,13 +78,15 @@ export default function App() {
     <IconRegistry icons={EvaIconsPack} />
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
       <Provider store={store}>
+        <SafeAreaView style={{flex:1}}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }} >
-            <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="NewCharge" component={NewChargeScreen} />
+            <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
+        </SafeAreaView>
       </Provider>
     </ApplicationProvider>
 </>

@@ -16,7 +16,7 @@ const initialState = {
         google_credentials: null,
         settings: {},
         token: "",
-        accounts: [{name:'Test', charges:[{name:'TestCharge'}]}] 
+        accounts: [{name:'Test', charges:[{name:'TestCharge'}]},{name:'Compte joint', charges:[{name:'TestCharge'}]}] 
     }, 
 };
 
@@ -28,10 +28,13 @@ export const userSlice = createSlice({
     reducers:{
         addCharge:(state, action) => {
             //console.log(action.payload.selectedAccount)
-            const selectedIndex = state.value.accounts.findIndex(account=>account.name==action.payload.selectedAccount)
+            // const selectedIndex = state.value.accounts.findIndex(account=>account.name==action.payload.selectedAccount)
+            const selectedIndex = action.payload.selectedAccount
             //console.log(selectedIndex)
-            state.value.accounts[selectedIndex].charges.push({name:action.payload.name});
+            state.value.accounts[selectedIndex].charges.push(action.payload );
             //console.log(state.value.accounts[selectedIndex].charges)
+            console.log(action.payload)
+            console.log(state.value.accounts[action.payload.selectedAccount])
         },
         removeCharge:(state, action) => {
             //state.value.charges = state.value.charges.filter(e =>e.name  !==action.payload);
