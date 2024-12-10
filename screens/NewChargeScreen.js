@@ -45,7 +45,7 @@ export default function NewChargeScreen({ navigation }) {
   ];
   const displayTypeValue = type[selectedChargeType.row];
   const renderType = (title) => (
-    <SelectItem title={title} />
+    <SelectItem title={title} key={title}/>
   );
 
   //variables pour l'affichage du composant select pour la récurrence
@@ -57,7 +57,7 @@ export default function NewChargeScreen({ navigation }) {
   ];
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => (
-    <SelectItem title={title} />
+    <SelectItem title={title} key={title} />
   );
 
   // called when add button is pressed
