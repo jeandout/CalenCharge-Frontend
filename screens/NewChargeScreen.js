@@ -118,10 +118,10 @@ export default function NewChargeScreen({ navigation }) {
       </View>
       <View style={styles.actions}>
         <Button onPress={() => handleSubmit()}>
-          Ajouter
+        <Text>Ajouter</Text>
         </Button>
         <Button appearance='ghost' onPress={() => navigation.goBack()}>
-          Annuler
+        <Text>Annuler</Text>
         </Button>
       </View>
     </Layout>

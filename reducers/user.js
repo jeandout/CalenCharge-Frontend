@@ -18,7 +18,7 @@ const initialState = {
             google_credentials: null,
             settings: {},
             token: "",
-            accounts: [{ name: "Test", icon:require("../assets/iconsAccount/sun-outline.png"), charges: [{ name: "TestCharge" }] }],
+            accounts: [{ name: "Test", icon:"person-outline", charges: [{ name: "TestCharge" }] }],
     
         },
         selectedAccount: 0,
