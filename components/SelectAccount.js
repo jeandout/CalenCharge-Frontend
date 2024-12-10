@@ -17,7 +17,7 @@ export default function SelectAccount() {
     return (
         <Select
         style={styles.container}
-            value={accounts[selectedAccount].name}
+            value={accounts[selectedAccount].name?accounts[selectedAccount].name:'Pas de compte renseigné'}
             selectedIndex={new IndexPath(selectedAccount)}
             accessoryLeft={renderAccessory(accounts[selectedAccount].icon)}
             onSelect={index => dispatch(selectAccount(index.row))}
@@ -35,9 +35,8 @@ export default function SelectAccount() {
 //CSS à revoir
 const styles = StyleSheet.create({
     container: {
-        width: "90%",
-        minHeight: 50, 
-        paddingHorizontal: 10, 
+
+
     },
 });
 
