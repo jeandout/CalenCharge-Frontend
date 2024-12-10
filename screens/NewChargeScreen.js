@@ -8,7 +8,7 @@ import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, I
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCharge } from "../reducers/user";
-
+import SelectAccount from "../components/SelectAccount";
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
   <Icon
@@ -23,9 +23,9 @@ export default function NewChargeScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [name, setName] = useState("");
-  const accounts = useSelector((state) => state.user.value.accounts);
+  const accounts = useSelector((state) => state.user.value.user.accounts);
   const [amount, setAmount] = useState(0);
-  const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
+  // const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
   const [date, setDate] = useState(new Date());
@@ -45,15 +45,15 @@ export default function NewChargeScreen({ navigation }) {
   ];
   const displayTypeValue = type[selectedChargeType.row];
   const renderType = (title) => (
-    <SelectItem title={title} key={title}/>
+    <SelectItem title={title} key={title} />
   );
 
   //variables pour l'affichage du composant select pour la récurrence
   const recurrence = [
     'Hebdomadaire',
-    'Logement',
-    'Enfants',
-    'Autre',
+    'Mensuelle',
+    'Trimestrielle',
+    'Annuelle',
   ];
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => (
@@ -62,7 +62,7 @@ export default function NewChargeScreen({ navigation }) {
 
   // called when add button is pressed
   function handleSubmit() {
-    dispatch(addCharge({ name, selectedAccount: selectedAccount.row, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
+    dispatch(addCharge({ name, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
     setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
 
@@ -70,68 +70,74 @@ export default function NewChargeScreen({ navigation }) {
 
   return (
     <Layout style={styles.container}>
-      <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
-      <Select
-        placeholder='Compte'
-        selectedIndex={selectedAccount}
-        onSelect={index => setSelectedAccount(index)}
-      >
-        {accounts.map((option, index) => (
-          <SelectItem key={index} title={option.name} />
-        ))}
-      </Select>
-      <Input
-        placeholder='Nom'
-        value={name}
-        onChangeText={nextValue => setName(nextValue)}
-      />
-      <Select
-        placeholder='Default'
-        value={displayTypeValue}
-        selectedIndex={selectedChargeType}
-        onSelect={index => setSelectedChargeType(index)}
-      >
-        {type.map(renderType)}
-      </Select>
-      <Select
-        placeholder='Default'
-        value={displayRecurrenceValue}
-        selectedIndex={selectedRecurrence}
-        onSelect={index => setSelectedRecurrence(index)}
-      >
-        {recurrence.map(renderRecurrence)}
-      </Select>
-      <Datepicker
-        placeholder='Pick Date'
-        date={date}
-        onSelect={nextDate => setDate(nextDate)}
-        accessoryRight={CalendarIcon}
-      />
-      <View style={styles.row}>
-        <Text style={styles.text} category='p1'>Prioritaire</Text>
-        <Toggle
-          checked={checked}
-          onChange={onCheckedChange}
+      <View style={styles.inputs}>
+        <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
+        <SelectAccount/>
+        <Input
+          placeholder='Nom'
+          value={name}
+          onChangeText={nextValue => setName(nextValue)}
+        />
+        <Select
+          placeholder='Default'
+          value={displayTypeValue}
+          selectedIndex={selectedChargeType}
+          onSelect={index => setSelectedChargeType(index)}
+        >
+          {type.map(renderType)}
+        </Select>
+        <Select
+          placeholder='Default'
+          value={displayRecurrenceValue}
+          selectedIndex={selectedRecurrence}
+          onSelect={index => setSelectedRecurrence(index)}
+        >
+          {recurrence.map(renderRecurrence)}
+        </Select>
+        <Datepicker
+          placeholder='Pick Date'
+          date={date}
+          onSelect={nextDate => setDate(nextDate)}
+          accessoryRight={CalendarIcon}
+        />
+        <View style={styles.row}>
+          <Text style={styles.text} category='p1'>Prioritaire</Text>
+          <Toggle
+            checked={checked}
+            onChange={onCheckedChange}
+          >
+          </Toggle>
+        </View>
+        <Input
+          keyboardType="numeric"
+          size='large'
+          placeholder='Montant'
+          value={amount}
+          onChangeText={nextValue => setAmount(nextValue)}
         />
       </View>
-      <Input
-        keyboardType="numeric"
-        size='large'
-        placeholder='Montant'
-        value={amount}
-        onChangeText={nextValue => setAmount(nextValue)}
-      />
-      <Button onPress={() => handleSubmit()}>
-        Ajouter
-      </Button>
-    // </Layout>
+      <View style={styles.actions}>
+        <Button onPress={() => handleSubmit()}>
+          Ajouter
+        </Button>
+        <Button appearance='ghost' onPress={() => navigation.goBack()}>
+          Annuler
+        </Button>
+      </View>
+    </Layout>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 20,
+    justifyContent: 'space-around',
     padding: 15,
+  },
+  inputs: {
+    gap: 20,
+  },
+  actions: {
+    gap: 10,
   },
   row: {
     flexDirection: 'row',

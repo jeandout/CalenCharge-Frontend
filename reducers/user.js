@@ -36,10 +36,9 @@ export const userSlice = createSlice({
             //   const selectedIndex = state.value.accounts.findIndex(
             //     (account) => account.name == action.payload.selectedAccount
             //   );
-            const selectedIndex = action.payload.selectedAccount
-                ;
+          
             //console.log(selectedIndex)
-            //state.value.accounts[selectedIndex].charges.push(action.payload);
+            state.value.user.accounts[state.value.selectedAccount].charges.push(action.payload);
             //console.log(state.value.accounts[selectedIndex].charges)
         },
         removeCharge: (state, action) => {

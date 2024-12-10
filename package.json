@@ -14,9 +14,9 @@
     "@react-navigation/bottom-tabs": "6",
     "@react-navigation/native": "6",
     "@react-navigation/native-stack": "6",
+    "@reduxjs/toolkit": "^2.4.0",
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
-    "@reduxjs/toolkit": "^2.4.0",
     "expo": "~52.0.17",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
@@ -33,4 +33,3 @@
   },
   "private": true
 }
-
