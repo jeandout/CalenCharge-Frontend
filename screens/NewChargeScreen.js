@@ -62,7 +62,7 @@ export default function NewChargeScreen({ navigation }) {
 
   // called when add button is pressed
   function handleSubmit() {
-    dispatch(addCharge({ name, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
+    dispatch(addCharge({ name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
     setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
 

@@ -18,7 +18,7 @@ const initialState = {
             google_credentials: null,
             settings: {},
             token: "",
-            accounts: [{ name: "Test", icon:"person-outline", charges: [{ name: "TestCharge" }] }],
+            accounts: [{ name: "Test", icon:"person-outline", charges: [{amount: "32", chargeType: 0, date: "2024-12-10T13:42:18.784Z", name: "TestCharge", priority: true, recurrence: 1}] }],
     
         },
         selectedAccount: 0,
@@ -32,17 +32,14 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         addCharge: (state, action) => {
-            //console.log(action.payload.selectedAccount)
-            //   const selectedIndex = state.value.accounts.findIndex(
-            //     (account) => account.name == action.payload.selectedAccount
-            //   );
-          
-            //console.log(selectedIndex)
             state.value.user.accounts[state.value.selectedAccount].charges.push(action.payload);
-            //console.log(state.value.accounts[selectedIndex].charges)
+        },       
+        updateCharge:(state, action)=>{
+            const chargeToUpdateIndex = state.value.user.accounts[state.value.selectedAccount].charges.findIndex(e=>e.name===action.payload.oldCharge.name && e.date===action.payload.oldCharge.date)
+            state.value.user.accounts[state.value.selectedAccount].charges[chargeToUpdateIndex] = action.payload.updatedCharge;
         },
-        removeCharge: (state, action) => {
-            //state.value.charges = state.value.charges.filter(e =>e.name  !==action.payload);
+        removeCharge:(state, action)=>{
+            state.value.user.accounts[state.value.selectedAccount].charges = state.value.user.accounts[state.value.selectedAccount].charges.filter(e=>e===action.payload)
         },
         addAccount: (state, action) => {
             state.value.user.accounts.push({
@@ -54,7 +51,8 @@ export const userSlice = createSlice({
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
         },
+ 
     },
 });
-export const { addCharge, removeCharge, addAccount, selectAccount } = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge } = userSlice.actions;
 export default userSlice.reducer;
