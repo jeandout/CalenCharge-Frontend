@@ -35,9 +35,8 @@ export default function SelectAccount() {
 //CSS à revoir
 const styles = StyleSheet.create({
     container: {
-        width: "90%",
-        minHeight: 50, 
-        paddingHorizontal: 10, 
+
+
     },
 });
 
