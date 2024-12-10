@@ -1,65 +1,151 @@
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
+  SafeAreaView,
 } from "react-native";
+import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Toggle, Button, } from '@ui-kitten/components';
+
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCharge } from "../reducers/user";
+import SelectAccount from "../components/SelectAccount";
+//icone pour l'affichage du calendrier du datepicker
+const CalendarIcon = ({ name = 'calendar', ...props }) => (
+  <Icon
+    {...props}
+    name={name}
+  />
+);
+
 
 export default function NewChargeScreen({ navigation }) {
+
   const dispatch = useDispatch();
 
-  const [chargeInput, setChargeInput] = useState("");
+  const [name, setName] = useState("");
+  const accounts = useSelector((state) => state.user.value.user.accounts);
+  const [amount, setAmount] = useState(0);
+  // const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
+  const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
+  const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
+  const [date, setDate] = useState(new Date());
 
-  const user = useSelector((state) => state.user.value);
+  // const pour le toggle
+  const [checked, setChecked] = useState(false);
+  const onCheckedChange = (isChecked) => {
+    setChecked(isChecked);
+  };
 
-  const [selectedAccount, setSelectedAccount] = useState('Test'); //Changer quand on aura le déroulant
+  //variables pour l'affichage du composant select pour le type
+  const type = [
+    'Loisir',
+    'Logement',
+    'Enfants',
+    'Autre',
+  ];
+  const displayTypeValue = type[selectedChargeType.row];
+  const renderType = (title) => (
+    <SelectItem title={title} key={title} />
+  );
 
-  const accountObj = user.accounts.filter(account=>account.name===selectedAccount);
+  //variables pour l'affichage du composant select pour la récurrence
+  const recurrence = [
+    'Hebdomadaire',
+    'Mensuelle',
+    'Trimestrielle',
+    'Annuelle',
+  ];
+  const displayRecurrenceValue = recurrence[selectedRecurrence.row];
+  const renderRecurrence = (title) => (
+    <SelectItem title={title} key={title} />
+  );
 
-  function handleSubmit(){
-    dispatch(addCharge({name:chargeInput, selectedAccount}));
-    setChargeInput('');
+  // called when add button is pressed
+  function handleSubmit() {
+    dispatch(addCharge({ name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
+    setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
+
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="New charge"
-        onChangeText={(value) => setChargeInput(value)}
-        value={chargeInput}
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        onPress={() => handleSubmit()}
-        style={styles.button}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.textButton}>Add</Text>
-      </TouchableOpacity>
-    </View>
+    <Layout style={styles.container}>
+      <View style={styles.inputs}>
+        <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
+        <SelectAccount/>
+        <Input
+          placeholder='Nom'
+          value={name}
+          onChangeText={nextValue => setName(nextValue)}
+        />
+        <Select
+          placeholder='Default'
+          value={displayTypeValue}
+          selectedIndex={selectedChargeType}
+          onSelect={index => setSelectedChargeType(index)}
+        >
+          {type.map(renderType)}
+        </Select>
+        <Select
+          placeholder='Default'
+          value={displayRecurrenceValue}
+          selectedIndex={selectedRecurrence}
+          onSelect={index => setSelectedRecurrence(index)}
+        >
+          {recurrence.map(renderRecurrence)}
+        </Select>
+        <Datepicker
+          placeholder='Pick Date'
+          date={date}
+          onSelect={nextDate => setDate(nextDate)}
+          accessoryRight={CalendarIcon}
+        />
+        <View style={styles.row}>
+          <Text style={styles.text} category='p1'>Prioritaire</Text>
+          <Toggle
+            checked={checked}
+            onChange={onCheckedChange}
+          >
+          </Toggle>
+        </View>
+        <Input
+          keyboardType="numeric"
+          size='large'
+          placeholder='Montant'
+          value={amount}
+          onChangeText={nextValue => setAmount(nextValue)}
+        />
+      </View>
+      <View style={styles.actions}>
+        <Button onPress={() => handleSubmit()}>
+        <Text>Ajouter</Text>
+        </Button>
+        <Button appearance='ghost' onPress={() => navigation.goBack()}>
+        <Text>Annuler</Text>
+        </Button>
+      </View>
+    </Layout>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ffffff",
+    justifyContent: 'space-around',
+    padding: 15,
   },
-  input: {
-    width: "65%",
-    marginTop: 6,
-    borderBottomColor: "#ec6e5b",
-    borderBottomWidth: 1,
-    fontSize: 16,
+  inputs: {
+    gap: 20,
+  },
+  actions: {
+    gap: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 5,
+  },
+  text: {
+    textAlign: 'center',
   },
 });

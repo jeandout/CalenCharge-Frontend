@@ -1,41 +1,68 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput,
+import {
+    ScrollView,
+    View, Text, StyleSheet, Image, TextInput,
     KeyboardAvoidingView, Platform
 } from "react-native";
 import Charge from "../components/Charge";
-import {useSelector} from 'react-redux';
-import {useState} from 'react'
+import SelectAccount from "../components/SelectAccount";
+import { useSelector } from 'react-redux';
+import { useState } from 'react'
+import { Button, Icon, IconElement, List, ListItem, } from '@ui-kitten/components';
 
-export default function ListScreen({navigation}){
+const addIcon = ({ name = 'plus-outline', ...props }) => (
+    <Icon
+        {...props}
+        name={name}
+        fill={'white'}
+    />
+);
 
-    const user = useSelector((state) => state.user.value);
 
-    const [selectedAccount, setSelectedAccount] = useState('Test'); //Changer quand on aura le déroulant
+export default function ListScreen({ navigation }) {
 
-    const accountObj = user.accounts.find(account=>account.name===selectedAccount);
+    const accounts = useSelector((state) => state.user.value.user.accounts);
+    const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
 
-    const charges = accountObj.charges?.map((charge, i)=>{
+    const charges = accounts[selectedAccount].charges?.map((charge, i) => {
         console.log(charge)
-       return <Charge key={i} name={charge.name}/>
+        return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
-
-    //amount={charge.amount} date={charge.date} priority={charge.priority}
 
     //Changer icone pour un PLUS
 
-    return(
+    return (
         <View style={styles.container}>
-           <View >{charges}</View>
-           <TouchableOpacity onPress={() => navigation.navigate("NewCharge")}> 
-        <Text>Ajouter une Charge</Text>
-      </TouchableOpacity>
+            <View style={styles.top}>
+                <SelectAccount />
+                <ScrollView >
+                    {charges}
+                </ScrollView>
+            </View>
+            <View style={styles.bottom}>
+                <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
+            </View>
         </View>
     )
 }
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        alignItems:"center",
-        justifyContent:"center",
-        backgroundColor:"brown"
+    container: {
+        flex: 1,
+        gap: 15,
+        padding: 15,
+        marginTop: 40,
+     
+        justifyContent:'space-between',
     },
+    addButton: {
+        height: 50,
+        width: 50,
+        
+    },
+    top: {
+        gap:15,
+    },
+    bottom: {
+        alignItems:'flex-end',
+    },
+
 })
