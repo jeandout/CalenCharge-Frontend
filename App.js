@@ -58,7 +58,7 @@ const BottomTabBar =({navigation, state}) =>(
 // Navigation par onglets
 const TabNavigator = () => (
 
-  <Navigator tabBar={(props) => <BottomTabBar {...props} />}>
+  <Navigator tabBar={(props) => <BottomTabBar {...props}/>} screenOptions={{ headerShown: false }}>
     <Screen name="Calendrier" component={CalendarScreen} />
     <Screen name="Liste" component={ListScreen} />
     <Screen name="Rapport" component={RapportScreen} />
