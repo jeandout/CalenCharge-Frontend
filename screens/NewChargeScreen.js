@@ -3,7 +3,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
-import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Toggle, Button, } from '@ui-kitten/components';
+import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Toggle, Button,KeyboardAvoidingView, } from '@ui-kitten/components';
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -69,6 +69,7 @@ export default function NewChargeScreen({ navigation }) {
   }
 
   return (
+    
     <Layout style={styles.container}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
