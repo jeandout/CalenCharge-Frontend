@@ -28,6 +28,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user'
 import NewChargeScreen from './screens/NewChargeScreen';
 import { Icon } from '@ui-kitten/components';
+import UpdateChargeScreen from './screens/UpdateChargeScreen';
 
 const store = configureStore({
   reducer: { user }
@@ -73,12 +74,12 @@ export default function App() {
     <IconRegistry icons={EvaIconsPack} />
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
       <Provider store={store}>
-        <NavigationContainer> // 
+        <NavigationContainer> 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
-           <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="NewCharge" component={NewChargeScreen} />
-            
+            <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
+            <Stack.Screen name="NewAccount" component={NewAccountScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>

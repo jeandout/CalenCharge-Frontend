@@ -11,22 +11,13 @@ import { Button, Icon, IconElement, List, ListItem } from '@ui-kitten/components
 
 export default function ListScreen({ navigation }) {
 
-    //const user = useSelector((state) => state.user.value.user);
-
     const accounts = useSelector((state) => state.user.value.user.accounts);
     const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
 
-    //const accountObj = user.accounts.find(account=>account.name===selectedAccount);
-    //let charges;
-    console.log(accounts[selectedAccount])
-    //if (accounts[selectedAccount].charges.length > 0){
     const charges = accounts[selectedAccount].charges?.map((charge, i) => {
         console.log(charge)
-        return <Charge key={i} name={charge.name} amount={charge.amount} date={charge.date} priority={charge.priority} />
+        return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
-    //}
-
-    //amount={charge.amount} date={charge.date} priority={charge.priority}
 
     //Changer icone pour un PLUS
 

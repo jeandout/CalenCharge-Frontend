@@ -20,11 +20,7 @@ const alertIcon = ({ name = 'alert-triangle-outline', ...props }) => (
 
 
 export default function Charge(props) {
-    console.log(props.priority)
 
-    const edit = () => {
-
-    }
     const priorityDisplay = () => {
         if (props.priority) {
             return( <Icon name='alert-triangle-outline' style={{marginRight:10, height:15}}/>   )
@@ -45,7 +41,7 @@ export default function Charge(props) {
             </View>
             <Text category='h4'>{props.amount}€</Text>
             <View style={styles.actions}>
-                <Button onPress={() => edit()} accessoryLeft={editIcon} appearance='ghost' />
+                <Button onPress={() => props.navigationCharge.navigate('UpdateCharge', {props})} accessoryLeft={editIcon} appearance='ghost' />
             </View>
         </View>
 
