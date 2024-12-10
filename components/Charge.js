@@ -29,6 +29,7 @@ export default function Charge(props) {
     }
 
     const day = new Date(props.date).getDate();
+    const month = new Date(props.date).getMonth();
 
     const recurrence = () => {
         if (props.recurrence == 1) {
@@ -45,9 +46,9 @@ export default function Charge(props) {
             return (
                 `Chaque semaine`
             )
-        } else {
+        } else if (props.recurrence >1 ){
             return (
-                `${day} de ${recurrence()}`
+                `${day} ${day} de ${recurrence()}`
             )
         }
     }

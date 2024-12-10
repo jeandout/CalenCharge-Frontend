@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View,} from 'react-native';
 //Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -71,19 +71,26 @@ const TabNavigator = () => (
 export default function App() {
   return (
     <>
+    
     <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+    
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
       <Provider store={store}>
-        <NavigationContainer> 
+      
+        <NavigationContainer > 
+
           <Stack.Navigator screenOptions={{ headerShown: false }} >
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="NewCharge" component={NewChargeScreen} />
             <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
             <Stack.Screen name="NewAccount" component={NewAccountScreen} />
           </Stack.Navigator>
+
         </NavigationContainer>
+       
       </Provider>
     </ApplicationProvider>
+    
 </>
 
   )
