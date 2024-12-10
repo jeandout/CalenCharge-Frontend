@@ -1,23 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+
 //Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-//FontAwesome
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 //KITTEN UI
 import React from 'react';
 
-
 import { default as theme } from './theme.json'; // <-- Import app theme
-import { default as mapping } from './mapping.json'; // <-- Import app mapping
 
+import user from './reducers/user'
+import NewChargeScreen from './screens/NewChargeScreen';
 import NewAccountScreen from './screens/NewAccountScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
+import UpdateChargeScreen from './screens/UpdateChargeScreen';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
@@ -25,10 +24,8 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
-import user from './reducers/user'
-import NewChargeScreen from './screens/NewChargeScreen';
 import { Icon } from '@ui-kitten/components';
-import UpdateChargeScreen from './screens/UpdateChargeScreen';
+
 
 const store = configureStore({
   reducer: { user }
