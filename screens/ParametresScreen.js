@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addAccount } from "../reducers/user";
 import { Button, Card, Modal, Input, Icon } from "@ui-kitten/components";
+import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }){
 
@@ -65,6 +66,8 @@ export default function ParametresScreen({ navigation }){
         </View>
       </View>
       <View>
+        <SelectAccount/>
+      <Button appearance="ghost" onPress={()=>navigation.navigate('UpdateAccount')}><Text>Modifier ou supprimer le compte</Text></Button>
       <Button onPress={handleSubmit}><Text>Ajouter un nouveau compte</Text></Button>
       </View>
       </ScrollView> 
@@ -75,6 +78,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#f2f2f2",
         flexGrow: 1,
+        marginTop:15
     },
     connectButton: {
         backgroundColor: "#4CAF50",

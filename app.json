@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-projetCalechargeT",
-    "slug": "my-projetCalechargeT",
+    "name": "CalenCharge",
+    "slug": "CalenCharge",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

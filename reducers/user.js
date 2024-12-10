@@ -48,11 +48,21 @@ export const userSlice = createSlice({
                 charges: [],
             });
         },
+        updateAccount:(state, action)=>{
+            state.value.user.accounts[state.value.selectedAccount].name=action.payload.accountInput;
+            state.value.user.accounts[state.value.selectedAccount].icon=action.payload.iconInput;
+        },
+        removeAccount:(state, action)=>{
+            state.value.user.accounts = state.value.user.accounts.splice(state.value.selectedAccount, 1);
+            if (state.value.user.accounts.length===0){
+                state.value.selectedAccount=null;
+            }
+        },
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
         },
  
     },
 });
-export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge } = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount } = userSlice.actions;
 export default userSlice.reducer;
