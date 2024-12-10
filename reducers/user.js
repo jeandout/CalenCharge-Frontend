@@ -12,11 +12,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     value: {
-        email: null,
-        google_credentials: null,
-        settings: {},
-        token: "",
-        accounts: [{ name: "Test", charges: [{ name: "TestCharge" }] }],
+
+        user: {
+            email: null,
+            google_credentials: null,
+            settings: {},
+            token: "",
+            accounts: [{ name: "Test", icon:require("../assets/iconsAccount/sun-outline.png"), charges: [{ name: "TestCharge" }] }],
+    
+        },
+        selectedAccount: 0,
     },
 };
 
@@ -34,20 +39,23 @@ export const userSlice = createSlice({
             const selectedIndex = action.payload.selectedAccount
                 ;
             //console.log(selectedIndex)
-            state.value.accounts[selectedIndex].charges.push(action.payload);
+            //state.value.accounts[selectedIndex].charges.push(action.payload);
             //console.log(state.value.accounts[selectedIndex].charges)
         },
         removeCharge: (state, action) => {
             //state.value.charges = state.value.charges.filter(e =>e.name  !==action.payload);
         },
         addAccount: (state, action) => {
-            state.value.accounts.push({
+            state.value.user.accounts.push({
                 name: action.payload.accountInput,
                 icon: action.payload.iconInput,
                 charges: [],
             });
         },
+        selectAccount: (state, action) => {
+            state.value.selectedAccount = action.payload;
+        },
     },
 });
-export const { addCharge, removeCharge, addAccount } = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount } = userSlice.actions;
 export default userSlice.reducer;

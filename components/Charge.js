@@ -9,11 +9,11 @@ export default function Charge(props){
             <View style={styles.chargeDescription}>
             <View style={styles.chargeTitle}>
             <Text>{props.name}</Text>
-            <Text>Logo Important ?</Text>
+            <Text>{props.priority}</Text>
             </View>
-            <Text>Tous les XXX</Text>
+            <Text>{props.date}</Text>
             </View>
-            <Text>XXX€</Text>
+            <Text>{props.amount}€</Text>
             <Text>Logo Modifier</Text>
         </View>
     )

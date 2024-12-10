@@ -53,7 +53,7 @@ export default function NewAccountScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
         <Text>Ajouter un compte bancaire :</Text>
         <View style={styles.previewContainer}>
       <Image source={iconInput} style={styles.selectedIcon}></Image>
