@@ -45,7 +45,7 @@ export default function NewChargeScreen({ navigation }) {
   ];
   const displayTypeValue = type[selectedChargeType.row];
   const renderType = (title) => (
-    <SelectItem title={title} key={title}/>
+    <SelectItem title={title} key={title} />
   );
 
   //variables pour l'affichage du composant select pour la récurrence
@@ -70,68 +70,82 @@ export default function NewChargeScreen({ navigation }) {
 
   return (
     <Layout style={styles.container}>
-      <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
-      <Select
-        placeholder='Compte'
-        selectedIndex={selectedAccount}
-        onSelect={index => setSelectedAccount(index)}
-      >
-        {accounts.map((option, index) => (
-          <SelectItem key={index} title={option.name} />
-        ))}
-      </Select>
-      <Input
-        placeholder='Nom'
-        value={name}
-        onChangeText={nextValue => setName(nextValue)}
-      />
-      <Select
-        placeholder='Default'
-        value={displayTypeValue}
-        selectedIndex={selectedChargeType}
-        onSelect={index => setSelectedChargeType(index)}
-      >
-        {type.map(renderType)}
-      </Select>
-      <Select
-        placeholder='Default'
-        value={displayRecurrenceValue}
-        selectedIndex={selectedRecurrence}
-        onSelect={index => setSelectedRecurrence(index)}
-      >
-        {recurrence.map(renderRecurrence)}
-      </Select>
-      <Datepicker
-        placeholder='Pick Date'
-        date={date}
-        onSelect={nextDate => setDate(nextDate)}
-        accessoryRight={CalendarIcon}
-      />
-      <View style={styles.row}>
-        <Text style={styles.text} category='p1'>Prioritaire</Text>
-        <Toggle
-          checked={checked}
-          onChange={onCheckedChange}
+      <View style={styles.inputs}>
+        <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
+        <Select
+          placeholder='Compte'
+          selectedIndex={selectedAccount}
+          onSelect={index => setSelectedAccount(index)}
+        >
+          {accounts.map((option, index) => (
+            <SelectItem key={index} title={option.name} />
+          ))}
+        </Select>
+        <Input
+          placeholder='Nom'
+          value={name}
+          onChangeText={nextValue => setName(nextValue)}
+        />
+        <Select
+          placeholder='Default'
+          value={displayTypeValue}
+          selectedIndex={selectedChargeType}
+          onSelect={index => setSelectedChargeType(index)}
+        >
+          {type.map(renderType)}
+        </Select>
+        <Select
+          placeholder='Default'
+          value={displayRecurrenceValue}
+          selectedIndex={selectedRecurrence}
+          onSelect={index => setSelectedRecurrence(index)}
+        >
+          {recurrence.map(renderRecurrence)}
+        </Select>
+        <Datepicker
+          placeholder='Pick Date'
+          date={date}
+          onSelect={nextDate => setDate(nextDate)}
+          accessoryRight={CalendarIcon}
+        />
+        <View style={styles.row}>
+          <Text style={styles.text} category='p1'>Prioritaire</Text>
+          <Toggle
+            checked={checked}
+            onChange={onCheckedChange}
+          >
+          </Toggle>
+        </View>
+        <Input
+          keyboardType="numeric"
+          size='large'
+          placeholder='Montant'
+          value={amount}
+          onChangeText={nextValue => setAmount(nextValue)}
         />
       </View>
-      <Input
-        keyboardType="numeric"
-        size='large'
-        placeholder='Montant'
-        value={amount}
-        onChangeText={nextValue => setAmount(nextValue)}
-      />
-      <Button onPress={() => handleSubmit()}>
-        Ajouter
-      </Button>
-    // </Layout>
+      <View style={styles.actions}>
+        <Button onPress={() => handleSubmit()}>
+          Ajouter
+        </Button>
+        <Button appearance='ghost' onPress={() => navigation.goBack()}>
+          Annuler
+        </Button>
+      </View>
+    </Layout>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 20,
+    justifyContent: 'space-around',
     padding: 15,
+  },
+  inputs: {
+    gap: 20,
+  },
+  actions: {
+    gap: 10,
   },
   row: {
     flexDirection: 'row',
