@@ -20,8 +20,8 @@ export default function SelectAccount() {
     return (
         <Select
             placeholder='Compte'
-            selectedIndex={selectedAccount}
-            onSelect={index => dispatch(selectAccount(index))}
+            selectedIndex={new IndexPath(selectedAccount)}
+            onSelect={index => dispatch(selectAccount(index.row))}
         >
             {accounts.map((option, index) => (
                 <SelectItem key={index}

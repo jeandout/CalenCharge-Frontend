@@ -16,13 +16,14 @@ export default function ListScreen({navigation}){
     const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
 
     //const accountObj = user.accounts.find(account=>account.name===selectedAccount);
-let charges;
+//let charges;
 console.log(accounts[selectedAccount])
-/*if (accounts[selectedAccount].charges.length > 0){
-   charges = accounts[selectedAccount].charges?.map((charge, i)=>{
+//if (accounts[selectedAccount].charges.length > 0){
+   const charges = accounts[selectedAccount].charges?.map((charge, i)=>{
         console.log(charge)
-       return <Charge key={i} name={charge.name}/>
-    })}*/
+       return <Charge key={i} name={charge.name} amount={charge.amount} date={charge.date} priority={charge.priority}/>
+    })
+//}
 
     //amount={charge.amount} date={charge.date} priority={charge.priority}
 

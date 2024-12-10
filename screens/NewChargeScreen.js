@@ -23,7 +23,7 @@ export default function NewChargeScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [name, setName] = useState("");
-  const accounts = useSelector((state) => state.user.value.accounts);
+  const accounts = useSelector((state) => state.user.value.user.accounts);
   const [amount, setAmount] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
@@ -51,9 +51,9 @@ export default function NewChargeScreen({ navigation }) {
   //variables pour l'affichage du composant select pour la récurrence
   const recurrence = [
     'Hebdomadaire',
-    'Logement',
-    'Enfants',
-    'Autre',
+    'Mensuelle',
+    'Trimestrielle',
+    'Annuelle',
   ];
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => (
