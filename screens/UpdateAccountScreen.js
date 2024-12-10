@@ -15,20 +15,24 @@ export default function UpdateAccountScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const accounts = useSelector((state) => state.user.value.user.accounts);
-  const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
+  const selectedAccount = useSelector(
+    (state) => state.user.value.selectedAccount
+  );
 
-  const [accountInput, setAccountInput] = useState(accounts[selectedAccount].name);
-  const [iconInput, setIconInput] = useState(accounts[selectedAccount].icon); 
+  const [accountInput, setAccountInput] = useState(
+    accounts[selectedAccount].name
+  );
+  const [iconInput, setIconInput] = useState(accounts[selectedAccount].icon);
   const [visible, setVisible] = useState(false);
 
   function handleSubmit() {
-    dispatch(updateAccount({ accountInput, iconInput })); 
+    dispatch(updateAccount({ accountInput, iconInput }));
     setAccountInput("");
-    navigation.navigate('TabNavigator');
+    navigation.navigate("TabNavigator");
   }
 
   const handleIconPress = (iconName) => {
-    setIconInput(iconName); 
+    setIconInput(iconName);
     setVisible(false);
   };
 
@@ -41,37 +45,45 @@ export default function UpdateAccountScreen({ navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-              <Button style={styles.button} status="danger" onPress={() => {dispatch(removeAccount()); navigation.goBack()}}>
-          <Text>Supprimer le compte</Text>
-        </Button>
-      <Text>Modifier un compte bancaire :</Text> 
+      {accounts.length>1 && (<Button
+        style={styles.button}
+        status="danger"
+        onPress={() => {
+          dispatch(removeAccount());
+          navigation.goBack();
+        }}
+      >
+        <Text>Supprimer le compte</Text>
+      </Button>)}
+      <Text>Modifier un compte bancaire :</Text>
       <View style={styles.previewContainer}>
-
         {renderIcon(iconInput, { style: styles.selectedIcon })}
-        <Button onPress={() => setVisible(true)}><Text>Changer l'icône</Text></Button>
+        <Button onPress={() => setVisible(true)}>
+          <Text>Changer l'icône</Text>
+        </Button>
       </View>
 
-  <Modal
-    visible={visible}
-    backdropStyle={styles.backdrop}
-    onBackdropPress={() => setVisible(false)}
-  >
-    <Card style={styles.card}>
-      <View style={styles.grid}>
-        {Object.keys(iconsMap).map((iconName) => (
-          <TouchableOpacity
-            key={iconName}
-            onPress={() => handleIconPress(iconName)}
-          >
-            {renderIcon(iconName)}
-          </TouchableOpacity>
-        ))}
-      </View>
-      <Button style={styles.closeButton} onPress={() => setVisible(false)}>
-        Fermer
-      </Button>
-    </Card>
-  </Modal>
+      <Modal
+        visible={visible}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setVisible(false)}
+      >
+        <Card style={styles.card}>
+          <View style={styles.grid}>
+            {Object.keys(iconsMap).map((iconName) => (
+              <TouchableOpacity
+                key={iconName}
+                onPress={() => handleIconPress(iconName)}
+              >
+                {renderIcon(iconName)}
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Button style={styles.closeButton} onPress={() => setVisible(false)}>
+            Fermer
+          </Button>
+        </Card>
+      </Modal>
 
       <View style={styles.previewContainer}>
         <Input
@@ -81,7 +93,9 @@ export default function UpdateAccountScreen({ navigation }) {
           style={styles.input}
         />
       </View>
-      <Button onPress={handleSubmit}><Text>Modifier le compte</Text></Button>
+      <Button onPress={handleSubmit}>
+        <Text>Modifier le compte</Text>
+      </Button>
     </KeyboardAvoidingView>
   );
 }
@@ -126,8 +140,8 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 16,
   },
-  button:{
-    marginBottom:16
+  button: {
+    marginBottom: 16,
   },
   previewContainer: {
     padding: 20,
