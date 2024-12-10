@@ -17,7 +17,6 @@ import CalendarScreen from './screens/CalendarScreen';
 import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
-import UpdateChargeScreen from './screens/UpdateChargeScreen';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
@@ -83,5 +82,4 @@ export default function App() {
 
   )
 }
-
 
