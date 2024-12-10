@@ -39,7 +39,8 @@ export const userSlice = createSlice({
             state.value.user.accounts[state.value.selectedAccount].charges[chargeToUpdateIndex] = action.payload.updatedCharge;
         },
         removeCharge:(state, action)=>{
-            state.value.user.accounts[state.value.selectedAccount].charges = state.value.user.accounts[state.value.selectedAccount].charges.filter(e=>e===action.payload)
+            console.log(action.payload)
+            state.value.user.accounts[state.value.selectedAccount].charges = state.value.user.accounts[state.value.selectedAccount].charges.filter(e=>e.name!==action.payload.name && e.date!==action.payload.date)
         },
         addAccount: (state, action) => {
             state.value.user.accounts.push({
