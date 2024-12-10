@@ -8,7 +8,7 @@ import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, I
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCharge } from "../reducers/user";
-
+import SelectAccount from "../components/SelectAccount";
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
   <Icon
@@ -25,7 +25,7 @@ export default function NewChargeScreen({ navigation }) {
   const [name, setName] = useState("");
   const accounts = useSelector((state) => state.user.value.user.accounts);
   const [amount, setAmount] = useState(0);
-  const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
+  // const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
   const [date, setDate] = useState(new Date());
@@ -62,7 +62,7 @@ export default function NewChargeScreen({ navigation }) {
 
   // called when add button is pressed
   function handleSubmit() {
-    dispatch(addCharge({ name, selectedAccount: selectedAccount.row, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
+    dispatch(addCharge({ name, recurence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
     setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
 
@@ -72,15 +72,7 @@ export default function NewChargeScreen({ navigation }) {
     <Layout style={styles.container}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
-        <Select
-          placeholder='Compte'
-          selectedIndex={selectedAccount}
-          onSelect={index => setSelectedAccount(index)}
-        >
-          {accounts.map((option, index) => (
-            <SelectItem key={index} title={option.name} />
-          ))}
-        </Select>
+        <SelectAccount/>
         <Input
           placeholder='Nom'
           value={name}
