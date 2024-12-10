@@ -64,10 +64,14 @@ const TabNavigator = () => (
 export default function App() {
   return (
     <>
+    
     <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+    
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
       <Provider store={store}>
-        <NavigationContainer> 
+      
+        <NavigationContainer > 
+
           <Stack.Navigator screenOptions={{ headerShown: false }} >
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="NewCharge" component={NewChargeScreen} />
@@ -75,9 +79,12 @@ export default function App() {
             <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
           </Stack.Navigator>
+
         </NavigationContainer>
+       
       </Provider>
     </ApplicationProvider>
+    
 </>
 
   )
