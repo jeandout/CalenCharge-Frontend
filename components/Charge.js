@@ -31,6 +31,22 @@ export default function Charge(props) {
     const day = new Date(props.date).getDate();
     const month = new Date(props.date).getMonth();
 
+    const monthNames = [
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre",
+    ];
+    const monthName = monthNames[month].toLowerCase()
+
     const recurrence = () => {
         if (props.recurrence == 1) {
             return ('chaque mois')
@@ -46,9 +62,13 @@ export default function Charge(props) {
             return (
                 `Chaque semaine`
             )
-        } else if (props.recurrence >1 ){
+        } else if (props.recurrence == 1 || props.recurrence == 2) {
             return (
-                `${day} ${day} de ${recurrence()}`
+                `${day} de ${recurrence()}`
+            )
+        } else if (props.recurrence > 2) {
+            return (
+                `${day} ${monthName} de ${recurrence()}`
             )
         }
     }
@@ -93,10 +113,10 @@ const styles = StyleSheet.create({
     infos: {
 
     },
-    right:{
-        flexDirection:'row',
-        gap:20,
-        alignItems:'center',
+    right: {
+        flexDirection: 'row',
+        gap: 20,
+        alignItems: 'center',
     },
     amount: {
         fontSize: 24,

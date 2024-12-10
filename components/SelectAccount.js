@@ -17,7 +17,7 @@ export default function SelectAccount() {
     return (
         <Select
         style={styles.container}
-            value={accounts[selectedAccount].name?accounts[selectedAccount].name:'Pas de compte renseigné'}
+            value={accounts[selectedAccount].name}
             selectedIndex={new IndexPath(selectedAccount)}
             accessoryLeft={renderAccessory(accounts[selectedAccount].icon)}
             onSelect={index => dispatch(selectAccount(index.row))}

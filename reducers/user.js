@@ -1,15 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//     value: {
-//         email: null,
-//         google_credentials: null,
-//         settings: {},
-//         token: "",
-//         accounts: []
-//     },
-// };
-
 const initialState = {
     value: {
 
@@ -54,10 +44,10 @@ export const userSlice = createSlice({
             state.value.user.accounts[state.value.selectedAccount].icon=action.payload.iconInput;
         },
         removeAccount:(state, action)=>{
-            state.value.user.accounts = state.value.user.accounts.splice(state.value.selectedAccount, 1);
-            if (state.value.user.accounts.length===0){
-                state.value.selectedAccount=null;
-            }
+            state.value.user.accounts.splice(state.value.selectedAccount, 1);
+            console.log(state.value.selectedAccount)
+            state.value.selectedAccount=0;
+            console.log(state.value.selectedAccount)
         },
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
