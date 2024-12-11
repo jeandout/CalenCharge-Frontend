@@ -24,6 +24,8 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
+import NotificationsHandler from './NotificationsHandler'; // Import des notifications
+
 const store = configureStore({
   reducer: { user }
 })
@@ -69,7 +71,7 @@ export default function App() {
     
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
       <Provider store={store}>
-      
+      <NotificationsHandler />
         <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
