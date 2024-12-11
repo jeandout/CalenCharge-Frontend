@@ -9,6 +9,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCharge } from "../reducers/user";
 import SelectAccount from "../components/SelectAccount";
+import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
+
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
   <Icon
@@ -50,7 +52,6 @@ export default function NewChargeScreen({ navigation }) {
 
   //variables pour l'affichage du composant select pour la récurrence
   const recurrence = [
-    'Hebdomadaire',
     'Mensuelle',
     'Trimestrielle',
     'Annuelle',
@@ -62,7 +63,8 @@ export default function NewChargeScreen({ navigation }) {
 
   // called when add button is pressed
   function handleSubmit() {
-    dispatch(addCharge({ name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount }));
+    const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
+    dispatch(addCharge({ name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList })); //add recurrenceList : checkMonth (selectedRecurrence.row, date)  en entrée, date et type de récurence, en sortie tableau d'index de mois. Mettre à jour pour supprimer index hebdo (mois, trimestre, année), création, modification et composant charge. Ajouter label date de premiere occurence sur le selecteur de date
     setName('');
     navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
 
@@ -95,6 +97,7 @@ export default function NewChargeScreen({ navigation }) {
           {recurrence.map(renderRecurrence)}
         </Select>
         <Datepicker
+          label="Début de la récurrence"
           placeholder='Pick Date'
           date={date}
           onSelect={nextDate => setDate(nextDate)}

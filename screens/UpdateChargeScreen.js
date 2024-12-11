@@ -16,14 +16,15 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCharge, removeCharge } from "../reducers/user";
+import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = "calendar", ...props }) => (
   <Icon {...props} name={name} />
 );
 
 export default function UpdateChargeScreen({ navigation, route }) {
-  
-  const {navigationCharge, ...propsFromCharge} = route.params.props;
+
+  const { navigationCharge, ...propsFromCharge } = route.params.props;
 
   const dispatch = useDispatch();
 
@@ -51,12 +52,13 @@ export default function UpdateChargeScreen({ navigation, route }) {
   const renderType = (title) => <SelectItem title={title} key={title} />;
 
   //variables pour l'affichage du composant select pour la récurrence
-  const recurrence = ["Hebdomadaire", "Mensuelle", "Trimestrielle", "Annuelle"];
+  const recurrence = ["Mensuelle", "Trimestrielle", "Annuelle"];
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => <SelectItem title={title} key={title} />;
 
   // called when add button is pressed
   function handleSubmit() {
+    const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
     dispatch(
       updateCharge({
         oldCharge: propsFromCharge,
@@ -67,6 +69,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           date: date.toISOString(),
           priority: checked,
           amount,
+          recurrenceList,
         },
       })
     );
@@ -80,7 +83,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
-        <Button status="danger" onPress={() => {dispatch(removeCharge(propsFromCharge)); navigation.goBack()}}>
+        <Button status="danger" onPress={() => { dispatch(removeCharge(propsFromCharge)); navigation.goBack() }}>
           <Text>Supprimer la charge</Text>
         </Button>
         <Input
@@ -105,6 +108,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           {recurrence.map(renderRecurrence)}
         </Select>
         <Datepicker
+          label="Début de la récurrence"
           placeholder="Pick Date"
           date={date}
           onSelect={(nextDate) => setDate(nextDate)}
