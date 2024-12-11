@@ -7,9 +7,9 @@ const initialState = {
             email: null,
             google_credentials: null,
             settings: {
-                weeklyNotificationsEnabled: true,
-                monthlyNotificationsEnabled: true,
-                chargeNotificationsEnabled: true,
+                weeklyNotificationsEnabled: false,
+                monthlyNotificationsEnabled: false,
+                chargeNotificationsEnabled: false,
               },
             token: "",
             accounts: [

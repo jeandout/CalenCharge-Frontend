@@ -15,8 +15,6 @@ export default function ParametresScreen({ navigation }){
 
   const {weeklyNotificationsEnabled, monthlyNotificationsEnabled, chargeNotificationsEnabled} = useSelector((state) => state.user.value.user.settings);
   
-  console.log(weeklyNotificationsEnabled, monthlyNotificationsEnabled, chargeNotificationsEnabled)
-
   const [calendarDate, setCalendarDate] = useState("");
  
   function handleSubmit() {

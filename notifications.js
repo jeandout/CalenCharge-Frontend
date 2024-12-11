@@ -2,14 +2,12 @@ import * as Notifications from 'expo-notifications';
 
 // Initialiser les notifications
 export async function initializeNotifications() {
-  // Demander les permissions
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') {
     console.warn('Les permissions de notification ont été refusées.');
     return;
   }
 
-  // Configurer le comportement des notifications
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -21,166 +19,187 @@ export async function initializeNotifications() {
   console.log('Notifications initialisées avec succès.');
 }
 
-// Planifier des notifications hebdomadaires pour chaque compte
+// Fonction utilitaire : calculer les charges pour une semaine
+function calculateWeeklyCharges(charges, startDate, endDate) {
+  let totalCharges = 0;
+
+  for (const charge of charges) {
+    const chargeDay = new Date(charge.date).getDate();
+    const chargeRecurrenceMonths = charge.recurrenceList;
+
+    for (let current = new Date(startDate); current <= endDate; current.setDate(current.getDate() + 1)) {
+      if (
+        chargeRecurrenceMonths.includes(current.getMonth()) && // Mois inclus dans recurrenceList
+        current.getDate() === chargeDay // Jour précis
+      ) {
+        totalCharges += parseFloat(charge.amount);
+      }
+    }
+  }
+
+  return totalCharges;
+}
+
+// Fonction utilitaire : calculer les charges pour un mois
+function calculateMonthlyCharges(charges, month) {
+  let totalCharges = 0;
+
+  for (const charge of charges) {
+    const chargeDay = new Date(charge.date).getDate();
+    const chargeRecurrenceMonths = charge.recurrenceList;
+
+    if (chargeRecurrenceMonths.includes(month)) {
+      totalCharges += parseFloat(charge.amount);
+    }
+  }
+
+  return totalCharges;
+}
+
+// Planifier des notifications hebdomadaires
 export async function scheduleWeeklyNotifications(accounts) {
-  const now = new Date();
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Résumé de la semaine',
+      body: 'Les charges prévues pour cette semaine seront incluses dans cette notification.',
+      data: { accounts }, // Passer les comptes dans les données
+    },
+    trigger: {
+      weekday: 7, // Samedi
+      hour: 9,
+      minute: 0,
+      repeats: true, // Répétition hebdomadaire
+    },
+  });
 
-  // Définir le prochain samedi
-  const day = now.getDay(); // Jour actuel (0 = dimanche, 6 = samedi)
-  const daysUntilSaturday = (6 - day + 7) % 7;
-  const nextSaturday = new Date(now);
-  nextSaturday.setDate(now.getDate() + daysUntilSaturday);
-  nextSaturday.setHours(9, 0, 0, 0);
-
-  // Fin de la semaine (vendredi suivant)
-  const endOfWeek = new Date(nextSaturday);
-  endOfWeek.setDate(nextSaturday.getDate() + 6);
-
-  // Planifier une notification pour chaque compte
-  for (const account of accounts) {
-    let totalCharges = 0;
-
-    for (const charge of account.charges) {
-      const chargeDate = new Date(charge.date);
-      const chargeMonth = chargeDate.getMonth();
-      const chargeYear = chargeDate.getFullYear();
-
-      // Calculer la différence de mois par rapport à charge.date
-      const monthDifference =
-        (nextSaturday.getFullYear() - chargeYear) * 12 +
-        nextSaturday.getMonth() -
-        chargeMonth;
-
-      // Vérifier si le mois de récurrence est inclus
-      if (charge.recurrenceList.includes((monthDifference % 12 + 12) % 12)) {
-        totalCharges += parseFloat(charge.amount);
-      }
-    }
-
-    if (totalCharges > 0) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: `Résumé de la semaine pour ${account.name}`,
-          body: `${totalCharges.toFixed(2)}€ passeront sur votre compte ${account.name} entre samedi et vendredi.`,
-        },
-        trigger: {
-          weekday: 7, // Dimanche (dimanche = 1, samedi = 7)
-          hour: 9,
-          minute: 0,
-          repeats: true,
-        },
-      });
-    }
-  }
+  console.log('Notifications hebdomadaires programmées.');
 }
 
-// Planifier des notifications mensuelles pour chaque compte
+// Planifier des notifications mensuelles
 export async function scheduleMonthlyNotifications(accounts) {
-  const now = new Date();
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Résumé du mois',
+      body: 'Les charges prévues pour ce mois seront incluses dans cette notification.',
+      data: { accounts },
+    },
+    trigger: {
+      day: 1, // Premier jour du mois
+      hour: 9,
+      minute: 0,
+      repeats: true, // Répétition mensuelle
+    },
+  });
 
-  // Premier jour du mois suivant
-  const firstDayNextMonth = new Date(now);
-  firstDayNextMonth.setMonth(firstDayNextMonth.getMonth() + 1);
-  firstDayNextMonth.setDate(1);
-  firstDayNextMonth.setHours(9, 0, 0, 0);
-
-  // Planifier une notification pour chaque compte
-  for (const account of accounts) {
-    let totalCharges = 0;
-
-    for (const charge of account.charges) {
-      const chargeDate = new Date(charge.date);
-      const chargeMonth = chargeDate.getMonth();
-      const chargeYear = chargeDate.getFullYear();
-
-      // Calculer la différence de mois par rapport à charge.date
-      const monthDifference =
-        (firstDayNextMonth.getFullYear() - chargeYear) * 12 +
-        firstDayNextMonth.getMonth() -
-        chargeMonth;
-
-      // Vérifier si le mois de récurrence est inclus
-      if (charge.recurrenceList.includes((monthDifference % 12 + 12) % 12)) {
-        totalCharges += parseFloat(charge.amount);
-      }
-    }
-
-    if (totalCharges > 0) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: `Résumé du mois pour ${account.name}`,
-          body: `${totalCharges.toFixed(2)}€ passeront sur votre compte ${account.name} le mois prochain.`,
-        },
-        trigger: {
-          day: 1, // Premier jour du mois
-          hour: 9,
-          minute: 0,
-          repeats: true,
-        },
-      });
-    }
-  }
+  console.log('Notifications mensuelles programmées.');
 }
 
-// Planifier des notifications pour chaque charge
+// Planifier des notifications pour chaque charge (3 jours avant)
 export async function scheduleChargeNotifications(accounts) {
   for (const account of accounts) {
     for (const charge of account.charges) {
       const chargeDate = new Date(charge.date);
+      const chargeDay = chargeDate.getDate();
+      const chargeRecurrenceMonths = charge.recurrenceList;
 
-      // Calculer si la charge doit être déclenchée ce mois-ci
-      const currentMonth = new Date().getMonth();
-      const chargeMonth = chargeDate.getMonth();
-      const chargeYear = chargeDate.getFullYear();
+      const now = new Date();
 
-      const monthDifference =
-        (new Date().getFullYear() - chargeYear) * 12 +
-        currentMonth -
-        chargeMonth;
+      // Vérifier si la charge doit être déclenchée ce mois-ci
+      if (chargeRecurrenceMonths.includes(now.getMonth())) {
+        const notificationDate = new Date(now);
+        notificationDate.setDate(chargeDay - 3); // 3 jours avant
+        notificationDate.setHours(9, 0, 0, 0);
 
-      if (!charge.recurrenceList.includes((monthDifference % 12 + 12) % 12)) {
-        continue;
-      }
+        if (notificationDate > now) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: `Prélèvement imminent : ${charge.name}`,
+              body: `Un prélèvement de ${charge.amount}€ est prévu le ${chargeDay}.`,
+            },
+            trigger: {
+              date: notificationDate, // Déclenchement 3 jours avant
+            },
+          });
 
-      // Date de la notification : 3 jours avant la charge
-      const notificationDate = new Date(chargeDate);
-      notificationDate.setDate(chargeDate.getDate() - 3);
-      notificationDate.setHours(9, 0, 0, 0);
-
-      // Vérification que la notification n'est pas dans le passé
-      if (notificationDate.getTime() > Date.now()) {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: `Prélèvement imminent : ${charge.name}`,
-            body: `Un prélèvement de ${charge.amount}€ est prévu le ${chargeDate.toLocaleDateString()} sur ${account.name}.`,
-          },
-          trigger: {
-            date: notificationDate,
-          },
-        });
+          console.log(
+            `Notification planifiée pour ${charge.name} sur ${account.name} le ${notificationDate.toLocaleDateString()}`
+          );
+        }
       }
     }
   }
 }
 
+// Envoie une notification de test
 export async function sendTestNotification() {
-    try {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Notification de test',
-          body: 'Ceci est une notification de test pour vérifier que tout fonctionne bien.',
-          sound: true,
-        },
-        trigger: null, // Notification immédiate
-      });
-  
-      console.log('Notification de test envoyée.');
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de la notification de test :', error);
-    }
-  }
+  const now = new Date();
+  now.setSeconds(now.getSeconds() + 5); // 5 secondes dans le futur
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Notification de test',
+      body: 'Ceci est une notification de test pour vérifier que tout fonctionne bien.',
+    },
+    trigger: {
+      date: now,
+    },
+  });
 
-// Annuler toutes les notifications
+  console.log('Notification de test envoyée.');
+}
+
+// Gérer la notification au moment du déclenchement
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    const { accounts } = notification.request.content.data;
+
+    if (notification.request.trigger.repeatFrequency === 'WEEKLY') {
+      const now = new Date();
+      const thisSaturday = new Date(now);
+      thisSaturday.setDate(thisSaturday.getDate() - thisSaturday.getDay() + 6); // Samedi
+      thisSaturday.setHours(0, 0, 0, 0);
+
+      const nextFriday = new Date(thisSaturday);
+      nextFriday.setDate(thisSaturday.getDate() + 6); // Vendredi suivant
+      nextFriday.setHours(23, 59, 59, 999);
+
+      for (const account of accounts) {
+        const totalCharges = calculateWeeklyCharges(
+          account.charges,
+          thisSaturday,
+          nextFriday
+        );
+
+        console.log(
+          `Charges hebdomadaires pour ${account.name}: ${totalCharges.toFixed(2)}€`
+        );
+      }
+    }
+
+    if (notification.request.trigger.repeatFrequency === 'MONTHLY') {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+
+      for (const account of accounts) {
+        const totalCharges = calculateMonthlyCharges(
+          account.charges,
+          currentMonth
+        );
+
+        console.log(
+          `Charges mensuelles pour ${account.name}: ${totalCharges.toFixed(2)}€`
+        );
+      }
+    }
+
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    };
+  },
+});
+
+// Annuler toutes les notifications programmées
 export async function cancelAllNotifications() {
   await Notifications.cancelAllScheduledNotificationsAsync();
   console.log('Toutes les notifications programmées ont été annulées.');
