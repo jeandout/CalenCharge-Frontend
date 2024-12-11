@@ -48,25 +48,21 @@ export default function Charge(props) {
     const monthName = monthNames[month].toLowerCase()
 
     const recurrence = () => {
-        if (props.recurrence == 1) {
+        if (props.recurrence == 0) {
             return ('chaque mois')
-        } else if (props.recurrence == 2) {
+        } else if (props.recurrence == 1) {
             return ('chaque trimestre')
-        } else if (props.recurrence == 3) {
+        } else if (props.recurrence == 2) {
             return ('chaque année')
         }
     };
 
     const payDay = () => {
-        if (props.recurrence == 0) {
-            return (
-                `Chaque semaine`
-            )
-        } else if (props.recurrence == 1 || props.recurrence == 2) {
+        if (props.recurrence == 0 || props.recurrence == 1) {
             return (
                 `${day} de ${recurrence()}`
             )
-        } else if (props.recurrence > 2) {
+        } else if (props.recurrence > 1) {
             return (
                 `${day} ${monthName} de ${recurrence()}`
             )
