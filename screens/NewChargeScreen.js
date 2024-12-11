@@ -72,9 +72,7 @@ export default function NewChargeScreen({ navigation }) {
       setName('');
       navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
     }
-    console.log('empty fields')
     setRequieredFieldStatus('warning')
-
   }
 
   return (
