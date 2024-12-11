@@ -28,7 +28,13 @@ export default function ListScreen({ navigation }) {
         return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
 
-    //Changer icone pour un PLUS
+    const accountsList = useSelector((state) => state.user.value)
+    console.log('liste des charges :')
+    console.log(accountsList.user)
+    for (let el in accountsList.accounts ){
+        console.log(el)
+    }
+    
 
     return (
         <View style={styles.container}>

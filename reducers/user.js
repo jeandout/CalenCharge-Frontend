@@ -8,8 +8,26 @@ const initialState = {
             google_credentials: null,
             settings: {},
             token: "",
-            accounts: [{ name: "Test", icon:"person-outline", charges: [{amount: "32", chargeType: 0, date: "2024-12-10T13:42:18.784Z", name: "TestCharge", priority: true, recurrence: 1}] }],
-    
+            accounts: [
+                {
+                    "charges":
+                        [{ "amount": "9,99", "chargeType": 0, "date": "2024-09-16T22:00:00.000Z", "name": "Xbox live", "priority": false, "recurrence": 0, "recurrenceList": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                        { "amount": "42", "chargeType": 3, "date": "2024-07-20T22:00:00.000Z", "name": "Abonnement Canard PC", "priority": false, "recurrence": 1, "recurrenceList": [6, 9, 0, 3] },
+                        { "amount": "59", "chargeType": 3, "date": "2024-04-08T22:00:00.000Z", "name": "iCloud", "priority": true, "recurrence": 2, "recurrenceList": [3] }],
+
+                    "icon": "person-outline", "name": "Perso"
+                },
+                {
+                    "charges":
+                        [{ "amount": "25", "chargeType": 0, "date": "2024-06-08T22:00:00.000Z", "name": "Netflix ", "priority": false, "recurrence": 0, "recurrenceList": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                        { "amount": "456", "chargeType": 1, "date": "2024-01-01T23:00:00.000Z", "name": "Copro", "priority": true, "recurrence": 1, "recurrenceList": [0, 3, 6, 9] },
+                        { "amount": "75", "chargeType": 0, "date": "2024-08-12T22:00:00.000Z", "name": "Amazon Prime", "priority": false, "recurrence": 2, "recurrenceList": [7] }],
+                    "icon": "people-outline", "name": "Commun"
+                }
+
+
+            ],
+
         },
         selectedAccount: 0,
     },
@@ -23,14 +41,14 @@ export const userSlice = createSlice({
     reducers: {
         addCharge: (state, action) => {
             state.value.user.accounts[state.value.selectedAccount].charges.push(action.payload);
-        },       
-        updateCharge:(state, action)=>{
-            const chargeToUpdateIndex = state.value.user.accounts[state.value.selectedAccount].charges.findIndex(e=>e.name===action.payload.oldCharge.name && e.date===action.payload.oldCharge.date)
+        },
+        updateCharge: (state, action) => {
+            const chargeToUpdateIndex = state.value.user.accounts[state.value.selectedAccount].charges.findIndex(e => e.name === action.payload.oldCharge.name && e.date === action.payload.oldCharge.date)
             state.value.user.accounts[state.value.selectedAccount].charges[chargeToUpdateIndex] = action.payload.updatedCharge;
         },
-        removeCharge:(state, action)=>{
+        removeCharge: (state, action) => {
             console.log(action.payload)
-            state.value.user.accounts[state.value.selectedAccount].charges = state.value.user.accounts[state.value.selectedAccount].charges.filter(e=>e.name!==action.payload.name && e.date!==action.payload.date)
+            state.value.user.accounts[state.value.selectedAccount].charges = state.value.user.accounts[state.value.selectedAccount].charges.filter(e => e.name !== action.payload.name && e.date !== action.payload.date)
         },
         addAccount: (state, action) => {
             state.value.user.accounts.push({
@@ -39,20 +57,20 @@ export const userSlice = createSlice({
                 charges: [],
             });
         },
-        updateAccount:(state, action)=>{
-            state.value.user.accounts[state.value.selectedAccount].name=action.payload.accountInput;
-            state.value.user.accounts[state.value.selectedAccount].icon=action.payload.iconInput;
+        updateAccount: (state, action) => {
+            state.value.user.accounts[state.value.selectedAccount].name = action.payload.accountInput;
+            state.value.user.accounts[state.value.selectedAccount].icon = action.payload.iconInput;
         },
-        removeAccount:(state, action)=>{
+        removeAccount: (state, action) => {
             state.value.user.accounts.splice(state.value.selectedAccount, 1);
             console.log(state.value.selectedAccount)
-            state.value.selectedAccount=0;
+            state.value.selectedAccount = 0;
             console.log(state.value.selectedAccount)
         },
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
         },
- 
+
     },
 });
 export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount } = userSlice.actions;
