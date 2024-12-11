@@ -16,18 +16,22 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCharge, removeCharge } from "../reducers/user";
+import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
+import CheckChargeFields from "../components/CheckChargeFields";
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = "calendar", ...props }) => (
   <Icon {...props} name={name} />
 );
 
 export default function UpdateChargeScreen({ navigation, route }) {
-  
-  const {navigationCharge, ...propsFromCharge} = route.params.props;
+
+  const { navigationCharge, ...propsFromCharge } = route.params.props;
 
   const dispatch = useDispatch();
 
   const [name, setName] = useState(propsFromCharge.name);
+
+  const [requieredFieldStatus, setRequieredFieldStatus] = useState('basic')
 
   const [amount, setAmount] = useState(propsFromCharge.amount);
 
@@ -51,27 +55,34 @@ export default function UpdateChargeScreen({ navigation, route }) {
   const renderType = (title) => <SelectItem title={title} key={title} />;
 
   //variables pour l'affichage du composant select pour la récurrence
-  const recurrence = ["Hebdomadaire", "Mensuelle", "Trimestrielle", "Annuelle"];
+  const recurrence = ["Mensuelle", "Trimestrielle", "Annuelle"];
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => <SelectItem title={title} key={title} />;
 
   // called when add button is pressed
   function handleSubmit() {
-    dispatch(
-      updateCharge({
-        oldCharge: propsFromCharge,
-        updatedCharge: {
-          name,
-          recurrence: selectedRecurrence.row,
-          chargeType: selectedChargeType.row,
-          date: date.toISOString(),
-          priority: checked,
-          amount,
-        },
-      })
-    );
-    setName("");
-    navigation.goBack();
+    const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
+    const updatedCharge = {
+      name,
+      recurrence: selectedRecurrence.row,
+      chargeType: selectedChargeType.row,
+      date: date.toISOString(),
+      priority: checked,
+      amount,
+      recurrenceList,
+    };
+    if (CheckChargeFields(updatedCharge, ['name', 'amount',])) {
+      dispatch(
+        updateCharge({
+          oldCharge: propsFromCharge,
+          updatedCharge,
+        })
+      );
+      setName("");
+      navigation.goBack();
+    }
+    setRequieredFieldStatus('warning')
+
   }
 
   return (
@@ -80,10 +91,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
-        <Button status="danger" onPress={() => {dispatch(removeCharge(propsFromCharge)); navigation.goBack()}}>
+        <Button status="danger" onPress={() => { dispatch(removeCharge(propsFromCharge)); navigation.goBack() }}>
           <Text>Supprimer la charge</Text>
         </Button>
         <Input
+          status={requieredFieldStatus}
           placeholder="Nom"
           value={name}
           onChangeText={(nextValue) => setName(nextValue)}
@@ -105,6 +117,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           {recurrence.map(renderRecurrence)}
         </Select>
         <Datepicker
+          label="Début de la récurrence"
           placeholder="Pick Date"
           date={date}
           onSelect={(nextDate) => setDate(nextDate)}
@@ -117,6 +130,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           <Toggle checked={checked} onChange={onCheckedChange}></Toggle>
         </View>
         <Input
+          status={requieredFieldStatus}
           keyboardType="numeric"
           size="large"
           placeholder="Montant"
