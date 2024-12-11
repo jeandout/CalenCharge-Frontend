@@ -28,14 +28,6 @@ export default function ListScreen({ navigation }) {
         return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
 
-    const accountsList = useSelector((state) => state.user.value)
-    console.log('liste des charges :')
-    console.log(accountsList.user)
-    for (let el in accountsList.accounts ){
-        console.log(el)
-    }
-    
-
     return (
         <View style={styles.container}>
             <View style={styles.top}>
@@ -44,9 +36,7 @@ export default function ListScreen({ navigation }) {
                     {charges}
                 </ScrollView>
             </View>
-            <View style={styles.bottom}>
-                <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
-            </View>
+            <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
         </View>
     )
 }
@@ -56,19 +46,24 @@ const styles = StyleSheet.create({
         gap: 15,
         padding: 15,
         marginTop: 40,
-     
-        justifyContent:'space-between',
+        justifyContent: 'space-between',
     },
     addButton: {
+        position: 'absolute',
         height: 50,
         width: 50,
-        
+        bottom: 20, // Position en bas
+        right: 20,
+        zIndex: 30,
     },
     top: {
-        gap:15,
+        gap: 15,
+        flex: 1,
+        zIndex: 20,
     },
     bottom: {
-        alignItems:'flex-end',
+        // alignItems:'flex-end',
+
     },
 
 })
