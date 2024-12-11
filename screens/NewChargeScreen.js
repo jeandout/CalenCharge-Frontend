@@ -79,7 +79,7 @@ export default function NewChargeScreen({ navigation }) {
   }
 
   return (
-    <Layout style={styles.container}>
+    <Layout style={styles.container} level={'1'}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
         <SelectAccount />

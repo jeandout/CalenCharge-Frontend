@@ -82,7 +82,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
   }
 
   return (
-    <Layout style={styles.container}>
+    <Layout style={styles.container} level={'1'}>
       <View style={styles.inputs}>
         <Text style={styles.text} category="h3">
           Modifier une charge
