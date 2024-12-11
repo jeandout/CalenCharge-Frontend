@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addCharge } from "../reducers/user";
 import SelectAccount from "../components/SelectAccount";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
+import CheckChargeFields from "../components/CheckChargeFields";
 
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
@@ -25,6 +26,7 @@ export default function NewChargeScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [name, setName] = useState("");
+  const [requieredFieldStatus, setRequieredFieldStatus] = useState('basic')
   const accounts = useSelector((state) => state.user.value.user.accounts);
   const [amount, setAmount] = useState(0);
   // const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
@@ -64,9 +66,14 @@ export default function NewChargeScreen({ navigation }) {
   // called when add button is pressed
   function handleSubmit() {
     const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
-    dispatch(addCharge({ name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList })); //add recurrenceList : checkMonth (selectedRecurrence.row, date)  en entrée, date et type de récurence, en sortie tableau d'index de mois. Mettre à jour pour supprimer index hebdo (mois, trimestre, année), création, modification et composant charge. Ajouter label date de premiere occurence sur le selecteur de date
-    setName('');
-    navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
+    const newCharge = { name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList }
+    if (CheckChargeFields(newCharge, ['name', 'amount',])) {
+      dispatch(addCharge(newCharge)); //add recurrenceList : checkMonth (selectedRecurrence.row, date)  en entrée, date et type de récurence, en sortie tableau d'index de mois. Mettre à jour pour supprimer index hebdo (mois, trimestre, année), création, modification et composant charge. Ajouter label date de premiere occurence sur le selecteur de date
+      setName('');
+      navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
+    }
+    console.log('empty fields')
+    setRequieredFieldStatus('warning')
 
   }
 
@@ -74,8 +81,9 @@ export default function NewChargeScreen({ navigation }) {
     <Layout style={styles.container}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
-        <SelectAccount/>
+        <SelectAccount />
         <Input
+          status={requieredFieldStatus}
           placeholder='Nom'
           value={name}
           onChangeText={nextValue => setName(nextValue)}
@@ -112,6 +120,7 @@ export default function NewChargeScreen({ navigation }) {
           </Toggle>
         </View>
         <Input
+          status={requieredFieldStatus}
           keyboardType="numeric"
           size='large'
           placeholder='Montant'
@@ -121,10 +130,10 @@ export default function NewChargeScreen({ navigation }) {
       </View>
       <View style={styles.actions}>
         <Button onPress={() => handleSubmit()}>
-        <Text>Ajouter</Text>
+          <Text>Ajouter</Text>
         </Button>
         <Button appearance='ghost' onPress={() => navigation.goBack()}>
-        <Text>Annuler</Text>
+          <Text>Annuler</Text>
         </Button>
       </View>
     </Layout>

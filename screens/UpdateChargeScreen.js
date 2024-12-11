@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCharge, removeCharge } from "../reducers/user";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
+import CheckChargeFields from "../components/CheckChargeFields";
 //icone pour l'affichage du calendrier du datepicker
 const CalendarIcon = ({ name = "calendar", ...props }) => (
   <Icon {...props} name={name} />
@@ -29,6 +30,8 @@ export default function UpdateChargeScreen({ navigation, route }) {
   const dispatch = useDispatch();
 
   const [name, setName] = useState(propsFromCharge.name);
+
+  const [requieredFieldStatus, setRequieredFieldStatus] = useState('basic')
 
   const [amount, setAmount] = useState(propsFromCharge.amount);
 
@@ -59,22 +62,27 @@ export default function UpdateChargeScreen({ navigation, route }) {
   // called when add button is pressed
   function handleSubmit() {
     const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
-    dispatch(
-      updateCharge({
-        oldCharge: propsFromCharge,
-        updatedCharge: {
-          name,
-          recurrence: selectedRecurrence.row,
-          chargeType: selectedChargeType.row,
-          date: date.toISOString(),
-          priority: checked,
-          amount,
-          recurrenceList,
-        },
-      })
-    );
-    setName("");
-    navigation.goBack();
+    const updatedCharge = {
+      name,
+      recurrence: selectedRecurrence.row,
+      chargeType: selectedChargeType.row,
+      date: date.toISOString(),
+      priority: checked,
+      amount,
+      recurrenceList,
+    };
+    if (CheckChargeFields(updatedCharge, ['name', 'amount',])) {
+      dispatch(
+        updateCharge({
+          oldCharge: propsFromCharge,
+          updatedCharge,
+        })
+      );
+      setName("");
+      navigation.goBack();
+    }
+    setRequieredFieldStatus('warning')
+
   }
 
   return (
@@ -87,6 +95,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           <Text>Supprimer la charge</Text>
         </Button>
         <Input
+          status={requieredFieldStatus}
           placeholder="Nom"
           value={name}
           onChangeText={(nextValue) => setName(nextValue)}
@@ -121,6 +130,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           <Toggle checked={checked} onChange={onCheckedChange}></Toggle>
         </View>
         <Input
+          status={requieredFieldStatus}
           keyboardType="numeric"
           size="large"
           placeholder="Montant"
