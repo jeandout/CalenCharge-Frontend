@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput,
-    KeyboardAvoidingView, Platform, ScrollView, Switch
+    KeyboardAvoidingView, Platform, ScrollView, Switch, Layout
 } from "react-native";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications, } from "../reducers/user";
-import { Button, Card, Modal, Input, Icon } from "@ui-kitten/components";
+import { Button, Card, Modal, Input, Icon, Datepicker } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }){
@@ -15,17 +15,25 @@ export default function ParametresScreen({ navigation }){
 
   const {weeklyNotificationsEnabled, monthlyNotificationsEnabled, chargeNotificationsEnabled} = useSelector((state) => state.user.value.user.settings);
   
-  const [calendarDate, setCalendarDate] = useState("");
+  const [calendarDate, setCalendarDate] = useState(new Date());
  
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
+  // Icône pour le calendrier
+const CalendarIcon = ({ name = 'calendar', ...props }) => (
+  <Icon
+      {...props}
+      name={name}
+  />
+);
  
     return(
+  
     <ScrollView contentContainerStyle={styles.container}>   
-        <TouchableOpacity style={styles.connectButton}>
-        <Text style={styles.connectButtonText}>Se connecter / créer un compte</Text>
-      </TouchableOpacity>
+        <Button>
+        <Text style={styles.connectButtonText} onPress={()=>navigation.navigate('LoginScreen')}>Se connecter / créer un compte</Text>
+      </Button>
 
       
       <View style={styles.section}>
@@ -52,25 +60,25 @@ export default function ParametresScreen({ navigation }){
           />
         </View>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Vue Calendrier: choisir le début de période</Text>
         <View>
-            <TextInput 
-            style={styles.calendarInput}
-            placeholder="JJ/MM/AAAA"
-            value={calendarDate} onChangeText={(text) =>setCalendarDate(text)}/>
-            <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>+</Text>
-            </TouchableOpacity>
-            
-        </View>
-      </View>
+        <View style={styles.datePickerContainer}>
+                    <Text category="label" style={styles.label}>Vue Calendrier: choisir le début de période</Text>
+                    <Datepicker
+                        placeholder="JJ/MM/AAAA"
+                        date={calendarDate}
+                        onSelect={setCalendarDate}
+                        accessoryRight={CalendarIcon}
+                        style={styles.datePicker}
+                    />
+                </View>
+        </View>     
       <View>
         <SelectAccount/>
       <Button appearance="ghost" onPress={()=>navigation.navigate('UpdateAccount')}><Text>Modifier ou supprimer le compte</Text></Button>
       <Button onPress={handleSubmit}><Text>Ajouter un nouveau compte</Text></Button>
       </View>
       </ScrollView> 
+      
     )
 }
 const styles = StyleSheet.create({
@@ -80,13 +88,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         marginTop:15
     },
-    connectButton: {
-        backgroundColor: "#4CAF50",
-        padding: 15,
-        borderRadius: 5,
-        alignItems: "center",
-        marginBottom: 20,
-      },
+  
       connectButtonText: {
         color: "white",
         fontSize: 16,
@@ -119,5 +121,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
       },
      
+    
       
 })

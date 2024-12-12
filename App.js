@@ -17,6 +17,9 @@ import CalendarScreen from './screens/CalendarScreen';
 import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import SignInScreen from './screens/SignInScreen';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
@@ -75,6 +78,9 @@ export default function App() {
         <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
+           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+           <Stack.Screen name="SignInScreen" component={SignInScreen} />
+           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="NewCharge" component={NewChargeScreen} />
             <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
