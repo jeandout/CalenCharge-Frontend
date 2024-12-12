@@ -75,6 +75,9 @@ export default function NewAccountScreen({ navigation }) {
         />
       </View>
       <Button onPress={handleSubmit}><Text>Ajouter un compte</Text></Button>
+      <Button appearance='ghost' onPress={() => navigation.goBack()}>
+          <Text>Annuler</Text>
+        </Button>
     </KeyboardAvoidingView>
   );
 }
