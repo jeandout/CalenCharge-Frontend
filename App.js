@@ -17,6 +17,9 @@ import CalendarScreen from './screens/CalendarScreen';
 import ListScreen from './screens/ListScreen';
 import ParametresScreen from './screens/ParametresScreen';
 import RapportScreen from './screens/RapportScreen';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import SignInScreen from './screens/SignInScreen';
 
 
 import * as eva from '@eva-design/eva';
@@ -68,7 +71,16 @@ export default function App() {
   return (
     <>
 
-      <IconRegistry icons={EvaIconsPack} />
+          <Stack.Navigator screenOptions={{ headerShown: false }} >
+           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+           <Stack.Screen name="SignInScreen" component={SignInScreen} />
+           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+            <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            <Stack.Screen name="NewCharge" component={NewChargeScreen} />
+            <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
+            <Stack.Screen name="NewAccount" component={NewAccountScreen} />
+            <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
+          </Stack.Navigator>
 
       <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
         <Provider store={store}>
