@@ -2,8 +2,10 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput,
     KeyboardAvoidingView, Platform, ScrollView, Switch
 } from "react-native";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addAccount } from "../reducers/user";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleWeeklyNotifications,
+  toggleMonthlyNotifications,
+  toggleChargeNotifications, } from "../reducers/user";
 import { Button, Card, Modal, Input, Icon } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
@@ -11,12 +13,10 @@ export default function ParametresScreen({ navigation }){
 
   const dispatch = useDispatch();
 
-  const [monthlyNotifications, setMonthlyNotifications] = useState(false);
-  const [weeklyNotifications, setWeeklyNotifications] = useState(false);
-  const [paymentNotifications, setPaymentNotifications] = useState(false);
+  const {weeklyNotificationsEnabled, monthlyNotificationsEnabled, chargeNotificationsEnabled} = useSelector((state) => state.user.value.user.settings);
+  
   const [calendarDate, setCalendarDate] = useState("");
  
-
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
@@ -33,22 +33,22 @@ export default function ParametresScreen({ navigation }){
         <View style={styles.switchRow}>
         <Text>Hebdomadaires</Text>
           <Switch
-            value={weeklyNotifications}
-            onValueChange={(value) => setWeeklyNotifications(value)}
+            value={weeklyNotificationsEnabled}
+            onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
           />
         </View>
         <View style={styles.switchRow}>
         <Text>Mensuelles</Text>
           <Switch
-            value={monthlyNotifications}
-            onValueChange={(value) => setMonthlyNotifications(value)}
+            value={monthlyNotificationsEnabled}
+            onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
           />
         </View>
         <View style={styles.switchRow}>
           <Text>A chaque prélèvement</Text>
           <Switch
-            value={paymentNotifications}
-            onValueChange={(value) => setPaymentNotifications(value)}
+            value={chargeNotificationsEnabled}
+            onValueChange={(value) => dispatch(toggleChargeNotifications())}
           />
         </View>
       </View>

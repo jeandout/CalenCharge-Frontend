@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"],
+        "NSUserNotificationUsageDescription": "Nous utilisons les notifications pour vous tenir informé des rappels importants."
+      }
     },
     "android": {
       "adaptiveIcon": {

@@ -6,7 +6,11 @@ const initialState = {
         user: {
             email: null,
             google_credentials: null,
-            settings: {},
+            settings: {
+                weeklyNotificationsEnabled: false,
+                monthlyNotificationsEnabled: false,
+                chargeNotificationsEnabled: false,
+              },
             token: "",
             accounts: [
                 {
@@ -70,8 +74,17 @@ export const userSlice = createSlice({
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
         },
-
+        toggleWeeklyNotifications(state) {
+            state.value.user.settings.weeklyNotificationsEnabled = !state.value.user.settings.weeklyNotificationsEnabled;
+          },
+          toggleMonthlyNotifications(state) {
+            state.value.user.settings.monthlyNotificationsEnabled = !state.value.user.settings.monthlyNotificationsEnabled;
+          },
+          toggleChargeNotifications(state) {
+            state.value.user.settings.chargeNotificationsEnabled = !state.value.user.settings.chargeNotificationsEnabled;
+          },
+ 
     },
 });
-export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount } = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount, toggleWeeklyNotifications, toggleMonthlyNotifications, toggleChargeNotifications, } = userSlice.actions;
 export default userSlice.reducer;

@@ -2,8 +2,9 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
+  Switch,
 } from "react-native";
-import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Toggle, Button,KeyboardAvoidingView, } from '@ui-kitten/components';
+import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Button, } from '@ui-kitten/components';
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,11 +35,13 @@ export default function NewChargeScreen({ navigation }) {
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
   const [date, setDate] = useState(new Date());
 
-  // const pour le toggle
+  // const pour le toggle - REMPLACé PAR SWITCH FROM REACT
+  // const [checked, setChecked] = useState(false);
+  // const onCheckedChange = (isChecked) => {
+  //   setChecked(isChecked);
+  // };
+  // console.log(checked)
   const [checked, setChecked] = useState(false);
-  const onCheckedChange = (isChecked) => {
-    setChecked(isChecked);
-  };
 
   //variables pour l'affichage du composant select pour le type
   const type = [
@@ -76,8 +79,7 @@ export default function NewChargeScreen({ navigation }) {
   }
 
   return (
-    
-    <Layout style={styles.container}>
+    <Layout style={styles.container} level={'1'}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
         <SelectAccount />
@@ -112,11 +114,12 @@ export default function NewChargeScreen({ navigation }) {
         />
         <View style={styles.row}>
           <Text style={styles.text} category='p1'>Prioritaire</Text>
-          <Toggle
-            checked={checked}
-            onChange={onCheckedChange}
-          >
-          </Toggle>
+          <Switch
+            trackColor={{ false: '#767577', true: '#E1FAEB' }}
+            thumbColor={checked ? '#55AD9B' : '#f4f3f4'}
+            value={checked}
+            onValueChange={(value) => setChecked(value)}
+          />
         </View>
         <Input
           status={requieredFieldStatus}

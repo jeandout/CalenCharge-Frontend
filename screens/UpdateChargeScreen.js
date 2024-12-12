@@ -1,4 +1,4 @@
-import { View, StyleSheet, SafeAreaView } from "react-native";
+import { View, StyleSheet, SafeAreaView, Switch } from "react-native";
 import {
   Layout,
   Text,
@@ -9,7 +9,6 @@ import {
   Datepicker,
   Icon,
   IconElement,
-  Toggle,
   Button,
 } from "@ui-kitten/components";
 
@@ -45,9 +44,6 @@ export default function UpdateChargeScreen({ navigation, route }) {
 
   // const pour le toggle
   const [checked, setChecked] = useState(propsFromCharge.priority);
-  const onCheckedChange = (isChecked) => {
-    setChecked(isChecked);
-  };
 
   //variables pour l'affichage du composant select pour le type
   const type = ["Loisir", "Logement", "Enfants", "Autre"];
@@ -86,7 +82,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
   }
 
   return (
-    <Layout style={styles.container}>
+    <Layout style={styles.container} level={'1'}>
       <View style={styles.inputs}>
         <Text style={styles.text} category="h3">
           Modifier une charge
@@ -127,7 +123,12 @@ export default function UpdateChargeScreen({ navigation, route }) {
           <Text style={styles.text} category="p1">
             Prioritaire
           </Text>
-          <Toggle checked={checked} onChange={onCheckedChange}></Toggle>
+          <Switch
+            trackColor={{ false: '#767577', true: '#E1FAEB' }}
+            thumbColor={checked ? '#55AD9B' : '#f4f3f4'}
+            value={checked}
+            onValueChange={(value) => setChecked(value)}
+          />
         </View>
         <Input
           status={requieredFieldStatus}
