@@ -8,7 +8,6 @@ import { useState } from "react";
 import SelectAccount from "../components/SelectAccount";
 import { useSelector } from 'react-redux';
 import Charge from "../components/Charge";
-//import Ionicons from '@expo/vector-icons/Ionicons';
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 
 
@@ -57,14 +56,25 @@ export default function CalendarScreen({ navigation }) {
 
   const [date, setDate] = useState(null);
 
-  const InfoDay = (date) => {
-    const day = new Date(date.date).getDate();
-    const formattedDate = date.date.toISOString().split('T')[0];  // Get date in "YYYY-MM-DD" format
+  const InfoDay = (calendarDate) => {
+    const day = new Date(calendarDate.date).getDate();
+    
+    const formattedDate = calendarDate.date.toISOString().split('T')[0];  // Get date in "YYYY-MM-DD" format
 
     // Filter charges for the specific date
     const chargesForDay = charges.filter(charge => {
       const chargeDate = new Date(charge.date).toISOString().split('T')[0];  // Format charge date
-      return chargeDate === formattedDate;  // Compare the date
+      const chargedThisMonth = () => {
+        return charge.recurrenceList.includes(calendarDate.date.getMonth())
+      }
+      // const allreadyCreated = () => {
+      //   if (calendarDate.date.getYear() >= chargeDate.slice(0, 4)){
+      //     return true
+      //   }else{
+      //     return false
+      //   }
+      // }
+      return chargeDate.slice(-2) === formattedDate.slice(-2) && chargedThisMonth();  // Compare the date
     });
 
     return (
@@ -73,8 +83,8 @@ export default function CalendarScreen({ navigation }) {
           {day}
         </Text>
         {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
-          <Text key={i} style={styles.chargeText}>
-            {`Charge: $${charge.amount}`}
+          <Text key={i} style={styles.chargeText} onPress={() => navigation.navigate("NewCharge")}>
+            {`${charge.amount}€`}
           </Text>
         ))}
       </View>
@@ -93,7 +103,6 @@ export default function CalendarScreen({ navigation }) {
         date={date}
         onSelect={(nextDate) => setDate(nextDate)}
         renderDay={InfoDay}
-        //renderMonth={InfoDay}
         renderArrowLeft={LeftArrow}
         renderArrowRight={RightArrow}
       />
@@ -102,8 +111,6 @@ export default function CalendarScreen({ navigation }) {
   )
 }
 
-//<Ionicons name="chevron-back-outline" size={20} color='blue' />
-//<Ionicons name="chevron-forward" size={20} color="blue" />
 
 const styles = StyleSheet.create({
   container: {

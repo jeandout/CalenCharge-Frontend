@@ -46,7 +46,7 @@ const NotificationsHandler = () => {
           await scheduleChargeNotifications(accounts);
         }
 
-        //await sendTestNotification();
+        await sendTestNotification();
 
         console.log('Notifications mises à jour.');
       } catch (error) {
