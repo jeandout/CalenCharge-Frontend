@@ -21,7 +21,6 @@ import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
 
-
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
@@ -40,25 +39,25 @@ const ReportIcon = (props) => <Icon {...props} name="bar-chart-outline" />;
 const SettingsIcon = (props) => <Icon {...props} name="settings-outline" />;
 
 // création des navigateurs 
-const { Navigator, Screen } = createBottomTabNavigator();
+const {Navigator, Screen} = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 // onglets personnalisés
-const BottomTabBar = ({ navigation, state }) => (
-  <BottomNavigation
-    selectedIndex={state.index}
-    onSelect={(index) => navigation.navigate(state.routeNames[index])}>
-    <BottomNavigationTab title="Calendrier" icon={CalendarIcon} />
-    <BottomNavigationTab title="Liste" icon={ListIcon} />
-    <BottomNavigationTab title="Rapport" icon={ReportIcon} />
-    <BottomNavigationTab title="Paramètres" icon={SettingsIcon} />
+const BottomTabBar =({navigation, state}) =>(
+  <BottomNavigation 
+  selectedIndex={state.index}
+  onSelect={(index)=> navigation.navigate(state.routeNames[index])}>
+   <BottomNavigationTab title="Calendrier" icon={CalendarIcon}/>
+    <BottomNavigationTab title="Liste" icon={ListIcon}/>
+    <BottomNavigationTab title="Rapport" icon={ReportIcon}/>
+    <BottomNavigationTab title="Paramètres"icon={SettingsIcon} />
   </BottomNavigation>
 )
 
 // Navigation par onglets
 const TabNavigator = () => (
 
-  <Navigator tabBar={(props) => <BottomTabBar {...props} />} screenOptions={{ headerShown: false }}>
+  <Navigator tabBar={(props) => <BottomTabBar {...props}/>} screenOptions={{ headerShown: false }}>
     <Screen name="Calendrier" component={CalendarScreen} />
     <Screen name="Liste" component={ListScreen} />
     <Screen name="Rapport" component={RapportScreen} />
@@ -70,6 +69,13 @@ const TabNavigator = () => (
 export default function App() {
   return (
     <>
+    
+    <IconRegistry icons={EvaIconsPack} />
+    
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
+      <Provider store={store}>
+      <NotificationsHandler />
+        <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
            <Stack.Screen name="LoginScreen" component={LoginScreen} />
@@ -82,25 +88,12 @@ export default function App() {
             <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
           </Stack.Navigator>
 
-      <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
-        <Provider store={store}>
-          <NotificationsHandler />
-          <NavigationContainer >
-
-            <Stack.Navigator screenOptions={{ headerShown: false }} >
-              <Stack.Screen name="TabNavigator" component={TabNavigator} />
-              <Stack.Screen name="NewCharge" component={NewChargeScreen} />
-              <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
-              <Stack.Screen name="NewAccount" component={NewAccountScreen} />
-              <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
-            </Stack.Navigator>
-
-          </NavigationContainer>
-
-        </Provider>
-      </ApplicationProvider>
-
-    </>
+        </NavigationContainer>
+       
+      </Provider>
+    </ApplicationProvider>
+    
+</>
 
   )
 }
