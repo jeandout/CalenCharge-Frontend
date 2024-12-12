@@ -1,22 +1,12 @@
 import {
     ScrollView,
-    View, StyleSheet, Image, TextInput,
-    KeyboardAvoidingView, Platform, Dimensions
+    View, StyleSheet, Dimensions
 } from "react-native";
-import SelectAccount from "../components/SelectAccount";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, Button } from '@ui-kitten/components';
-import { BarChart, PieChart } from 'react-native-chart-kit'; 
-
-// Icône pour le bouton ajout
-const addIcon = ({ name = 'plus-outline', ...props }) => (
-    <Icon
-        {...props}
-        name={name}
-        fill={'white'}
-    />
-);
+import { Layout, Text, Select, SelectItem, IndexPath, Datepicker, Icon } from '@ui-kitten/components';
+import { BarChart, PieChart } from 'react-native-chart-kit';
+import { selectAccount } from '../reducers/user';
 
 // Icône pour le calendrier
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
@@ -27,46 +17,80 @@ const CalendarIcon = ({ name = 'calendar', ...props }) => (
 );
 
 export default function RapportScreen() {
+    const dispatch = useDispatch();
+    // Récup des comptes et de l'index du compte sélectionné depuis le store Redux
     const accounts = useSelector((state) => state.user.value.user.accounts);
-    const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
+    const selectedAccountIndex = useSelector((state) => state.user.value.selectedAccount);
+    // Récup du compte actuellement selectionné
+    const selectedAccount = accounts[selectedAccountIndex];
+    // les Etats
     const [selectedStatistic, setSelectedStatistic] = useState(new IndexPath(0));
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
 
-    // Variables pour l'affichage du composant Select pour la statistique
+    // Options pour les statistiques
     const statistic = [
         'Statistiques Mensuelles',
         'Statistiques Trimestrielles',
         'Statistiques Annuelles',
     ];
     const displayStatisticValue = statistic[selectedStatistic.row];
-    const renderStatistic = (title) => (
-        <SelectItem title={title} key={title} />
-    );
+    const renderStatistic = (title) => <SelectItem title={title} key={title} />;
 
-    // données fictives pour le diagramme
-  const barChartData = {
-    labels: [ 'Compte1', 'Compte2', 'Compte3', 'Compte4'],
-    datasets: [
-        {
-            data:[750, 520, 900, 360],
-        },
-    ],
-  };
-   // données fictives pour le camembert 
 
-   const pieChartData =[
-    {name :'Loisir', charge: 150, color: 'blue', legendFontColor:'#7F7F7F', legendFontSize: 12},
-    {name :'Logement', charge: 850, color: 'green', legendFontColor:'#7F7F7F', legendFontSize: 12},
-    {name :'Enfants', charge: 300, color: 'red', legendFontColor:'#7F7F7F', legendFontSize: 12},
-    {name :'Autre', charge: 200, color: 'orange', legendFontColor:'#7F7F7F', legendFontSize: 12}
-   ]
-    
+    // Données pour le BarChart de tous les comptes
+    const barChartDataAllAccounts = {
+        labels: accounts.map((account) => account.name),
+        datasets: [
+            {
+                data: accounts.map((account) =>
+                    account.charges.reduce((sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 0)
+                ),
+            },
+        ],
+    };
+
+    // Données dynamiques pour le PieChart
+    const chargeTypes = [
+        { name: 'Loisir', color: 'blue' },
+        { name: 'Logement', color: 'green' },
+        { name: 'Enfants', color: 'red' },
+        { name: 'Autre', color: 'orange' },
+    ];
+     
+    const pieChartData = chargeTypes.map((type, index) => {
+        const totalCharge = selectedAccount.charges
+            .filter((charge) => charge.chargeType === index)
+            .reduce((sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 0);
+
+        return {
+            name: type.name,
+            charge: totalCharge,
+            color: type.color,
+            legendFontColor: '#7F7F7F',
+            legendFontSize: 12,
+        };
+    });
+
+    // Gestion du changement de compte
+    const handleAccountChange = (index) => {
+        dispatch(selectAccount(index.row));
+    };
+
     return (
         <Layout style={styles.container}>
-            {/* Selecteur de compte */}
+            {/* Sélecteur de compte */}
             <View style={styles.top}>
-                <SelectAccount />
+                <Select
+                    selectedIndex={new IndexPath(selectedAccountIndex)}
+                    value={selectedAccount.name}
+                    onSelect={handleAccountChange}
+                    style={styles.select}
+                >
+                    {accounts.map((account) => (
+                        <SelectItem title={account.name} key={account.name} />
+                    ))}
+                </Select>
             </View>
 
             {/* Sélecteur de statistique */}
@@ -74,7 +98,7 @@ export default function RapportScreen() {
                 placeholder="Default"
                 value={displayStatisticValue}
                 selectedIndex={selectedStatistic}
-                onSelect={index => setSelectedStatistic(index)}
+                onSelect={(index) => setSelectedStatistic(index)}
                 style={styles.select}
             >
                 {statistic.map(renderStatistic)}
@@ -100,31 +124,33 @@ export default function RapportScreen() {
                         onSelect={setEndDate}
                         accessoryRight={CalendarIcon}
                         style={styles.datePicker}
-                        
                     />
                 </View>
             </View>
-            {/*graphiques*/}
-           <ScrollView style={styles.chartContainer}>
-               <BarChart
-               data={barChartData}
-               width={Dimensions.get('window').width - 30}
-               height={220}
-               chartConfig={{
-                   backgroundColor: '#f7f9fc',
-                   backgroundGradientFrom: '#ffffff',
-                   backgroundGradientTo: '#ffffff',
-                   decimalPlaces: 0,
-                   color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                   style: {
-                       borderRadius: 16,
-                   },
-               }}
-               style={styles.chart}
-               fromZero
-               />
-               <PieChart
+
+            {/* Graphiques */}
+            <ScrollView style={styles.chartContainer}>
+                <Text category="h6" style={styles.chartTitle}>Tous les Comptes</Text>
+                <BarChart
+                    data={barChartDataAllAccounts}
+                    width={Dimensions.get('window').width - 30}
+                    height={220}
+                    chartConfig={{
+                        backgroundColor: '#f7f9fc',
+                        backgroundGradientFrom: '#ffffff',
+                        backgroundGradientTo: '#ffffff',
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16,
+                        },
+                    }}
+                    style={styles.chart}
+                    fromZero
+                />
+                <Text category="h6" style={styles.chartTitle}>Types de charges par compte Sélectionné</Text>
+                <PieChart
                     data={pieChartData}
                     width={Dimensions.get('window').width - 30}
                     height={220}
@@ -177,5 +203,10 @@ const styles = StyleSheet.create({
     },
     chartContainer: {
         marginTop: 20,
+    },
+    chartTitle: {
+        textAlign: 'center',
+        marginBottom: 10,
+        fontWeight: 'bold',
     },
 });
