@@ -1,16 +1,44 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { Button } from '@ui-kitten/components';
+import { useDispatch, useSelector } from "react-redux";
+import { addToken } from "../reducers/user";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = () => {
-    //if (!email || !password) {
-   //   Alert.alert('Erreur', 'Veuillez remplir tous les champs');
-   //   return;
-   // }
+  const dispatch = useDispatch();
+
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
+  const handleSubmit = async () => {
+
+    if (!email || !password) {
+     Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+     return;
+   }
+
+      const response = await fetch(`${backend}/users/signin`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({email, password}),
+     })
+   
+     const data = await response.json();
+
+     if (!data.result) {
+      Alert.alert(data.message);
+      return;
+    }
+   
+     console.log(data.token)
+   
+     if (data.result){
+       dispatch(addToken(data.token));
+       navigation.navigate('TabNavigator');
+     }
+
     navigation.navigate('TabNavigator');
   };
 

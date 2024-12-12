@@ -74,17 +74,23 @@ export const userSlice = createSlice({
         selectAccount: (state, action) => {
             state.value.selectedAccount = action.payload;
         },
-        toggleWeeklyNotifications(state) {
+        toggleWeeklyNotifications:(state)=> {
             state.value.user.settings.weeklyNotificationsEnabled = !state.value.user.settings.weeklyNotificationsEnabled;
           },
-          toggleMonthlyNotifications(state) {
+          toggleMonthlyNotifications:(state) =>{
             state.value.user.settings.monthlyNotificationsEnabled = !state.value.user.settings.monthlyNotificationsEnabled;
           },
-          toggleChargeNotifications(state) {
+          toggleChargeNotifications:(state) =>{
             state.value.user.settings.chargeNotificationsEnabled = !state.value.user.settings.chargeNotificationsEnabled;
           },
+        addToken : (state, action)=>{
+            state.value.user.token = action.payload;
+        },
+        removeToken : (state, action)=>{
+            state.value.user.token = "";
+        },
  
     },
 });
-export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount, toggleWeeklyNotifications, toggleMonthlyNotifications, toggleChargeNotifications, } = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount, toggleWeeklyNotifications, toggleMonthlyNotifications, toggleChargeNotifications, addToken, removeToken} = userSlice.actions;
 export default userSlice.reducer;
