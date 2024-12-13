@@ -34,9 +34,9 @@ export default function SelectAccount() {
 
 //CSS à revoir
 const styles = StyleSheet.create({
-    container: {
-
-
+    
+container: {
+    width: 344,
     },
 });
 

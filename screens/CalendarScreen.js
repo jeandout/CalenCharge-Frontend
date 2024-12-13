@@ -9,6 +9,14 @@ import SelectAccount from "../components/SelectAccount";
 import { useSelector } from 'react-redux';
 import Charge from "../components/Charge";
 
+const addIcon = ({ name = 'plus-outline', ...props }) => (
+  <Icon
+      {...props}
+      name={name}
+      fill={'white'}
+  />
+);
+
 const backIcon = ({ name, ...props }) => (
   <Icon
     {...props}
@@ -92,7 +100,7 @@ export default function CalendarScreen({ navigation }) {
         <Text >
           {day}
         </Text>
-        <TouchableOpacity style={styles.button} appearance={'ghost'} onPress={() => handleCharges(chargesForDay)}>
+        <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay)}>
           {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
             <Text key={i} style={styles.chargeText} >
               {`${charge.amount}€`}
@@ -133,12 +141,7 @@ export default function CalendarScreen({ navigation }) {
       setChargeListDay( chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
    
     }
-
-
-
-
-  }
-
+  };
 
   return (
     <View style={styles.container}>
@@ -154,10 +157,13 @@ export default function CalendarScreen({ navigation }) {
           onVisibleDateChange={lastDate}
         />
         {chargesList}
+    
       </View>
+      <View style={styles.footer}>
+      <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
-      <Button onPress={() => goToday()}><Text>Aujourd'hui</Text></Button>
-
+      <Button onPress={() => goToday()} style={styles.button}><Text>Aujourd'hui</Text></Button>
+      </View>
     </View>
 
   )
@@ -166,10 +172,13 @@ export default function CalendarScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     justifyContent: 'space-between',
+    alignContent: 'center',
     gap: 15,
     padding: 15,
     marginTop: 50,
+    backgroundColor: '#F9FDF4',
   },
 
   icon: {
@@ -177,7 +186,9 @@ const styles = StyleSheet.create({
     height: 32,
   },
   cell: {
-    fontSize: 10,
+    height: 45,
+    width: 50,
+    fontStyle: 'bold',
   },
   arrow: {
     height: 32,
@@ -186,8 +197,25 @@ const styles = StyleSheet.create({
     fontSize: 15,
 
   },
+  addButton: {
+    position: 'absolute',
+    height: 50,
+    width: 50,
+    bottom: 20, // Position en bas
+    right: 20,
+    zIndex: 30,
+},
   button: {
-
-  }
+    height: 50,
+    width: 125,
+    bottom: 20, // Position en bas
+    left: 20,
+    zIndex: 30,
+    backgroundColor: '#979797'
+  },
+  footer: {
+    justifyContent: 'space-between',
+    alignContent: 'center'
+  },
 
 })
