@@ -17,6 +17,7 @@ import {
   toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications,
+  logOut
 } from "../reducers/user";
 import {
   Button,
@@ -30,13 +31,15 @@ import SelectAccount from "../components/SelectAccount";
 //import jwtDecode from "jwt-decode";
 
 export default function ParametresScreen({ navigation }) {
+  
   const dispatch = useDispatch();
 
   const userToken = useSelector((state) => state.user.value.user.token);
+  const email = useSelector((state) => state.user.value.user.email);
 
-  //const email = jwtDecode(userToken)
+  // const decodedToken = jwtDecode(userToken)
 
-  //console.log(email)
+  // console.log(decodedToken)
 
   const {
     weeklyNotificationsEnabled,
@@ -57,7 +60,10 @@ export default function ParametresScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
-        <Text>Connecté</Text> // AJOuteR DECONNEXION CHANGER MDP SUPP COMPTE
+        <View style={{}}>
+          <Text>Connecté en tant que : {email}</Text>
+            <Text onPress={()=>dispatch(logOut())}>(Se déconnecter)</Text>
+        </View> // AJOuteR DECONNEXION CHANGER MDP SUPP COMPTE
       ) : (
         <Button>
           <Text

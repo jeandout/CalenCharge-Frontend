@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { Button } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
-import { addToken } from "../reducers/user";
+import { addToken, addEmail, syncDB } from "../reducers/user";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export default function SignInScreen({ navigation }) {
 
   const handleSubmit = async () => {
 
-    if (!email || !password) {
+    if (!email || !password) { //UTILISER CHECKCHARGEFIELD
      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
      return;
    }
@@ -32,10 +32,12 @@ export default function SignInScreen({ navigation }) {
       return;
     }
    
-     console.log(data.token)
+     console.log(data)
    
      if (data.result){
        dispatch(addToken(data.token));
+       dispatch(addEmail(email))
+       dispatch(syncDB({settings:data.settings,accounts:data.accounts}))
        navigation.navigate('TabNavigator');
      }
 

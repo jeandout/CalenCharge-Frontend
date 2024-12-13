@@ -1,10 +1,20 @@
 import { Button } from '@ui-kitten/components'
 import React from 'react'
 import {View, StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native'
-
+import { useDispatch, useSelector } from "react-redux";
+import { addToken } from "../reducers/user";
 
 
 export default function LoginScreen({ navigation }){
+
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  if(userToken || userToken===null){
+    navigation.navigate('TabNavigator')
+  }
+
+  const dispatch = useDispatch();
+
     return(
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>CalenCharge</Text>
@@ -17,7 +27,7 @@ export default function LoginScreen({ navigation }){
                 <Text style={styles.buttonText}>S'inscrire</Text>
             </Button>
 
-            <Text style={styles.link} onPress={()=>navigation.navigate('TabNavigator')}>Continuer sans se connecter</Text>
+            <Text style={styles.link} onPress={()=>{dispatch(addToken(null));navigation.navigate('TabNavigator')}}>Continuer sans se connecter</Text>
         </ScrollView>   
 
 

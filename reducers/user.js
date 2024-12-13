@@ -15,7 +15,7 @@ const initialState = {
             accounts: [
                 {
                     "charges":
-                        [{ "amount": "9,99", "chargeType": 0, "date": "2024-09-16T22:00:00.000Z", "name": "Xbox live", "priority": false, "recurrence": 0, "recurrenceList": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                        [{ "amount": "9.99", "chargeType": 0, "date": "2024-09-16T22:00:00.000Z", "name": "Xbox live", "priority": false, "recurrence": 0, "recurrenceList": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
                         { "amount": "42", "chargeType": 3, "date": "2024-07-20T22:00:00.000Z", "name": "Abonnement Canard PC", "priority": false, "recurrence": 1, "recurrenceList": [6, 9, 0, 3] },
                         { "amount": "59", "chargeType": 3, "date": "2024-04-08T22:00:00.000Z", "name": "iCloud", "priority": true, "recurrence": 2, "recurrenceList": [3] }],
 
@@ -37,7 +37,20 @@ const initialState = {
     },
 };
 
-//account:[{name:Test, charges:[]}, {name:test2, charges:[]}]
+const logOutState = {
+        user: {
+            email: null,
+            google_credentials: null,
+            settings: {
+                weeklyNotificationsEnabled: false,
+                monthlyNotificationsEnabled: false,
+                chargeNotificationsEnabled: false,
+              },
+            token: "",
+            accounts: [{icon: "person-outline", name: "Compte Personnel", charges:[]}],
+        },
+        selectedAccount: 0,
+    };
 
 export const userSlice = createSlice({
     name: "user",
@@ -89,8 +102,18 @@ export const userSlice = createSlice({
         removeToken : (state, action)=>{
             state.value.user.token = "";
         },
+        addEmail : (state, action)=>{
+            state.value.user.email=action.payload
+        },
+        logOut:(state, action)=>{
+            state.value=logOutState;
+        },
+        syncDB:(state,action)=>{
+            state.value.user.settings = action.payload.settings;
+            state.value.user.accounts = action.payload.accounts;
+        }
  
     },
 });
-export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount, toggleWeeklyNotifications, toggleMonthlyNotifications, toggleChargeNotifications, addToken, removeToken} = userSlice.actions;
+export const { addCharge, removeCharge, addAccount, selectAccount, updateCharge, updateAccount, removeAccount, toggleWeeklyNotifications, toggleMonthlyNotifications, toggleChargeNotifications, addToken, removeToken, addEmail, logOut, syncDB} = userSlice.actions;
 export default userSlice.reducer;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { Button } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
-import { addToken } from "../reducers/user";
+import { addToken, addEmail } from "../reducers/user";
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -10,9 +10,13 @@ export default function SignUpScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
+  const store = useSelector((state) => state.user.value.user);
+
+  console.log(JSON.stringify({ email, password, store }, null, 2))
+
   const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => { //UTILISER CHECKCHARGEFIELD
     if (!email || !password) {
      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
      return;
@@ -21,7 +25,7 @@ export default function SignUpScreen({ navigation }) {
    const response = await fetch(`${backend}/users/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({email, password}),
+    body: JSON.stringify({ email, password, store }),
   })
 
   const data = await response.json();
@@ -35,6 +39,7 @@ export default function SignUpScreen({ navigation }) {
 
   if (data.result){
     dispatch(addToken(data.token));
+    dispatch(addEmail(email))
     navigation.navigate('TabNavigator');
   }
 
