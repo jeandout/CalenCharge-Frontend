@@ -55,8 +55,17 @@ export default function UpdateChargeScreen({ navigation, route }) {
   const displayRecurrenceValue = recurrence[selectedRecurrence.row];
   const renderRecurrence = (title) => <SelectItem title={title} key={title} />;
 
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
+  const accounts = useSelector((state) => state.user.value.user.accounts);
+  const selectedAccount = useSelector(
+    (state) => state.user.value.selectedAccount
+  );
+
   // called when add button is pressed
-  function handleSubmit() {
+  async function handleSubmit() {
     const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
     const updatedCharge = {
       name,
@@ -67,6 +76,29 @@ export default function UpdateChargeScreen({ navigation, route }) {
       amount,
       recurrenceList,
     };
+
+    if (CheckChargeFields(updatedCharge, ['name', 'amount',]) && userToken) {
+    const response = await fetch(`${backend}/charges/update`, {
+            method: 'put',
+            headers: { 'Content-type': 'application/json',
+                  'Authorization': `Bearer ${userToken}` },
+            body: JSON.stringify({oldCharge: propsFromCharge, updatedCharge, account:accounts[selectedAccount]}),
+          })
+        
+          const data = await response.json();
+    
+          if(data.result){
+            dispatch(
+              updateCharge({
+                oldCharge: propsFromCharge,
+                updatedCharge,
+              })
+            );
+            setName("");
+            navigation.goBack();
+          return}
+    }
+
     if (CheckChargeFields(updatedCharge, ['name', 'amount',])) {
       dispatch(
         updateCharge({
@@ -77,8 +109,30 @@ export default function UpdateChargeScreen({ navigation, route }) {
       setName("");
       navigation.goBack();
     }
-    setRequieredFieldStatus('warning')
 
+    setRequieredFieldStatus('warning')
+  }
+
+  async function handleDelete(){
+
+    if (userToken) {
+      const response = await fetch(`${backend}/charges/delete`, {
+              method: 'delete',
+              headers: { 'Content-type': 'application/json',
+                    'Authorization': `Bearer ${userToken}` },
+              body: JSON.stringify({oldCharge: propsFromCharge, account:accounts[selectedAccount]}),
+            })
+          
+            const data = await response.json();
+      
+            if(data.result){
+              dispatch(removeCharge(propsFromCharge))
+              navigation.goBack();
+            return}
+      }
+    
+    dispatch(removeCharge(propsFromCharge))
+    navigation.goBack()
   }
 
   return (
@@ -87,7 +141,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
-        <Button status="danger" onPress={() => { dispatch(removeCharge(propsFromCharge)); navigation.goBack() }}>
+        <Button status="danger" onPress={handleDelete}>
           <Text>Supprimer la charge</Text>
         </Button>
         <Input

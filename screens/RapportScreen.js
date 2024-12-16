@@ -8,6 +8,7 @@ import { Layout, Text, Select, SelectItem, IndexPath, Datepicker, Icon } from '@
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { selectAccount } from '../reducers/user';
 
+
 // Icône pour le calendrier
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
     <Icon
@@ -25,8 +26,8 @@ export default function RapportScreen() {
     const selectedAccount = accounts[selectedAccountIndex];
     // les Etats
     const [selectedStatistic, setSelectedStatistic] = useState(new IndexPath(0));
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startMonth, setStartMonth] = useState(new Date().getMonth());
+    
 
     // Options pour les statistiques
     const statistic = [
@@ -76,6 +77,40 @@ export default function RapportScreen() {
     const handleAccountChange = (index) => {
         dispatch(selectAccount(index.row));
     };
+    // calcul des charges passées et totales
+    const charges = selectedAccount?.charges || [];
+    
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    // Charges du mois en cours
+    const currentMonthCharges = charges.filter(charge => {
+        const chargeDate = new Date(charge.date);
+        const isRecurring = charge.recurrenceList?.includes(currentMonth);
+        return (
+            (chargeDate.getFullYear() === currentYear && chargeDate.getMonth() === currentMonth) || 
+            isRecurring
+        );
+    });
+
+    // Charges passées
+const pastCharges = currentMonthCharges.filter(charge => {
+    const chargeDate = new Date(charge.date);
+    return chargeDate < currentDate;
+});
+// Somme totale des charges du mois en cours
+const totalChargesSum = currentMonthCharges.reduce(
+    (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 
+    0
+); 
+// Somme des charges passées
+const pastChargesSum = pastCharges.reduce(
+    (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 
+    0
+); 
+//const dateService = new Date().getMonth();
+
 
     return (
         <Layout style={styles.container}>
@@ -92,40 +127,34 @@ export default function RapportScreen() {
                     ))}
                 </Select>
             </View>
-
-            {/* Sélecteur de statistique */}
-            <Select
+            <View>
+             {/* Sélecteur de statistique */}
+             <Select
                 placeholder="Default"
                 value={displayStatisticValue}
                 selectedIndex={selectedStatistic}
                 onSelect={(index) => setSelectedStatistic(index)}
                 style={styles.select}
-            >
+             >
                 {statistic.map(renderStatistic)}
             </Select>
+            </View>
 
-            {/* Champs pour les dates de début et de fin */}
+            {/* Champ pour la date de début */}
             <View style={styles.dateRow}>
                 <View style={styles.datePickerContainer}>
                     <Text category="label" style={styles.label}>Début</Text>
                     <Datepicker
-                        placeholder="Pick Date"
-                        date={startDate}
-                        onSelect={setStartDate}
-                        accessoryRight={CalendarIcon}
+                        // placeholder="Pick Date"
+                        // date={startDate}
+                        // onSelect={setStartMonth}
+                        // dateService={dateService}
+                        renderMonth={startMonth}
+                        // accessoryRight={CalendarIcon}
                         style={styles.datePicker}
                     />
                 </View>
-                <View style={styles.datePickerContainer}>
-                    <Text category="label" style={styles.label}>Fin</Text>
-                    <Datepicker
-                        placeholder="Pick Date"
-                        date={endDate}
-                        onSelect={setEndDate}
-                        accessoryRight={CalendarIcon}
-                        style={styles.datePicker}
-                    />
-                </View>
+               
             </View>
 
             {/* Graphiques */}
@@ -162,6 +191,11 @@ export default function RapportScreen() {
                     paddingLeft="15"
                     style={styles.chart}
                 />
+                 <View>
+         
+            <Text style={styles.chartTitle}>Charges passées du mois encours: {pastCharges.length} / {currentMonthCharges.length} </Text>
+            <Text style={styles.chartTitle}>Montant des charges prélévées: {pastChargesSum}€ / {totalChargesSum}€</Text> 
+            </View>
             </ScrollView>
         </Layout>
     );
@@ -205,7 +239,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     chartTitle: {
-        textAlign: 'center',
+        textAlign: 'left',
         marginBottom: 10,
         fontWeight: 'bold',
     },

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TextInput, Alert } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { Button } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail } from "../reducers/user";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -57,13 +59,23 @@ export default function SignUpScreen({ navigation }) {
         keyboardType="email-address"  // clavier type adresse mail
         autoCapitalize="none"        // en miniscule
       />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Mot de passe" 
-        value={password} 
-        onChangeText={setPassword} 
-        secureTextEntry    // cache le mot de passe lors de la saisie
-              />
+      <View style={styles.passwordContainer}>
+            <TextInput 
+             style={styles.passwordInput} 
+             placeholder="Mot de passe" 
+             secureTextEntry={!showPassword} // permet de contrôler l'affichage du mot de passe
+             value={password} 
+             onChangeText={setPassword} 
+            />
+            <TouchableOpacity style={styles.iconContainer}
+            onPress={()=>setShowPassword(!showPassword)}>
+             <Icon
+             name={showPassword ?'eye-off':'eye'}
+             size={24}
+             color="gray"
+             />
+            </TouchableOpacity>
+       </View>     
       <Button style={styles.button} onPress={handleSubmit}>
         <Text>Valider</Text>
       </Button>
@@ -97,8 +109,29 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#fff',
   },
+  passwordContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
+  },
+  iconContainer: {
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   button: {
     marginTop: 20,
     width: '100%',
   },
 });
+
