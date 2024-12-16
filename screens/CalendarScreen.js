@@ -3,17 +3,64 @@ import {
   KeyboardAvoidingView, Platform,
 } from "react-native";
 import React from 'react';
-import { Calendar, Text, Icon, Button } from '@ui-kitten/components';
+import { Calendar, Text, Icon, Button, Layout, NativeDateService, useTheme } from '@ui-kitten/components';
 import { useState, useEffect } from "react";
 import SelectAccount from "../components/SelectAccount";
 import { useSelector } from 'react-redux';
 import Charge from "../components/Charge";
 
+
+const i18n = {
+  dayNames: {
+    short: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'], // Abréviations en français
+    long: [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ], // Jours complets en français
+  },
+  monthNames: {
+    short: [
+      'Jan',
+      'Fév',
+      'Mar',
+      'Avr',
+      'Mai',
+      'Juin',
+      'Juil',
+      'Aoû',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Déc',
+    ], // Mois abrégés
+    long: [
+      'Janvier',
+      'Février',
+      'Mars',
+      'Avril',
+      'Mai',
+      'Juin',
+      'Juillet',
+      'Août',
+      'Septembre',
+      'Octobre',
+      'Novembre',
+      'Décembre',
+    ], // Mois complets
+  },
+};
+const localeDateService = new NativeDateService('fr', { i18n, startDayOfWeek: 1 });
+
 const addIcon = ({ name = 'plus-outline', ...props }) => (
   <Icon
-      {...props}
-      name={name}
-      fill={'white'}
+    {...props}
+    name={name}
+    fill={'white'}
   />
 );
 
@@ -53,6 +100,8 @@ const RightArrow = (arrowProps) => {
 }
 
 export default function CalendarScreen({ navigation }) {
+
+  const theme = useTheme();
 
   const accounts = useSelector((state) => state.user.value.user.accounts);
   const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
@@ -95,6 +144,7 @@ export default function CalendarScreen({ navigation }) {
       return chargeDate.slice(-2) === formattedDate.slice(-2) && chargedThisMonth() && allreadyCreated();  // Compare the date
     });
 
+
     return (
       <View>
         <Text >
@@ -102,7 +152,7 @@ export default function CalendarScreen({ navigation }) {
         </Text>
         <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay)}>
           {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
-            <Text key={i} style={styles.chargeText} >
+            <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
               {`${charge.amount}€`}
             </Text>
           ))}
@@ -112,42 +162,53 @@ export default function CalendarScreen({ navigation }) {
   };
 
   const lastDate = (item) => { //set the start date of calendar display function of the month selected to keep the view in memory
-    console.log(item)
+
     setDate(item)
   }
 
   const goToday = () => { //used to reset the calendar view to current day
     const today = new Date()
     setDate(today)
-    console.log(today)
+
   }
 
   const handleCharges = (daylyCharges) => { // used to display charges list from calendar day
+    console.log(daylyCharges[0])
     
-    if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
-      setChargesList([])
-      setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
 
-    } else { //ajout des taches de la date cliquée
-      const newChargesList = (
-        <View>
+ 
+    
 
-          {daylyCharges.map((charge, i) => (
-            <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
-          ))}
-        </View>
-      )
-      setChargesList(newChargesList)
-      setChargeListDay( chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
-   
-    }
+      if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+        setChargesList([])
+        setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
+
+
+
+      } else { //ajout des taches de la date cliquée
+        const newChargesList = (
+          <View>
+
+            {daylyCharges.map((charge, i) => (
+              <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
+            ))}
+          </View>
+        )
+        setChargesList(newChargesList)
+        setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
+
+      }
+    
   };
 
   return (
-    <View style={styles.container}>
-      <View>
+    <Layout style={styles.container}>
+      <View style={styles.main}>
         <SelectAccount />
-        <Calendar
+
+
+        <Calendar style={styles.calendar}
+          dateService={localeDateService} //calendrier en français
           key={calendarKey}
           date={date}
           // onSelect={(nextDate) => setDate(nextDate)}
@@ -155,16 +216,18 @@ export default function CalendarScreen({ navigation }) {
           renderArrowLeft={LeftArrow}
           renderArrowRight={RightArrow}
           onVisibleDateChange={lastDate}
+          min={new Date(1970, 0, 1)} // affichage min
+          max={new Date(2050, 11, 31)} // affichage max
         />
         {chargesList}
-    
-      </View>
-      <View style={styles.footer}>
-      <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
-      <Button onPress={() => goToday()} style={styles.button}><Text>Aujourd'hui</Text></Button>
       </View>
-    </View>
+      <View>
+        <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
+
+        <Button onPress={() => goToday()} style={styles.button}><Text>Aujourd'hui</Text></Button>
+      </View>
+    </Layout>
 
   )
 }
@@ -174,20 +237,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    alignContent: 'center',
     gap: 15,
     padding: 15,
-    marginTop: 50,
-    backgroundColor: '#F9FDF4',
-  },
+    marginTop: 40,
 
-  icon: {
-    width: 32,
-    height: 32,
+
+  },
+  main: {
+    flex: 1,
+    gap: 15,
+  },
+  calendar: {
+    maxWidth: '100%',
   },
   cell: {
     height: 45,
-    width: 50,
     fontStyle: 'bold',
   },
   arrow: {
@@ -195,6 +259,9 @@ const styles = StyleSheet.create({
   },
   chargeText: {
     fontSize: 15,
+    textAlign: 'center',
+    padding: 2,
+    borderRadius: 7,
 
   },
   addButton: {
@@ -204,7 +271,7 @@ const styles = StyleSheet.create({
     bottom: 20, // Position en bas
     right: 20,
     zIndex: 30,
-},
+  },
   button: {
     height: 50,
     width: 125,
@@ -213,9 +280,6 @@ const styles = StyleSheet.create({
     zIndex: 30,
     backgroundColor: '#979797'
   },
-  footer: {
-    justifyContent: 'space-between',
-    alignContent: 'center'
-  },
+
 
 })

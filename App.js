@@ -22,7 +22,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
 
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
+import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab, Layout } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -73,6 +73,7 @@ export default function App() {
     <IconRegistry icons={EvaIconsPack} />
     
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
+  
       <Provider store={store}>
       <NotificationsHandler />
         <NavigationContainer > 
@@ -91,6 +92,7 @@ export default function App() {
         </NavigationContainer>
        
       </Provider>
+
     </ApplicationProvider>
     
 </>
