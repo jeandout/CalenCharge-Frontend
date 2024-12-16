@@ -28,19 +28,19 @@ export default function NewChargeScreen({ navigation }) {
 
   const [name, setName] = useState("");
   const [requieredFieldStatus, setRequieredFieldStatus] = useState('basic')
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
   const accounts = useSelector((state) => state.user.value.user.accounts);
+  const selectedAccount = useSelector(
+    (state) => state.user.value.selectedAccount
+  );
   const [amount, setAmount] = useState(0);
-  // const [selectedAccount, setSelectedAccount] = useState(new IndexPath(0)); //Changer quand on aura le déroulant
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
   const [date, setDate] = useState(new Date());
 
-  // const pour le toggle - REMPLACé PAR SWITCH FROM REACT
-  // const [checked, setChecked] = useState(false);
-  // const onCheckedChange = (isChecked) => {
-  //   setChecked(isChecked);
-  // };
-  // console.log(checked)
   const [checked, setChecked] = useState(false);
 
   //variables pour l'affichage du composant select pour le type
@@ -68,13 +68,34 @@ export default function NewChargeScreen({ navigation }) {
 
   // called when add button is pressed
   //tt = tt.replace(/,/g, '.')
-  function handleSubmit() {
+  async function handleSubmit() {
+
     const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
     const newCharge = { name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList }
-    if (CheckChargeFields(newCharge, ['name', 'amount',])) {
-      dispatch(addCharge(newCharge)); //add recurrenceList : checkMonth (selectedRecurrence.row, date)  en entrée, date et type de récurence, en sortie tableau d'index de mois. Mettre à jour pour supprimer index hebdo (mois, trimestre, année), création, modification et composant charge. Ajouter label date de premiere occurence sur le selecteur de date
+
+    if (CheckChargeFields(newCharge, ['name', 'amount',]) && userToken) {
+      
+      const response = await fetch(`${backend}/charges/new`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json',
+              'Authorization': `Bearer ${userToken}` },
+        body: JSON.stringify({ charge:newCharge, account:accounts[selectedAccount] }),
+      })
+    
+      const data = await response.json();
+
+      if(data.result){
+      dispatch(addCharge(newCharge));
       setName('');
-      navigation.navigate("TabNavigator") //CHANGER POUR L'ANCIENNE PAGE
+      navigation.goBack()
+      return}
+    }
+
+
+    if (CheckChargeFields(newCharge, ['name', 'amount',])) {
+      dispatch(addCharge(newCharge)); 
+      setName('');
+      navigation.goBack()
     }
     setRequieredFieldStatus('warning')
   }
