@@ -67,6 +67,7 @@ export default function NewChargeScreen({ navigation }) {
   );
 
   // called when add button is pressed
+  //tt = tt.replace(/,/g, '.')
   function handleSubmit() {
     const recurrenceList = MonthOccurrenceGenerator(selectedRecurrence.row, date)
     const newCharge = { name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList }
