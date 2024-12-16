@@ -26,7 +26,7 @@ export default function RapportScreen() {
     // les Etats
     const [selectedStatistic, setSelectedStatistic] = useState(new IndexPath(0));
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startMonth, setStartMonth] = useState(new Date());
 
     // Options pour les statistiques
     const statistic = [
@@ -104,28 +104,21 @@ export default function RapportScreen() {
                 {statistic.map(renderStatistic)}
             </Select>
 
-            {/* Champs pour les dates de début et de fin */}
+            {/* Champs pour les dates de début */}
             <View style={styles.dateRow}>
                 <View style={styles.datePickerContainer}>
-                    <Text category="label" style={styles.label}>Début</Text>
+                    <Text category="label" style={styles.label}>Selectionner un mois</Text>
                     <Datepicker
-                        placeholder="Pick Date"
+                        //placeholder="Pick Date"
                         date={startDate}
                         onSelect={setStartDate}
-                        accessoryRight={CalendarIcon}
+                        //renderMonth={setStartMonth}
+                        //startView= CalendarViewModes.MONTH
+                        //accessoryRight={CalendarIcon}
                         style={styles.datePicker}
                     />
                 </View>
-                <View style={styles.datePickerContainer}>
-                    <Text category="label" style={styles.label}>Fin</Text>
-                    <Datepicker
-                        placeholder="Pick Date"
-                        date={endDate}
-                        onSelect={setEndDate}
-                        accessoryRight={CalendarIcon}
-                        style={styles.datePicker}
-                    />
-                </View>
+                
             </View>
 
             {/* Graphiques */}
