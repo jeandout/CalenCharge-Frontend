@@ -79,27 +79,37 @@ const nextIcon = ({ name, ...props }) => (
   />
 );
 
-const LeftArrow = (arrowProps) => {
-  return (
-    <TouchableOpacity
-      style={styles.arrow}
-      onPress={arrowProps.onPress}>
-      {backIcon({})}
-    </TouchableOpacity>
-  );
-};
 
-const RightArrow = (arrowProps) => {
-  return (
-    <TouchableOpacity
-      style={styles.arrow}
-      onPress={arrowProps.onPress}>
-      {nextIcon({})}
-    </TouchableOpacity>
-  );
-}
 
 export default function CalendarScreen({ navigation }) {
+
+  const LeftArrow = (arrowProps) => {
+    return (
+      <View style={styles.calendarNavLeft}>
+        <TouchableOpacity
+          style={styles.arrow}
+          onPress={arrowProps.onPress}>
+          {backIcon({})}
+        </TouchableOpacity>
+        <View
+          style={styles.todayButton}
+          > 
+          <Button size='tiny' onPress={() => goToday()}
+          >Aujourd'hui</Button>
+        </View>
+      </View>
+    );
+  };
+
+  const RightArrow = (arrowProps) => {
+    return (
+      <TouchableOpacity
+        style={styles.arrow}
+        onPress={arrowProps.onPress}>
+        {nextIcon({})}
+      </TouchableOpacity>
+    );
+  }
 
   const theme = useTheme();
 
@@ -167,6 +177,7 @@ export default function CalendarScreen({ navigation }) {
   }
 
   const goToday = () => { //used to reset the calendar view to current day
+    console.log('clicked')
     const today = new Date()
     setDate(today)
 
@@ -174,31 +185,31 @@ export default function CalendarScreen({ navigation }) {
 
   const handleCharges = (daylyCharges) => { // used to display charges list from calendar day
     console.log(daylyCharges[0])
-    
-
- 
-    
-
-      if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
-        setChargesList([])
-        setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
 
 
 
-      } else { //ajout des taches de la date cliquée
-        const newChargesList = (
-          <View>
 
-            {daylyCharges.map((charge, i) => (
-              <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
-            ))}
-          </View>
-        )
-        setChargesList(newChargesList)
-        setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
 
-      }
-    
+    if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+      setChargesList([])
+      setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
+
+
+
+    } else { //ajout des taches de la date cliquée
+      const newChargesList = (
+        <View>
+
+          {daylyCharges.map((charge, i) => (
+            <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
+          ))}
+        </View>
+      )
+      setChargesList(newChargesList)
+      setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
+
+    }
+
   };
 
   return (
@@ -250,6 +261,14 @@ const styles = StyleSheet.create({
   calendar: {
     maxWidth: '100%',
   },
+  calendarNavLeft: {
+    flexDirection: 'row',
+    gap: 10,
+    marginRight: 10,
+  },
+  todayButton: {
+    height: 32,
+  },
   cell: {
     height: 45,
     fontStyle: 'bold',
@@ -262,7 +281,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 2,
     borderRadius: 7,
-
   },
   addButton: {
     position: 'absolute',
