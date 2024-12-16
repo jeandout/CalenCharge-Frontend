@@ -28,7 +28,6 @@ import {
   Datepicker,
 } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
-//import jwtDecode from "jwt-decode";
 
 export default function ParametresScreen({ navigation }) {
   
@@ -36,10 +35,6 @@ export default function ParametresScreen({ navigation }) {
 
   const userToken = useSelector((state) => state.user.value.user.token);
   const email = useSelector((state) => state.user.value.user.email);
-
-  // const decodedToken = jwtDecode(userToken)
-
-  // console.log(decodedToken)
 
   const {
     weeklyNotificationsEnabled,

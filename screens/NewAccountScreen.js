@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addAccount } from "../reducers/user";
 import { Button, Card, Modal, Text, Input, Icon } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
@@ -18,10 +18,35 @@ export default function NewAccountScreen({ navigation }) {
   const [iconInput, setIconInput] = useState("person-outline"); 
   const [visible, setVisible] = useState(false);
 
-  function handleSubmit() {
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
+  async function handleSubmit() {
+
+    if(userToken){
+      const response = await fetch(`${backend}/accounts/new`, {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json',
+            'Authorization': `Bearer ${userToken}` },
+      body: JSON.stringify({ accountInput, iconInput }),
+    })
+  
+    const data = await response.json();
+
+    console.log(data)
+
+    if(data.result){
+      dispatch(addAccount({ accountInput, iconInput })); 
+      setAccountInput("");
+      navigation.goBack();
+      return
+    }
+  }
+  
     dispatch(addAccount({ accountInput, iconInput })); 
     setAccountInput("");
-    navigation.navigate("TabNavigator");
+    navigation.goBack();
   }
 
   const handleIconPress = (iconName) => {
