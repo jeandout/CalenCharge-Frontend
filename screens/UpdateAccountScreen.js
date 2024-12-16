@@ -14,6 +14,10 @@ import iconsMap from "../assets/iconsMap";
 export default function UpdateAccountScreen({ navigation }) {
   const dispatch = useDispatch();
 
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
   const accounts = useSelector((state) => state.user.value.user.accounts);
   const selectedAccount = useSelector(
     (state) => state.user.value.selectedAccount
@@ -25,10 +29,56 @@ export default function UpdateAccountScreen({ navigation }) {
   const [iconInput, setIconInput] = useState(accounts[selectedAccount].icon);
   const [visible, setVisible] = useState(false);
 
-  function handleSubmit() {
+  async function handleSubmit() {
+
+    if(userToken){
+          const response = await fetch(`${backend}/accounts/update`, {
+          method: 'PUT',
+          headers: { 'Content-type': 'application/json',
+                'Authorization': `Bearer ${userToken}` },
+          body: JSON.stringify({ accountInput, iconInput, account:accounts[selectedAccount] }),
+        })
+      
+        const data = await response.json();
+        
+        if(data.result){
+          dispatch(updateAccount({ accountInput, iconInput })); 
+          setAccountInput("");
+          setIconInput("");
+          navigation.goBack();
+          return
+        }
+      }
+
     dispatch(updateAccount({ accountInput, iconInput }));
     setAccountInput("");
+    setIconInput("");
     navigation.navigate("TabNavigator");
+  }
+
+  async function handleDelete(){
+
+    if(userToken){
+      const response = await fetch(`${backend}/accounts/delete`, {
+      method: 'DELETE',
+      headers: { 'Content-type': 'application/json',
+            'Authorization': `Bearer ${userToken}` },
+      body: JSON.stringify({account:accounts[selectedAccount]}),
+    })
+  
+    const data = await response.json();
+
+    console.log(data)
+
+    if(data.result){
+      dispatch(removeAccount()); 
+      navigation.goBack();
+      return
+    }
+  }
+
+    dispatch(removeAccount());
+      navigation.goBack();
   }
 
   const handleIconPress = (iconName) => {
@@ -48,10 +98,7 @@ export default function UpdateAccountScreen({ navigation }) {
       {accounts.length>1 && (<Button
         style={styles.button}
         status="danger"
-        onPress={() => {
-          dispatch(removeAccount());
-          navigation.goBack();
-        }}
+        onPress={handleDelete}
       >
         <Text>Supprimer le compte</Text>
       </Button>)}
