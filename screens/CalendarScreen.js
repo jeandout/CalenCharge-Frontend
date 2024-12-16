@@ -236,7 +236,7 @@ export default function CalendarScreen({ navigation }) {
       <View>
         <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
-        <Button onPress={() => goToday()} style={styles.button}><Text>Aujourd'hui</Text></Button>
+       
       </View>
     </Layout>
 
