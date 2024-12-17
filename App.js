@@ -50,7 +50,8 @@ const Stack = createNativeStackNavigator();
 const BottomTabBar =({navigation, state}) =>(
   <BottomNavigation 
   selectedIndex={state.index}
-  onSelect={(index)=> navigation.navigate(state.routeNames[index])}>
+  onSelect={(index)=> navigation.navigate(state.routeNames[index])}
+  style={{ backgroundColor: '#F6FDF1' }}>
    <BottomNavigationTab title="Calendrier" icon={CalendarIcon}/>
     <BottomNavigationTab title="Liste" icon={ListIcon}/>
     <BottomNavigationTab title="Rapport" icon={ReportIcon}/>

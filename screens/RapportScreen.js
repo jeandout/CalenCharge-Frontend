@@ -50,7 +50,7 @@ export default function RapportScreen() {
         datasets: [
             {
                 data: accounts.map((account) =>
-                    account.charges.reduce((sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 0)
+                    account.charges.reduce((sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')), 0)
                 ),
             },
         ],
@@ -86,7 +86,7 @@ export default function RapportScreen() {
     });
 
     const totalCharge = charges.reduce(
-        (sum, charge) => sum + (parseFloat(charge.amount.replace(',', '.')) || 0), 
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
@@ -120,13 +120,13 @@ export default function RapportScreen() {
 
     // Somme totale des charges du mois en cours
     const totalChargesSum = currentMonthCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
     // Somme des charges passées
     const pastChargesSum = pastCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
@@ -152,7 +152,7 @@ export default function RapportScreen() {
                 </Text>
             </View>
 
-            <Text style={styles.text} category='h6'>Selectionner la période à afficher </Text>
+            <Text category='h6' style={styles.compteTitle}>Selectionner la période à afficher </Text>
 
             <View style={styles.dateRow}>
             {/* Sélecteur de statistique */}
@@ -183,7 +183,7 @@ export default function RapportScreen() {
 
             {/* Graphiques */}
             <ScrollView style={styles.chartContainer}>
-                <Text category="h6" style={styles.chartTitle}>
+                <Text category="h6" style={styles.compteTitle}>
                     Types de charges par compte sélectionné
                 </Text>
                 <PieChart
@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
     chart: {
         marginVertical: 10,
         borderRadius: 8,
+        
     },
     chartContainer: {
         marginTop: 20,
