@@ -53,6 +53,7 @@ export default function ParametresScreen({ navigation }) {
   );
 
   return (
+    <Layout style={styles.container}>
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
         <View style={{}}>
@@ -121,6 +122,7 @@ export default function ParametresScreen({ navigation }) {
         </Button>
       </View>
     </ScrollView>
+    </Layout>
   );
 }
 const styles = StyleSheet.create({
