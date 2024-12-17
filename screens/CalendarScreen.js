@@ -1,6 +1,6 @@
 import {
   View, StyleSheet, TouchableOpacity, Image, TextInput,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, ScrollView,
 } from "react-native";
 import React from 'react';
 import { Calendar, Text, Icon, Button, Layout, NativeDateService, useTheme } from '@ui-kitten/components';
@@ -93,7 +93,7 @@ export default function CalendarScreen({ navigation }) {
         </TouchableOpacity>
         <View
           style={styles.todayButton}
-          > 
+        >
           <Button size='tiny' onPress={() => goToday()}
           >Aujourd'hui</Button>
         </View>
@@ -214,29 +214,28 @@ export default function CalendarScreen({ navigation }) {
 
   return (
     <Layout style={styles.container}>
-      <View style={styles.main}>
-        <SelectAccount />
-
-
-        <Calendar style={styles.calendar}
-          dateService={localeDateService} //calendrier en français
-          key={calendarKey}
-          date={date}
-          // onSelect={(nextDate) => setDate(nextDate)}
-          renderDay={InfoDay}
-          renderArrowLeft={LeftArrow}
-          renderArrowRight={RightArrow}
-          onVisibleDateChange={lastDate}
-          min={new Date(1970, 0, 1)} // affichage min
-          max={new Date(2050, 11, 31)} // affichage max
-        />
-        {chargesList}
-
-      </View>
+      <ScrollView>
+        <View style={styles.main}>
+          <SelectAccount />
+          <Calendar style={styles.calendar}
+            dateService={localeDateService} //calendrier en français
+            key={calendarKey}
+            date={date}
+            // onSelect={(nextDate) => setDate(nextDate)}
+            renderDay={InfoDay}
+            renderArrowLeft={LeftArrow}
+            renderArrowRight={RightArrow}
+            onVisibleDateChange={lastDate}
+            min={new Date(1970, 0, 1)} // affichage min
+            max={new Date(2050, 11, 31)} // affichage max
+          />
+          {chargesList}
+        </View>
+      </ScrollView>
       <View>
         <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
-       
+
       </View>
     </Layout>
 
@@ -259,7 +258,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   calendar: {
-    maxWidth: '100%',
+    width: '100%',
   },
   calendarNavLeft: {
     flexDirection: 'row',
