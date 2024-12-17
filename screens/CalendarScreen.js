@@ -184,13 +184,10 @@ export default function CalendarScreen({ navigation }) {
   }
 
   const handleCharges = (daylyCharges) => { // used to display charges list from calendar day
-    console.log(daylyCharges[0])
 
 
 
-
-
-    if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+    if (daylyCharges[0] === undefined  || daylyCharges[0].date == chargeListDay[0] ) { //si la date cliqué à déja été cliqué
       setChargesList([])
       setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
 
@@ -206,6 +203,7 @@ export default function CalendarScreen({ navigation }) {
         </View>
       )
       setChargesList(newChargesList)
+      setChargeListDay(chargeListDay.shift())
       setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
 
     }
@@ -232,11 +230,11 @@ export default function CalendarScreen({ navigation }) {
           {chargesList}
         </View>
       </ScrollView>
-      <View>
-        <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
+
+      <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
 
-      </View>
+
     </Layout>
 
   )
@@ -256,6 +254,7 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     gap: 15,
+    paddingBottom: 60,
   },
   calendar: {
     width: '100%',
