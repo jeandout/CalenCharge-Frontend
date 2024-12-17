@@ -29,7 +29,6 @@ export default function RapportScreen() {
     // Options pour les statistiques
     const statistic = [
         'Statistiques Mensuelles',
-        'Statistiques Trimestrielles',
         'Statistiques Annuelles',
     ];
     const displayStatisticValue = statistic[selectedStatistic.row];
@@ -37,10 +36,10 @@ export default function RapportScreen() {
 
     // Types de charges
     const chargeTypes = [
-        { name: 'Loisir', color: 'blue' },
-        { name: 'Logement', color: 'green' },
-        { name: 'Enfants', color: 'red' },
-        { name: 'Autre', color: 'orange' },
+        { name: 'Loisir', color: '#D8EFD3' },
+        { name: 'Logement', color: '#55AD9B' },
+        { name: 'Enfants', color: '#FFB7AA' },
+        { name: 'Autre', color: '#979797' },
     ];
 
     // Données pour le BarChart de tous les comptes
@@ -75,22 +74,8 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                     isRecurringForMonth
                 ) && chargeTypeMatches;
 
-            case 1: // Trimestrielles
-                const currentQuarterStart = Math.floor(selectedMonth / 3) * 3; // Début du trimestre
-                const currentQuarterEnd = currentQuarterStart + 2; // Fin du trimestre
-                const isInQuarter = chargeDate.getMonth() >= currentQuarterStart &&
-                                    chargeDate.getMonth() <= currentQuarterEnd;
 
-                const isRecurringForQuarter = charge.recurrenceList?.some(
-                    (month) => month >= currentQuarterStart && month <= currentQuarterEnd
-                );
-
-                return (
-                    (chargeDate.getFullYear() === selectedYear && isInQuarter) ||
-                    isRecurringForQuarter
-                ) && chargeTypeMatches;
-
-            case 2: // Annuelles
+            case 1: // Annuelles
                 return (
                     chargeDate.getFullYear() === selectedYear || charge.recurrenceList
                 ) && chargeTypeMatches;
@@ -188,13 +173,14 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
             </Select>
 
             {/* Sélecteur de mois et année */}
-            
                 
                 <Datepicker
                     date={selectedDate}
                     onSelect={(nextDate) => setSelectedDate(nextDate)}
                     accessoryRight={CalendarIcon}
                     style={styles.datePicker}
+                    min={new Date(1970, 0, 1)} // affichage min
+                    max={new Date(2050, 11, 31)} // affichage max
                 />
             </View>
 
@@ -211,7 +197,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                         color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
                     }}
                     accessor="charge"
-                    backgroundColor="transparent"
+                    backgroundColor="#F6FDF1"
                     paddingLeft="15"
                     style={styles.chart}
                 />
@@ -224,7 +210,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                     width={Dimensions.get('window').width - 30}
                     height={220}
                     chartConfig={{
-                        backgroundColor: '#f7f9fc',
+                        backgroundColor: '##F6FDF1',
                         backgroundGradientFrom: '#ffffff',
                         backgroundGradientTo: '#ffffff',
                         decimalPlaces: 0,

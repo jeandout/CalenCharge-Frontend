@@ -54,6 +54,10 @@
     "color-basic-700": "#6CAC6A",
     "color-basic-800": "#2A7C7B",
     "color-basic-900": "#292929",
-    "color-basic-1000": "#F6FDF1" 
+    "color-basic-1000": "#F6FDF1",
+
+    "background-basic-color-1":"#F9FDF4",
+
+    "color-basic-default":"#F9FDF4"
 }
 

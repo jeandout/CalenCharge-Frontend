@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import { default as theme } from './theme.json';
+import { default as mapping } from './mapping.json';
+import * as Font from 'expo-font';
 
 import user from './reducers/user'
 
@@ -22,12 +24,14 @@ import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
 
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
+import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab, Layout } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { useState, useEffect } from "react";
 
 import NotificationsHandler from './NotificationsHandler'; // Import des notifications
+
 
 const store = configureStore({
   reducer: { user }
@@ -67,6 +71,19 @@ const TabNavigator = () => (
 
 
 export default function App() {
+  
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    Font.loadAsync({
+      'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+      'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+    }).then(() => setFontsLoaded(true));
+  }, []);
+
+  if (!fontsLoaded) {
+    return null; // Vous pouvez ajouter un écran de chargement ici
+  }
   return (
     <>
     
@@ -91,6 +108,7 @@ export default function App() {
         </NavigationContainer>
        
       </Provider>
+
     </ApplicationProvider>
     
 </>

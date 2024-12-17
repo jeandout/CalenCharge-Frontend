@@ -1,5 +1,21 @@
 {
     "strict": {
-      "text-font-family": "Ubuntu-Regular"
+      "text-font-family": "Ubuntu-Regular",
+
+      "text-heading-1-font-size": 36,
+      "text-heading-1-font-weight": "800",
+      "text-heading-1-font-family": "Ubuntu-Bold",
+
+      "text-subtitle-1-font-size": 15,
+      "text-subtitle-1-font-weight": "600",
+      "text-subtitle-1-font-family": "Ubuntu-SemiBold",
+
+      "text-paragraph-1-font-size": 15,
+      "text-paragraph-1-font-weight": "400",
+      "text-paragraph-1-font-family": "Ubuntu-Regular",
+
+    "text-caption-1-font-size": 12,
+    "text-caption-1-font-weight": "400",
+    "text-caption-1-font-family": "Ubuntu-Regular"
     }
   }
