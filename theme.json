@@ -44,26 +44,20 @@
   "color-danger-700": "#18261F",
   "color-danger-800": "#0F1F19",
   "color-danger-900": "#091915",
-
+  
   "color-basic-100": "#FFFFFF",
-  "color-basic-200": "#FFFFFF",
-  "color-basic-300": "#FFFFFF",
-  "color-basic-400": "#55AD9B",
-  "color-basic-500": "#F6FDF1",
-  "color-basic-600": "#979797",
-  "color-basic-700": "#6CAC6A",
-  "color-basic-800": "#2A7C7B",
-  "color-basic-900": "#292929",
-  "color-basic-1000": "#F6FDF1",
+    "color-basic-200": "#FFFFFF",
+    "color-basic-300": "#FFFFFF",
+    "color-basic-400": "#55AD9B",
+    "color-basic-500": "#F6FDF1",
+    "color-basic-600": "#979797",
+    "color-basic-700": "#6CAC6A",
+    "color-basic-800": "#2A7C7B",
+    "color-basic-900": "#292929",
+    "color-basic-1000": "#F6FDF1",
 
-  "color-primary-default": "$color-primary-500",
-  "color-primary-hover": "$color-primary-400",
-  "color-primary-focus": "$color-primary-600",
-  "color-primary-active": "$color-primary-600",
-  "color-primary-disabled": "$color-basic-transparent-300",
+    "background-basic-color-1":"#F9FDF4",
 
-  "background-basic-color-1": "#FFFFFF",
-  "background-basic-color-2": "#FFFFFF",
-  "background-basic-color-3": "FFFFFF",
-  "background-basic-color-4": "#000000"
+    "color-basic-default":"#F9FDF4"
 }
+
