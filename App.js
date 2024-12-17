@@ -89,7 +89,7 @@ export default function App() {
     
     <IconRegistry icons={EvaIconsPack} />
     
-    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} customMapping={mapping}>
       <Provider store={store}>
       <NotificationsHandler />
         <NavigationContainer > 
