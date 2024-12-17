@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { Layout, Text, Select, SelectItem, IndexPath, Datepicker, Icon } from '@ui-kitten/components';
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { selectAccount } from '../reducers/user';
+import SelectAccount from "../components/SelectAccount";
+
 
 // Icône pour le calendrier
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
@@ -28,8 +30,8 @@ export default function RapportScreen() {
 
     // Options pour les statistiques
     const statistic = [
-        'Statistiques Mensuelles',
-        'Statistiques Annuelles',
+        'Vue Mensuelle',
+        'Vue Annuelle',
     ];
     const displayStatisticValue = statistic[selectedStatistic.row];
     const renderStatistic = (title) => <SelectItem title={title} key={title} />;
@@ -139,16 +141,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
         <Layout style={styles.container}>
             {/* Sélecteur de compte */}
             <View style={styles.top}>
-                <Select
-                    selectedIndex={new IndexPath(selectedAccountIndex)}
-                    value={selectedAccount.name}
-                    onSelect={handleAccountChange}
-                    style={styles.select}
-                >
-                    {accounts.map((account) => (
-                        <SelectItem title={account.name} key={account.name} />
-                    ))}
-                </Select>
+            <SelectAccount />
             </View>
 
             {/* Informations sur les charges */}
@@ -160,8 +153,12 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                     Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
                 </Text>
             </View>
+
+            <Text style={styles.text} category='h6'>Selectionner la période à afficher </Text>
+
             <View style={styles.dateRow}>
             {/* Sélecteur de statistique */}
+            <View style={styles.stat}> 
             <Select
                 placeholder="Default"
                 value={displayStatisticValue}
@@ -171,9 +168,10 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
             >
                 {statistic.map(renderStatistic)}
             </Select>
+            </View>
 
             {/* Sélecteur de mois et année */}
-                
+            <View style={styles.dateStat}> 
                 <Datepicker
                     date={selectedDate}
                     onSelect={(nextDate) => setSelectedDate(nextDate)}
@@ -182,6 +180,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                     min={new Date(1970, 0, 1)} // affichage min
                     max={new Date(2050, 11, 31)} // affichage max
                 />
+            </View> 
             </View>
 
             {/* Graphiques */}
@@ -273,6 +272,18 @@ const styles = StyleSheet.create({
     compteTitle:{
         textAlign: 'center',
         marginBottom: 10,
-        fontWeight: 'bold'
-    }
+        paddingBlock: 10,
+        fontWeight: 'bold',
+        backgroundColor: '#ffffff'
+    },
+    stat:{
+        flex: 3, 
+    },
+    dateStat:{
+        flex: 3, 
+    },
+    text: {
+        textAlign: 'center', 
+        textDecorationStyle: 'bold'
+    },
 });
