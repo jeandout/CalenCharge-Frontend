@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
         padding: 15,
         marginTop: 40,
         justifyContent: 'space-between',
+        backgroundColor: '#F6FDF1',
     },
     addButton: {
         position: 'absolute',

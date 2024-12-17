@@ -51,7 +51,7 @@ const BottomTabBar =({navigation, state}) =>(
   <BottomNavigation 
   selectedIndex={state.index}
   onSelect={(index)=> navigation.navigate(state.routeNames[index])}
-  style={{ backgroundColor: '#F6FDF1' }}>
+  style={{ backgroundColor: '#ffffff' }}>
    <BottomNavigationTab title="Calendrier" icon={CalendarIcon}/>
     <BottomNavigationTab title="Liste" icon={ListIcon}/>
     <BottomNavigationTab title="Rapport" icon={ReportIcon}/>
