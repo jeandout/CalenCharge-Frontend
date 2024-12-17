@@ -4,6 +4,7 @@ import {View, StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native
 import { useDispatch, useSelector } from "react-redux";
 import { addToken } from "../reducers/user";
 
+//utiliser navigation.canGoBack ? pour afficher une alerte si on a été redirigé
 
 export default function LoginScreen({ navigation }){
 
