@@ -57,7 +57,7 @@ export default function RapportScreen() {
     };
 
    // Filtrer les charges en fonction du type de statistique (en incluant les récurrences)
-const filteredPieChartData = chargeTypes.map((type, index) => {
+   const filteredPieChartData = chargeTypes.map((type, index) => {
     const selectedMonth = selectedDate.getMonth();
     const selectedYear = selectedDate.getFullYear();
 
@@ -65,7 +65,6 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
         const chargeDate = new Date(charge.date);
         const chargeTypeMatches = charge.chargeType === index;
 
-        // Vérifier si la charge est récurrente pour le mois sélectionné
         const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
 
         switch (selectedStatistic.row) {
@@ -75,7 +74,6 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                         chargeDate.getMonth() === selectedMonth) ||
                     isRecurringForMonth
                 ) && chargeTypeMatches;
-
 
             case 1: // Annuelles
                 return (
@@ -88,7 +86,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
     });
 
     const totalCharge = charges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + (parseFloat(charge.amount.replace(',', '.')) || 0), 
         0
     );
 
