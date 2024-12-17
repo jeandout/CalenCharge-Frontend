@@ -50,7 +50,7 @@ export default function RapportScreen() {
         datasets: [
             {
                 data: accounts.map((account) =>
-                    account.charges.reduce((sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 0)
+                    account.charges.reduce((sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')), 0)
                 ),
             },
         ],
@@ -88,7 +88,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
     });
 
     const totalCharge = charges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
@@ -122,13 +122,13 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
 
     // Somme totale des charges du mois en cours
     const totalChargesSum = currentMonthCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
     // Somme des charges passées
     const pastChargesSum = pastCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
         0
     );
 
