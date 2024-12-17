@@ -57,7 +57,7 @@ export default function RapportScreen() {
     };
 
    // Filtrer les charges en fonction du type de statistique (en incluant les récurrences)
-const filteredPieChartData = chargeTypes.map((type, index) => {
+   const filteredPieChartData = chargeTypes.map((type, index) => {
     const selectedMonth = selectedDate.getMonth();
     const selectedYear = selectedDate.getFullYear();
 
@@ -65,7 +65,6 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
         const chargeDate = new Date(charge.date);
         const chargeTypeMatches = charge.chargeType === index;
 
-        // Vérifier si la charge est récurrente pour le mois sélectionné
         const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
 
         switch (selectedStatistic.row) {
@@ -75,7 +74,6 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                         chargeDate.getMonth() === selectedMonth) ||
                     isRecurringForMonth
                 ) && chargeTypeMatches;
-
 
             case 1: // Annuelles
                 return (
@@ -154,7 +152,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
                 </Text>
             </View>
 
-            <Text style={styles.text} category='h6'>Selectionner la période à afficher </Text>
+            <Text category='h6' style={styles.compteTitle}>Selectionner la période à afficher </Text>
 
             <View style={styles.dateRow}>
             {/* Sélecteur de statistique */}
@@ -185,7 +183,7 @@ const filteredPieChartData = chargeTypes.map((type, index) => {
 
             {/* Graphiques */}
             <ScrollView style={styles.chartContainer}>
-                <Text category="h6" style={styles.chartTitle}>
+                <Text category="h6" style={styles.compteTitle}>
                     Types de charges par compte sélectionné
                 </Text>
                 <PieChart
@@ -260,6 +258,7 @@ const styles = StyleSheet.create({
     chart: {
         marginVertical: 10,
         borderRadius: 8,
+        
     },
     chartContainer: {
         marginTop: 20,
