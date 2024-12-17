@@ -8,7 +8,6 @@ import { Layout, Text, Select, SelectItem, IndexPath, Datepicker, Icon } from '@
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { selectAccount } from '../reducers/user';
 
-
 // Icône pour le calendrier
 const CalendarIcon = ({ name = 'calendar', ...props }) => (
     <Icon
@@ -19,25 +18,29 @@ const CalendarIcon = ({ name = 'calendar', ...props }) => (
 
 export default function RapportScreen() {
     const dispatch = useDispatch();
-    // Récup des comptes et de l'index du compte sélectionné depuis le store Redux
     const accounts = useSelector((state) => state.user.value.user.accounts);
     const selectedAccountIndex = useSelector((state) => state.user.value.selectedAccount);
-    // Récup du compte actuellement selectionné
     const selectedAccount = accounts[selectedAccountIndex];
-    // les Etats
-    const [selectedStatistic, setSelectedStatistic] = useState(new IndexPath(0));
-    const [startMonth, setStartMonth] = useState(new Date().getMonth());
-    
+
+    // États
+    const [selectedStatistic, setSelectedStatistic] = useState(new IndexPath(0)); // Par défaut : Mensuelles
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     // Options pour les statistiques
     const statistic = [
         'Statistiques Mensuelles',
-        'Statistiques Trimestrielles',
         'Statistiques Annuelles',
     ];
     const displayStatisticValue = statistic[selectedStatistic.row];
     const renderStatistic = (title) => <SelectItem title={title} key={title} />;
 
+    // Types de charges
+    const chargeTypes = [
+        { name: 'Loisir', color: '#D8EFD3' },
+        { name: 'Logement', color: '#55AD9B' },
+        { name: 'Enfants', color: '#FFB7AA' },
+        { name: 'Autre', color: '#979797' },
+    ];
 
     // Données pour le BarChart de tous les comptes
     const barChartDataAllAccounts = {
@@ -51,66 +54,86 @@ export default function RapportScreen() {
         ],
     };
 
-    // Données dynamiques pour le PieChart
-    const chargeTypes = [
-        { name: 'Loisir', color: 'blue' },
-        { name: 'Logement', color: 'green' },
-        { name: 'Enfants', color: 'red' },
-        { name: 'Autre', color: 'orange' },
-    ];
-     
-    const pieChartData = chargeTypes.map((type, index) => {
-        const totalCharge = selectedAccount.charges
-            .filter((charge) => charge.chargeType === index)
-            .reduce((sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 0);
+   // Filtrer les charges en fonction du type de statistique (en incluant les récurrences)
+const filteredPieChartData = chargeTypes.map((type, index) => {
+    const selectedMonth = selectedDate.getMonth();
+    const selectedYear = selectedDate.getFullYear();
 
-        return {
-            name: type.name,
-            charge: totalCharge,
-            color: type.color,
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 12,
-        };
+    const charges = selectedAccount.charges.filter((charge) => {
+        const chargeDate = new Date(charge.date);
+        const chargeTypeMatches = charge.chargeType === index;
+
+        // Vérifier si la charge est récurrente pour le mois sélectionné
+        const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
+
+        switch (selectedStatistic.row) {
+            case 0: // Mensuelles
+                return (
+                    (chargeDate.getFullYear() === selectedYear &&
+                        chargeDate.getMonth() === selectedMonth) ||
+                    isRecurringForMonth
+                ) && chargeTypeMatches;
+
+
+            case 1: // Annuelles
+                return (
+                    chargeDate.getFullYear() === selectedYear || charge.recurrenceList
+                ) && chargeTypeMatches;
+
+            default:
+                return false;
+        }
     });
 
-    // Gestion du changement de compte
-    const handleAccountChange = (index) => {
-        dispatch(selectAccount(index.row));
+    const totalCharge = charges.reduce(
+        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        0
+    );
+
+    return {
+        name: type.name,
+        charge: totalCharge,
+        color: type.color,
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 12,
     };
-    // calcul des charges passées et totales
-    const charges = selectedAccount?.charges || [];
-    
+});
+
+    // Charges du mois en cours
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-
-    // Charges du mois en cours
-    const currentMonthCharges = charges.filter(charge => {
+    const currentMonthCharges = selectedAccount.charges.filter((charge) => {
         const chargeDate = new Date(charge.date);
         const isRecurring = charge.recurrenceList?.includes(currentMonth);
         return (
-            (chargeDate.getFullYear() === currentYear && chargeDate.getMonth() === currentMonth) || 
+            (chargeDate.getFullYear() === currentYear && chargeDate.getMonth() === currentMonth) ||
             isRecurring
         );
     });
 
     // Charges passées
-const pastCharges = currentMonthCharges.filter(charge => {
-    const chargeDate = new Date(charge.date);
-    return chargeDate < currentDate;
-});
-// Somme totale des charges du mois en cours
-const totalChargesSum = currentMonthCharges.reduce(
-    (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 
-    0
-); 
-// Somme des charges passées
-const pastChargesSum = pastCharges.reduce(
-    (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')), 
-    0
-); 
-//const dateService = new Date().getMonth();
+    const pastCharges = currentMonthCharges.filter((charge) => {
+        const chargeDate = new Date(charge.date);
+        return chargeDate < currentDate;
+    });
 
+    // Somme totale des charges du mois en cours
+    const totalChargesSum = currentMonthCharges.reduce(
+        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        0
+    );
+
+    // Somme des charges passées
+    const pastChargesSum = pastCharges.reduce(
+        (sum, charge) => sum + parseFloat(charge.amount.replace(',', '.')),
+        0
+    );
+
+    // Gestion du changement de compte
+    const handleAccountChange = (index) => {
+        dispatch(selectAccount(index.row));
+    };
 
     return (
         <Layout style={styles.container}>
@@ -127,45 +150,67 @@ const pastChargesSum = pastCharges.reduce(
                     ))}
                 </Select>
             </View>
+
+            {/* Informations sur les charges */}
             <View>
-             {/* Sélecteur de statistique */}
-             <Select
+                <Text style={styles.chartTitle}>
+                    Charges passées du mois en cours : {pastCharges.length} / {currentMonthCharges.length}
+                </Text>
+                <Text style={styles.chartTitle}>
+                    Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
+                </Text>
+            </View>
+            <View style={styles.dateRow}>
+            {/* Sélecteur de statistique */}
+            <Select
                 placeholder="Default"
                 value={displayStatisticValue}
                 selectedIndex={selectedStatistic}
                 onSelect={(index) => setSelectedStatistic(index)}
                 style={styles.select}
-             >
+            >
                 {statistic.map(renderStatistic)}
             </Select>
-            </View>
 
-            {/* Champ pour la date de début */}
-            <View style={styles.dateRow}>
-                <View style={styles.datePickerContainer}>
-                    <Text category="label" style={styles.label}>Selectionner un mois</Text>
-                    <Datepicker
-                        // placeholder="Pick Date"
-                        // date={startDate}
-                        // onSelect={setStartMonth}
-                        // dateService={dateService}
-                        renderMonth={startMonth}
-                        // accessoryRight={CalendarIcon}
-                        style={styles.datePicker}
-                    />
-                </View>
-               
+            {/* Sélecteur de mois et année */}
+                
+                <Datepicker
+                    date={selectedDate}
+                    onSelect={(nextDate) => setSelectedDate(nextDate)}
+                    accessoryRight={CalendarIcon}
+                    style={styles.datePicker}
+                    min={new Date(1970, 0, 1)} // affichage min
+                    max={new Date(2050, 11, 31)} // affichage max
+                />
             </View>
 
             {/* Graphiques */}
             <ScrollView style={styles.chartContainer}>
-                <Text category="h6" style={styles.chartTitle}>Tous les Comptes</Text>
+                <Text category="h6" style={styles.chartTitle}>
+                    Types de charges par compte sélectionné
+                </Text>
+                <PieChart
+                    data={filteredPieChartData}
+                    width={Dimensions.get('window').width - 30}
+                    height={220}
+                    chartConfig={{
+                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
+                    }}
+                    accessor="charge"
+                    backgroundColor="#F6FDF1"
+                    paddingLeft="15"
+                    style={styles.chart}
+                />
+
+                <Text category="h6" style={styles.compteTitle}>
+                    Vue sur tous les comptes
+                </Text>
                 <BarChart
                     data={barChartDataAllAccounts}
                     width={Dimensions.get('window').width - 30}
                     height={220}
                     chartConfig={{
-                        backgroundColor: '#f7f9fc',
+                        backgroundColor: '##F6FDF1',
                         backgroundGradientFrom: '#ffffff',
                         backgroundGradientTo: '#ffffff',
                         decimalPlaces: 0,
@@ -178,24 +223,6 @@ const pastChargesSum = pastCharges.reduce(
                     style={styles.chart}
                     fromZero
                 />
-                <Text category="h6" style={styles.chartTitle}>Types de charges par compte Sélectionné</Text>
-                <PieChart
-                    data={pieChartData}
-                    width={Dimensions.get('window').width - 30}
-                    height={220}
-                    chartConfig={{
-                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                    }}
-                    accessor="charge"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    style={styles.chart}
-                />
-                 <View>
-         
-            <Text style={styles.chartTitle}>Charges passées du mois encours: {pastCharges.length} / {currentMonthCharges.length} </Text>
-            <Text style={styles.chartTitle}>Montant des charges prélévées: {pastChargesSum}€ / {totalChargesSum}€</Text> 
-            </View>
             </ScrollView>
         </Layout>
     );
@@ -243,4 +270,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         fontWeight: 'bold',
     },
+    compteTitle:{
+        textAlign: 'center',
+        marginBottom: 10,
+        fontWeight: 'bold'
+    }
 });
