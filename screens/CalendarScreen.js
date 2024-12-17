@@ -3,11 +3,31 @@ import {
   KeyboardAvoidingView, Platform,
 } from "react-native";
 import React from 'react';
-import { Calendar, Text, Icon, Button } from '@ui-kitten/components';
+import { Calendar, Text, Icon, Button, I18nConfig, NativeDateService } from '@ui-kitten/components';
 import { useState, useEffect } from "react";
 import SelectAccount from "../components/SelectAccount";
 import { useSelector } from 'react-redux';
 import Charge from "../components/Charge";
+
+const i18nConfig = {
+  dayNames: {
+    short: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+    long: ["Dimanche", "Lundi", "Mardi", "Mercredi", 
+    "Jeudi", "Vendredi", "Samedi"],
+  },
+  monthNames: {
+    short: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", 
+    "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"],
+    long: [
+      "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ],
+  }
+};
+
+const localeDateService = new NativeDateService('fr', { i18n: i18nConfig, startDayOfWeek: 1 });
+
+
 
 const addIcon = ({ name = 'plus-outline', ...props }) => (
   <Icon
@@ -149,6 +169,7 @@ export default function CalendarScreen({ navigation }) {
         <SelectAccount />
         <Calendar
           key={calendarKey}
+          dateService={localeDateService}
           date={date}
           // onSelect={(nextDate) => setDate(nextDate)}
           renderDay={InfoDay}
@@ -163,6 +184,7 @@ export default function CalendarScreen({ navigation }) {
       <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
       <Button onPress={() => goToday()} style={styles.button}><Text>Aujourd'hui</Text></Button>
+
       </View>
     </View>
 
@@ -188,7 +210,6 @@ const styles = StyleSheet.create({
   cell: {
     height: 45,
     width: 50,
-    fontStyle: 'bold',
   },
   arrow: {
     height: 32,
@@ -213,6 +234,15 @@ const styles = StyleSheet.create({
     zIndex: 30,
     backgroundColor: '#979797'
   },
+  buttonTwo:
+  {
+    
+    height: 5,
+    width: 75,
+  
+    backgroundColor: '#979797'
+  },
+
   footer: {
     justifyContent: 'space-between',
     alignContent: 'center'

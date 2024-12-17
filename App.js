@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import { default as theme } from './theme.json';
+import { default as mapping } from './mapping.json';
+import * as Font from 'expo-font';
 
 import user from './reducers/user'
 
@@ -26,8 +28,10 @@ import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNaviga
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { useState, useEffect } from "react";
 
 import NotificationsHandler from './NotificationsHandler'; // Import des notifications
+
 
 const store = configureStore({
   reducer: { user }
@@ -67,12 +71,25 @@ const TabNavigator = () => (
 
 
 export default function App() {
+  
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    Font.loadAsync({
+      'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+      'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+    }).then(() => setFontsLoaded(true));
+  }, []);
+
+  if (!fontsLoaded) {
+    return null; // Vous pouvez ajouter un écran de chargement ici
+  }
   return (
     <>
     
     <IconRegistry icons={EvaIconsPack} />
     
-    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} >
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} customMapping={mapping}>
       <Provider store={store}>
       <NotificationsHandler />
         <NavigationContainer > 
