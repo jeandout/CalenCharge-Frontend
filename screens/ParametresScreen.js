@@ -53,7 +53,7 @@ export default function ParametresScreen({ navigation }) {
   );
 
   return (
-    <Layout style={styles.container}>
+  
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
         <View style={{}}>
@@ -63,7 +63,7 @@ export default function ParametresScreen({ navigation }) {
       ) : (
         <Button>
           <Text
-            style={styles.connectButtonText}
+            
             onPress={() => navigation.navigate("LoginScreen")}
           >
             Se connecter / créer un compte
@@ -72,7 +72,7 @@ export default function ParametresScreen({ navigation }) {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
+        <Text style={styles.sectionTitle} category='h1'>Notifications</Text>
         <View style={styles.switchRow}>
           <Text>Hebdomadaires</Text>
           <Switch
@@ -96,18 +96,7 @@ export default function ParametresScreen({ navigation }) {
         </View>
       </View>
       <View>
-        <View style={styles.datePickerContainer}>
-          <Text category="label" style={styles.label}>
-            Vue Calendrier: choisir le début de période
-          </Text>
-          <Datepicker
-            placeholder="JJ/MM/AAAA"
-            date={calendarDate}
-            onSelect={setCalendarDate}
-            accessoryRight={CalendarIcon}
-            style={styles.datePicker}
-          />
-        </View>
+        
       </View>
       <View>
         <SelectAccount />
@@ -122,28 +111,39 @@ export default function ParametresScreen({ navigation }) {
         </Button>
       </View>
     </ScrollView>
-    </Layout>
   );
 }
+
+/*<View style={styles.datePickerContainer}>
+          <Text category="label" style={styles.label}>
+            Vue Calendrier: choisir le début de période
+          </Text>
+          <Datepicker
+            placeholder="JJ/MM/AAAA"
+            date={calendarDate}
+            onSelect={setCalendarDate}
+            accessoryRight={CalendarIcon}
+            style={styles.datePicker}
+          />
+        </View>*/
+
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: "#f2f2f2",
-    flexGrow: 1,
-    marginTop: 15,
+    flex: 1,
+   flexDirection: 'column',
+    justifyContent: 'flex-start',
+    gap: 15,
+    padding: 15,
+    marginTop: 40,
+    backgroundColor : '#F6FDF1'
   },
 
-  connectButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   section: {
-    marginBottom: 20,
+    marginBottom: 30,
+    marginTop: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
     marginBottom: 10,
   },
   switchRow: {
@@ -152,16 +152,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  calendarInputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  calendarInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-  },
+  
 });
