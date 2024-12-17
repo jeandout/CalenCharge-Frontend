@@ -120,7 +120,7 @@ export default function CalendarScreen({ navigation }) {
   const [chargesList, setChargesList] = useState([]); // constante pour afficher la ou les taches sous le calendrier
   const [chargeListDay, setChargeListDay] = useState([]) //contien la date du jour cliqué sur le calendrier pour afficher les charges
 
-
+  const [selectedDay, setSelectedDay] = useState(new Date(1970, 0, 1)) // constante pour garder le jour cliqué en mémoire
   const [date, setDate] = useState(new Date());
 
   // use<effect pour rerender le calendrier au changement de selectedAccount et accounts
@@ -132,9 +132,9 @@ export default function CalendarScreen({ navigation }) {
   }, [selectedAccount, date, charges]); //render calendar when start date is changed or account changed
 
   const InfoDay = (calendarDate) => {
-
-    const day = new Date(calendarDate.date).getDate();
-
+    
+    const thisDay = new Date(); // date du jour 
+    const day = calendarDate.date.getDate();
     const formattedDate = calendarDate.date.toISOString().split('T')[0];  // Get date in "YYYY-MM-DD" format
 
     // Filter charges for the specific date
@@ -144,7 +144,6 @@ export default function CalendarScreen({ navigation }) {
         return charge.recurrenceList.includes(calendarDate.date.getMonth())
       }
       const allreadyCreated = () => {
-
         if (calendarDate.date.getFullYear() >= chargeDate.slice(0, 4)) {  //A FAIRE pour vérifier si la date est supérieure au mois de création : (calendarDate.date.getMonth() >= Number(chargeDate.slice(5, 7)))
           return true
         } else {
@@ -154,13 +153,16 @@ export default function CalendarScreen({ navigation }) {
       return chargeDate.slice(-2) === formattedDate.slice(-2) && chargedThisMonth() && allreadyCreated();  // Compare the date
     });
 
+    const dayStyle = calendarDate.date.getDate() == thisDay.getDate() && calendarDate.date.getMonth() == thisDay.getMonth() ? {backgroundColor: theme['color-primary-500'], borderRadius:7, color:'white'} : {}
+  
+    //TODO: selectedDay à utiliser pour surligner le jour selectionné
 
     return (
-      <View>
-        <Text >
+      <View >
+        <Text style={[dayStyle, styles.date]}>
           {day}
         </Text>
-        <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay)}>
+        <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay, calendarDate.date)}>
           {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
             <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
               {`${charge.amount}€`}
@@ -183,15 +185,14 @@ export default function CalendarScreen({ navigation }) {
 
   }
 
-  const handleCharges = (daylyCharges) => { // used to display charges list from calendar day
-
-
-
-    if (daylyCharges[0] === undefined  || daylyCharges[0].date == chargeListDay[0] ) { //si la date cliqué à déja été cliqué
+  const handleCharges = (daylyCharges, daySelected) => { // used to display charges list from calendar day
+    setSelectedDay(daySelected)
+    
+    if (daylyCharges[0] === undefined || daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
       setChargesList([])
       setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
 
-
+     
 
     } else { //ajout des taches de la date cliquée
       const newChargesList = (
@@ -202,6 +203,7 @@ export default function CalendarScreen({ navigation }) {
           ))}
         </View>
       )
+
       setChargesList(newChargesList)
       setChargeListDay(chargeListDay.shift())
       setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
@@ -258,6 +260,9 @@ const styles = StyleSheet.create({
   },
   calendar: {
     width: '100%',
+  },
+  date: {
+    textAlign:'center',
   },
   calendarNavLeft: {
     flexDirection: 'row',
