@@ -1,6 +1,6 @@
 import {
   View, StyleSheet, TouchableOpacity, Image, TextInput,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, ScrollView,
 } from "react-native";
 import React from 'react';
 import { Calendar, Text, Icon, Button, Layout, NativeDateService, useTheme } from '@ui-kitten/components';
@@ -93,7 +93,7 @@ export default function CalendarScreen({ navigation }) {
         </TouchableOpacity>
         <View
           style={styles.todayButton}
-          > 
+        >
           <Button size='tiny' onPress={() => goToday()}
           >Aujourd'hui</Button>
         </View>
@@ -120,7 +120,7 @@ export default function CalendarScreen({ navigation }) {
   const [chargesList, setChargesList] = useState([]); // constante pour afficher la ou les taches sous le calendrier
   const [chargeListDay, setChargeListDay] = useState([]) //contien la date du jour cliqué sur le calendrier pour afficher les charges
 
-
+  const [selectedDay, setSelectedDay] = useState(new Date(1970, 0, 1)) // constante pour garder le jour cliqué en mémoire
   const [date, setDate] = useState(new Date());
 
   // use<effect pour rerender le calendrier au changement de selectedAccount et accounts
@@ -133,8 +133,8 @@ export default function CalendarScreen({ navigation }) {
 
   const InfoDay = (calendarDate) => {
 
-    const day = new Date(calendarDate.date).getDate();
-
+    const thisDay = new Date(); // date du jour 
+    const day = calendarDate.date.getDate();
     const formattedDate = calendarDate.date.toISOString().split('T')[0];  // Get date in "YYYY-MM-DD" format
 
     // Filter charges for the specific date
@@ -144,7 +144,6 @@ export default function CalendarScreen({ navigation }) {
         return charge.recurrenceList.includes(calendarDate.date.getMonth())
       }
       const allreadyCreated = () => {
-
         if (calendarDate.date.getFullYear() >= chargeDate.slice(0, 4)) {  //A FAIRE pour vérifier si la date est supérieure au mois de création : (calendarDate.date.getMonth() >= Number(chargeDate.slice(5, 7)))
           return true
         } else {
@@ -154,18 +153,46 @@ export default function CalendarScreen({ navigation }) {
       return chargeDate.slice(-2) === formattedDate.slice(-2) && chargedThisMonth() && allreadyCreated();  // Compare the date
     });
 
+    const dayStyle = calendarDate.date.getDate() == thisDay.getDate() && calendarDate.date.getMonth() == thisDay.getMonth() ? { backgroundColor: theme['color-primary-500'], borderRadius: 50, color: 'white' } : {}
 
-    return (
-      <View>
-        <Text >
-          {day}
-        </Text>
-        <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay)}>
-          {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
+    //TODO: selectedDay à utiliser pour surligner le jour selectionné
+
+    const calendarChargeDisplay = () => { //permet d'afficher les charges dans le calendrier dynamiquement en fonction de leur nombre
+
+      if (chargesForDay.length == 1) { // Si une seule charge
+        return (
+          chargesForDay.map((charge, i) => (
             <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
               {`${charge.amount}€`}
             </Text>
-          ))}
+          ))
+        )
+      } else if (chargesForDay.length > 1) { // Si plus d'une charge, affichage du nombre de charge pour ce jour
+        return (
+          <>
+          <Text style={[styles.chargeText,{ backgroundColor:theme['color-primary-200'], justifyContent:'center',borderWidth: 2, borderColor: theme['color-primary-500'],}]}>
+          {`+ ${chargesForDay.length}`}
+          </Text>
+        </>
+        )
+      }
+
+    }
+
+    return (
+      <View style={styles.dateContainer}>
+        <Text style={[dayStyle, styles.date]}>
+          {day}
+        </Text>
+        <TouchableOpacity style={styles.cell} appearance={'ghost'} onPress={() => handleCharges(chargesForDay, calendarDate.date)}>
+          {/* Version qui affiche toutes les charges du jour */}
+          {/* {chargesForDay.length > 0 && chargesForDay.map((charge, i) => (
+            <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
+              {`${charge.amount}€`}
+            </Text>
+          ))} */}
+          {/* Version avec un affichage dynamique selon le nombre de charge */}
+          {calendarChargeDisplay()}
         </TouchableOpacity>
       </View>
     ); //background pour fond charge importante : color-warning-500
@@ -183,14 +210,10 @@ export default function CalendarScreen({ navigation }) {
 
   }
 
-  const handleCharges = (daylyCharges) => { // used to display charges list from calendar day
-    console.log(daylyCharges[0])
+  const handleCharges = (daylyCharges, daySelected) => { // used to display charges list from calendar day
+    setSelectedDay(daySelected)
 
-
-
-
-
-    if (daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+    if (daylyCharges[0] === undefined || daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
       setChargesList([])
       setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
 
@@ -205,7 +228,9 @@ export default function CalendarScreen({ navigation }) {
           ))}
         </View>
       )
+
       setChargesList(newChargesList)
+      setChargeListDay(chargeListDay.shift())
       setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
 
     }
@@ -214,30 +239,29 @@ export default function CalendarScreen({ navigation }) {
 
   return (
     <Layout style={styles.container}>
-      <View style={styles.main}>
-        <SelectAccount />
+      <ScrollView>
+        <View style={styles.main}>
+          <SelectAccount />
+          <Calendar style={styles.calendar}
+            dateService={localeDateService} //calendrier en français
+            key={calendarKey}
+            date={date}
+            // onSelect={(nextDate) => setDate(nextDate)}
+            renderDay={InfoDay}
+            renderArrowLeft={LeftArrow}
+            renderArrowRight={RightArrow}
+            onVisibleDateChange={lastDate}
+            min={new Date(1970, 0, 1)} // affichage min
+            max={new Date(2050, 11, 31)} // affichage max
+          />
+          {chargesList}
+        </View>
+      </ScrollView>
+
+      <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
 
 
-        <Calendar style={styles.calendar}
-          dateService={localeDateService} //calendrier en français
-          key={calendarKey}
-          date={date}
-          // onSelect={(nextDate) => setDate(nextDate)}
-          renderDay={InfoDay}
-          renderArrowLeft={LeftArrow}
-          renderArrowRight={RightArrow}
-          onVisibleDateChange={lastDate}
-          min={new Date(1970, 0, 1)} // affichage min
-          max={new Date(2050, 11, 31)} // affichage max
-        />
-        {chargesList}
 
-      </View>
-      <View>
-        <Button onPress={() => navigation.navigate("NewCharge")} style={styles.addButton} accessoryLeft={addIcon} />
-
-       
-      </View>
     </Layout>
 
   )
@@ -257,9 +281,17 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     gap: 15,
+    paddingBottom: 60,
   },
   calendar: {
-    maxWidth: '100%',
+    width: '100%',
+  },
+  dateContainer: {
+    alignItems: 'center',
+  },
+  date: {
+    aspectRatio: 1,
+    textAlign: 'center',
   },
   calendarNavLeft: {
     flexDirection: 'row',
@@ -270,8 +302,10 @@ const styles = StyleSheet.create({
     height: 32,
   },
   cell: {
+    paddingTop: 2,
     height: 45,
     fontStyle: 'bold',
+    width: "100%",
   },
   arrow: {
     height: 32,
@@ -281,6 +315,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 2,
     borderRadius: 7,
+
   },
   addButton: {
     position: 'absolute',
