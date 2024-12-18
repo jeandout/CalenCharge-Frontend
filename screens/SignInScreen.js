@@ -34,8 +34,6 @@ export default function SignInScreen({ navigation }) {
       return;
     }
    
-     console.log(data)
-   
      if (data.result){
        dispatch(addToken(data.token));
        dispatch(addEmail(email))

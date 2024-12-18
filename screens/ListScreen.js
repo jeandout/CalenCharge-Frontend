@@ -24,7 +24,6 @@ export default function ListScreen({ navigation }) {
     const selectedAccount = useSelector((state) => state.user.value.selectedAccount);
 
     const charges = accounts[selectedAccount].charges?.map((charge, i) => {
-        console.log(charge)
         return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
 

@@ -14,7 +14,7 @@ import {
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateCharge, removeCharge } from "../reducers/user";
+import { updateCharge, removeCharge, removeToken } from "../reducers/user";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 import CheckChargeFields from "../components/CheckChargeFields";
 //icone pour l'affichage du calendrier du datepicker
@@ -86,6 +86,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
           })
         
           const data = await response.json();
+
+          if(!data.result && data.redirectToLogin){
+            dispatch(removeToken());
+            navigation.navigate('LoginScreen');
+          }
     
           if(data.result){
             dispatch(
@@ -124,6 +129,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
             })
           
             const data = await response.json();
+
+            if(!data.result && data.redirectToLogin){
+              dispatch(removeToken());
+              navigation.navigate('LoginScreen');
+            }
       
             if(data.result){
               dispatch(removeCharge(propsFromCharge))
@@ -172,6 +182,8 @@ export default function UpdateChargeScreen({ navigation, route }) {
           date={date}
           onSelect={(nextDate) => setDate(nextDate)}
           accessoryRight={CalendarIcon}
+          min={new Date(2000, 0, 1)} // affichage min
+          max={new Date(2050, 11, 31)} // affichage max
         />
         <View style={styles.row}>
           <Text style={styles.text} category="p1">

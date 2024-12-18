@@ -14,8 +14,6 @@ export default function SignUpScreen({ navigation }) {
 
   const store = useSelector((state) => state.user.value.user);
 
-  console.log(JSON.stringify({ email, password, store }, null, 2))
-
   const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const handleSubmit = async () => { //UTILISER CHECKCHARGEFIELD
@@ -36,8 +34,6 @@ export default function SignUpScreen({ navigation }) {
         Alert.alert(data.message);
         return;
       }
-
-  console.log(data.token)
 
   if (data.result){
     dispatch(addToken(data.token));
