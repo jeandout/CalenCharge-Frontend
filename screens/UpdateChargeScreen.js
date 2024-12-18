@@ -22,6 +22,13 @@ const CalendarIcon = ({ name = "calendar", ...props }) => (
   <Icon {...props} name={name} />
 );
 
+const Trash = (props): IconElement => (
+  <Icon
+    {...props}
+    name='trash-2-outline'
+  />
+);
+
 export default function UpdateChargeScreen({ navigation, route }) {
 
   const { navigationCharge, ...propsFromCharge } = route.params.props;
@@ -78,30 +85,33 @@ export default function UpdateChargeScreen({ navigation, route }) {
     };
 
     if (CheckChargeFields(updatedCharge, ['name', 'amount',]) && userToken) {
-    const response = await fetch(`${backend}/charges/update`, {
-            method: 'put',
-            headers: { 'Content-type': 'application/json',
-                  'Authorization': `Bearer ${userToken}` },
-            body: JSON.stringify({oldCharge: propsFromCharge, updatedCharge, account:accounts[selectedAccount]}),
-          })
-        
-          const data = await response.json();
+      const response = await fetch(`${backend}/charges/update`, {
+        method: 'put',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ oldCharge: propsFromCharge, updatedCharge, account: accounts[selectedAccount] }),
+      })
 
-          if(!data.result && data.redirectToLogin){
-            dispatch(removeToken());
-            navigation.navigate('LoginScreen');
-          }
-    
-          if(data.result){
-            dispatch(
-              updateCharge({
-                oldCharge: propsFromCharge,
-                updatedCharge,
-              })
-            );
-            setName("");
-            navigation.goBack();
-          return}
+      const data = await response.json();
+
+      if (!data.result && data.redirectToLogin) {
+        dispatch(removeToken());
+        navigation.navigate('LoginScreen');
+      }
+
+      if (data.result) {
+        dispatch(
+          updateCharge({
+            oldCharge: propsFromCharge,
+            updatedCharge,
+          })
+        );
+        setName("");
+        navigation.goBack();
+        return
+      }
     }
 
     if (CheckChargeFields(updatedCharge, ['name', 'amount',])) {
@@ -118,49 +128,54 @@ export default function UpdateChargeScreen({ navigation, route }) {
     setRequieredFieldStatus('warning')
   }
 
-  async function handleDelete(){
+  async function handleDelete() {
 
     if (userToken) {
       const response = await fetch(`${backend}/charges/delete`, {
-              method: 'delete',
-              headers: { 'Content-type': 'application/json',
-                    'Authorization': `Bearer ${userToken}` },
-              body: JSON.stringify({oldCharge: propsFromCharge, account:accounts[selectedAccount]}),
-            })
-          
-            const data = await response.json();
+        method: 'delete',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ oldCharge: propsFromCharge, account: accounts[selectedAccount] }),
+      })
 
-            if(!data.result && data.redirectToLogin){
-              dispatch(removeToken());
-              navigation.navigate('LoginScreen');
-            }
-      
-            if(data.result){
-              dispatch(removeCharge(propsFromCharge))
-              navigation.goBack();
-            return}
+      const data = await response.json();
+
+      if (!data.result && data.redirectToLogin) {
+        dispatch(removeToken());
+        navigation.navigate('LoginScreen');
       }
+
+      if (data.result) {
+        dispatch(removeCharge(propsFromCharge))
+        navigation.goBack();
+        return
+      }
+    }
     
     dispatch(removeCharge(propsFromCharge))
     navigation.goBack()
   }
-
+  
   return (
     <Layout style={styles.container} level={'1'}>
       <View style={styles.inputs}>
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
-        <Button status="danger" onPress={handleDelete}>
+        <Button status="danger" onPress={handleDelete} accessoryRight={Trash} size='small'>
           <Text>Supprimer la charge</Text>
         </Button>
         <Input
+        label="Nom de la charge"
           status={requieredFieldStatus}
           placeholder="Nom"
           value={name}
           onChangeText={(nextValue) => setName(nextValue)}
         />
-        <Select
+        <Select style={{width:"100%"}}
+        label="Type de charge"
           placeholder="Default"
           value={displayTypeValue}
           selectedIndex={selectedChargeType}
@@ -168,26 +183,29 @@ export default function UpdateChargeScreen({ navigation, route }) {
         >
           {type.map(renderType)}
         </Select>
-        <Select
-          placeholder="Default"
-          value={displayRecurrenceValue}
-          selectedIndex={selectedRecurrence}
-          onSelect={(index) => setSelectedRecurrence(index)}
-        >
-          {recurrence.map(renderRecurrence)}
-        </Select>
-        <Datepicker
-          label="Début de la récurrence"
-          placeholder="Pick Date"
-          date={date}
-          onSelect={(nextDate) => setDate(nextDate)}
-          accessoryRight={CalendarIcon}
-          min={new Date(2000, 0, 1)} // affichage min
-          max={new Date(2050, 11, 31)} // affichage max
-        />
+        <View style={{flexDirection:'row', gap:10, alignItems:'end'}}>
+          <Select style={{flex:1}}
+          label="Récurrence"
+            placeholder="Default"
+            value={displayRecurrenceValue}
+            selectedIndex={selectedRecurrence}
+            onSelect={(index) => setSelectedRecurrence(index)}
+          >
+            {recurrence.map(renderRecurrence)}
+          </Select>
+          <Datepicker style={{flex:1}}
+            label="Début de la récurrence"
+            placeholder="Pick Date"
+            date={date}
+            onSelect={(nextDate) => setDate(nextDate)}
+            accessoryRight={CalendarIcon}
+            min={new Date(2000, 0, 1)} // affichage min
+            max={new Date(2050, 11, 31)} // affichage max
+          />
+        </View>
         <View style={styles.row}>
           <Text style={styles.text} category="p1">
-            Prioritaire
+            Charge prioritaire
           </Text>
           <Switch
             trackColor={{ false: '#767577', true: '#E1FAEB' }}
@@ -196,7 +214,8 @@ export default function UpdateChargeScreen({ navigation, route }) {
             onValueChange={(value) => setChecked(value)}
           />
         </View>
-        <Input
+        <Input style={{width:"30%"}}
+        label="Montant"
           status={requieredFieldStatus}
           keyboardType="numeric"
           size="large"
@@ -219,11 +238,14 @@ export default function UpdateChargeScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     padding: 15,
+    paddingTop:55,
   },
   inputs: {
-    gap: 20,
+    gap: 15,
+    alignItems:'center',
+    
   },
   actions: {
     gap: 10,
@@ -233,6 +255,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 5,
+    width:"100%",
   },
   text: {
     textAlign: "center",
