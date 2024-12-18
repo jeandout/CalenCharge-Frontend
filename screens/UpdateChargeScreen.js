@@ -22,6 +22,13 @@ const CalendarIcon = ({ name = "calendar", ...props }) => (
   <Icon {...props} name={name} />
 );
 
+const Trash = (props): IconElement => (
+  <Icon
+    {...props}
+    name='trash-2-outline'
+  />
+);
+
 export default function UpdateChargeScreen({ navigation, route }) {
 
   const { navigationCharge, ...propsFromCharge } = route.params.props;
@@ -157,7 +164,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
-        <Button status="danger" onPress={handleDelete}>
+        <Button status="danger" onPress={handleDelete} accessoryRight={Trash} size='small'>
           <Text>Supprimer la charge</Text>
         </Button>
         <Input
@@ -167,7 +174,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
           value={name}
           onChangeText={(nextValue) => setName(nextValue)}
         />
-        <Select
+        <Select style={{width:"100%"}}
         label="Type de charge"
           placeholder="Default"
           value={displayTypeValue}
@@ -198,7 +205,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
         </View>
         <View style={styles.row}>
           <Text style={styles.text} category="p1">
-            Prioritaire
+            Charge prioritaire
           </Text>
           <Switch
             trackColor={{ false: '#767577', true: '#E1FAEB' }}
@@ -207,7 +214,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
             onValueChange={(value) => setChecked(value)}
           />
         </View>
-        <Input style={{width:"50%"}}
+        <Input style={{width:"30%"}}
         label="Montant"
           status={requieredFieldStatus}
           keyboardType="numeric"
@@ -231,11 +238,12 @@ export default function UpdateChargeScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     padding: 15,
+    paddingTop:55,
   },
   inputs: {
-    gap: 20,
+    gap: 15,
     alignItems:'center',
     
   },

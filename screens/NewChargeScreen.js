@@ -118,12 +118,14 @@ export default function NewChargeScreen({ navigation }) {
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
         <SelectAccount />
         <Input
+          label="Nom de la charge"
           status={requieredFieldStatus}
           placeholder='Nom'
           value={name}
           onChangeText={nextValue => setName(nextValue)}
         />
         <Select
+          label="Type de charge"
           placeholder='Default'
           value={displayTypeValue}
           selectedIndex={selectedChargeType}
@@ -131,23 +133,26 @@ export default function NewChargeScreen({ navigation }) {
         >
           {type.map(renderType)}
         </Select>
-        <Select
-          placeholder='Default'
-          value={displayRecurrenceValue}
-          selectedIndex={selectedRecurrence}
-          onSelect={index => setSelectedRecurrence(index)}
-        >
-          {recurrence.map(renderRecurrence)}
-        </Select>
-        <Datepicker
-          label="Début de la récurrence"
-          placeholder='Pick Date'
-          date={date}
-          onSelect={nextDate => setDate(nextDate)}
-          accessoryRight={CalendarIcon}
-          min={new Date(2000, 0, 1)} // affichage min
-          max={new Date(2050, 11, 31)} // affichage max
-        />
+        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'end' }}>
+          <Select style={{ flex: 1 }}
+            label="Récurrence"
+            placeholder='Default'
+            value={displayRecurrenceValue}
+            selectedIndex={selectedRecurrence}
+            onSelect={index => setSelectedRecurrence(index)}
+          >
+            {recurrence.map(renderRecurrence)}
+          </Select>
+          <Datepicker style={{ flex: 1 }}
+            label="Début de la récurrence"
+            placeholder='Pick Date'
+            date={date}
+            onSelect={nextDate => setDate(nextDate)}
+            accessoryRight={CalendarIcon}
+            min={new Date(2000, 0, 1)} // affichage min
+            max={new Date(2050, 11, 31)} // affichage max
+          />
+        </View>
         <View style={styles.row}>
           <Text style={styles.text} category='p1'>Prioritaire</Text>
           <Switch
@@ -157,7 +162,8 @@ export default function NewChargeScreen({ navigation }) {
             onValueChange={(value) => setChecked(value)}
           />
         </View>
-        <Input
+        <View style={{alignItems:'center'}}><Input style={{width:"30%"}}
+        label="Montant"
           status={requieredFieldStatus}
           keyboardType="numeric"
           size='large'
@@ -165,6 +171,8 @@ export default function NewChargeScreen({ navigation }) {
           value={amount}
           onChangeText={nextValue => setAmount(nextValue)}
         />
+        </View>
+        
       </View>
       <View style={styles.actions}>
         <Button onPress={() => handleSubmit()}>
@@ -180,8 +188,9 @@ export default function NewChargeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: "space-between",
     padding: 15,
+    paddingTop: 55,
   },
   inputs: {
     gap: 20,
@@ -194,6 +203,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 5,
+    width: "100%",
   },
   text: {
     textAlign: 'center',
