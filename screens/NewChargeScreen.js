@@ -47,7 +47,6 @@ export default function NewChargeScreen({ navigation }) {
 
   const [date, setDate] = useState(getLocalMidnightDate());
   const [checked, setChecked] = useState(false);
-  console.log(date)
   //variables pour l'affichage du composant select pour le type
   const type = [
     'Loisir',
