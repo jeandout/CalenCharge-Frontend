@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 15,
     padding: 15,
-    marginTop: 40,
+    paddingTop: 55,
 
 
   },
