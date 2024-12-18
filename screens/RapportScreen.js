@@ -56,6 +56,48 @@ export default function RapportScreen() {
         ],
     };
 
+    // Fonction pour filtrer les données du BarChart en fonction de la vue sélectionnée
+    const getFilteredBarChartData = () => {
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
+    
+        // Filtrer les données pour chaque compte
+        const filteredData = accounts.map((account) => {
+            const charges = account.charges.filter((charge) => {
+                const chargeDate = new Date(charge.date);
+                const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
+    
+                switch (selectedStatistic.row) {
+                    case 0: // Vue mensuelle
+                        return (
+                            (chargeDate.getFullYear() === selectedYear &&
+                                chargeDate.getMonth() === selectedMonth) ||
+                            isRecurringForMonth
+                        );
+                    case 1: // Vue annuelle
+                        return (
+                            chargeDate.getFullYear() === selectedYear ||
+                            charge.recurrenceList?.length > 0
+                        );
+                    default:
+                        return false;
+                }
+            });
+    
+            // Somme des montants filtrés
+            return charges.reduce(
+                (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
+                0
+            );
+        });
+    
+        // Retourner les données formatées pour le BarChart
+        return {
+            ...barChartDataAllAccounts, // Inclure les labels des comptes
+            datasets: [{ data: filteredData }],
+        };
+    };
+
    // Filtrer les charges en fonction du type de statistique (en incluant les récurrences)
    const filteredPieChartData = chargeTypes.map((type, index) => {
     const selectedMonth = selectedDate.getMonth();
@@ -142,17 +184,8 @@ export default function RapportScreen() {
             <SelectAccount />
             </View>
 
-            {/* Informations sur les charges */}
-            <View>
-                <Text style={styles.chartTitle}>
-                    Charges passées du mois en cours : {pastCharges.length} / {currentMonthCharges.length}
-                </Text>
-                <Text style={styles.chartTitle}>
-                    Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
-                </Text>
-            </View>
+            
 
-            <Text category='h6' style={styles.compteTitle}>Selectionner la période à afficher </Text>
 
             <View style={styles.dateRow}>
             {/* Sélecteur de statistique */}
@@ -180,6 +213,15 @@ export default function RapportScreen() {
                 />
             </View> 
             </View>
+            {/* Informations sur les charges */}
+            <View>
+                <Text style={styles.chartTitle}>
+                    Charges passées du mois en cours : {pastCharges.length} / {currentMonthCharges.length}
+                </Text>
+                <Text style={styles.chartTitle}>
+                    Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
+                </Text>
+            </View>
 
             {/* Graphiques */}
             <ScrollView style={styles.chartContainer}>
@@ -203,7 +245,7 @@ export default function RapportScreen() {
                     Vue sur tous les comptes
                 </Text>
                 <BarChart
-                    data={barChartDataAllAccounts}
+                    data={getFilteredBarChartData()} 
                     width={Dimensions.get('window').width - 30}
                     height={220}
                     chartConfig={{
