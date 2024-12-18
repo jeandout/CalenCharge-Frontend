@@ -158,11 +158,9 @@ export default function CalendarScreen({ navigation }) {
     //TODO: selectedDay à utiliser pour surligner le jour selectionné
 
     const calendarChargeDisplay = () => { //permet d'afficher les charges dans le calendrier dynamiquement en fonction de leur nombre
-      console.log(chargesForDay)
+
       if (chargesForDay.length == 1) { // Si une seule charge
-        
         return (
-          
           chargesForDay.map((charge, i) => (
             <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
               {`${charge.amount}€`}
@@ -172,10 +170,10 @@ export default function CalendarScreen({ navigation }) {
       } else if (chargesForDay.length > 1) { // Si plus d'une charge, affichage du nombre de charge pour ce jour
         return (
           <>
-            <Text style={[styles.chargeText, { backgroundColor: theme['color-primary-200'], justifyContent: 'center', borderWidth: 2, borderColor: theme['color-primary-500'], }]}>
-              {`+ ${chargesForDay.length}`}
-            </Text>
-          </>
+          <Text style={[styles.chargeText,{ backgroundColor:theme['color-primary-200'], justifyContent:'center',borderWidth: 2, borderColor: theme['color-primary-500'],}]}>
+          {`+ ${chargesForDay.length}`}
+          </Text>
+        </>
         )
       }
 
@@ -211,35 +209,33 @@ export default function CalendarScreen({ navigation }) {
     setDate(today)
 
   }
-  
+
   const handleCharges = (daylyCharges, daySelected) => { // used to display charges list from calendar day
-    
-    console.log(daySelected)
     setSelectedDay(daySelected)
-    setChargesList(chargesList.filter(e => e == 0))
-  
-    if (daylyCharges.length === 0) { //si la date cliqué n'a pas de charge
-      setChargeListDay(chargeListDay.filter(e => e == 0)) 
-    } else if (daylyCharges[0].date === chargeListDay[0]) { // NE FONCTIONNE PAS 
-      setChargeListDay(chargeListDay.filter(e => e == 0))
+
+    if (daylyCharges[0] === undefined || daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+      setChargesList([])
+      setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
+
+
+
     } else { //ajout des taches de la date cliquée
-      setChargesList(...chargesList, daylyCharges)
-      setChargeListDay(chargeListDay.filter(e => e == 0))
-      setChargeListDay([...chargeListDay, daylyCharges[0].date]) //ajout de la date cliquée dans le tableau de date cliquée
+      const newChargesList = (
+        <View>
+
+          {daylyCharges.map((charge, i) => (
+            <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
+          ))}
+        </View>
+      )
+
+      setChargesList(newChargesList)
+      setChargeListDay(chargeListDay.shift())
+      setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
+
     }
+
   };
-
-  
-  
-  const chargesListTodisplay = (
-    <View>
-
-      {chargesList.map((charge, i) => (
-        <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
-      ))}
-    </View>
-  )
-
 
   return (
     <Layout style={styles.container}>
@@ -258,7 +254,7 @@ export default function CalendarScreen({ navigation }) {
             min={new Date(1970, 0, 1)} // affichage min
             max={new Date(2050, 11, 31)} // affichage max
           />
-          {chargesListTodisplay}
+          {chargesList}
         </View>
       </ScrollView>
 
@@ -319,6 +315,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 2,
     borderRadius: 7,
+
   },
   addButton: {
     position: 'absolute',
