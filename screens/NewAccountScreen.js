@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addAccount } from "../reducers/user";
+import { addAccount, removeToken } from "../reducers/user";
 import { Button, Card, Modal, Text, Input, Icon } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
 
@@ -34,7 +34,10 @@ export default function NewAccountScreen({ navigation }) {
   
     const data = await response.json();
 
-    console.log(data)
+    if(!data.result && data.redirectToLogin){
+      dispatch(removeToken());
+      navigation.navigate('LoginScreen');
+    }
 
     if(data.result){
       dispatch(addAccount({ accountInput, iconInput })); 

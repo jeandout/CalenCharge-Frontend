@@ -14,7 +14,7 @@ import {
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateCharge, removeCharge } from "../reducers/user";
+import { updateCharge, removeCharge, removeToken } from "../reducers/user";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 import CheckChargeFields from "../components/CheckChargeFields";
 //icone pour l'affichage du calendrier du datepicker
@@ -86,6 +86,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
           })
         
           const data = await response.json();
+
+          if(!data.result && data.redirectToLogin){
+            dispatch(removeToken());
+            navigation.navigate('LoginScreen');
+          }
     
           if(data.result){
             dispatch(
@@ -124,6 +129,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
             })
           
             const data = await response.json();
+
+            if(!data.result && data.redirectToLogin){
+              dispatch(removeToken());
+              navigation.navigate('LoginScreen');
+            }
       
             if(data.result){
               dispatch(removeCharge(propsFromCharge))
