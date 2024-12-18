@@ -22,6 +22,7 @@ import RapportScreen from './screens/RapportScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
+import PasswordUpdate from './screens/PasswordUpdate';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab, Layout } from '@ui-kitten/components';
@@ -96,6 +97,7 @@ export default function App() {
         <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
+          
            <Stack.Screen name="LoginScreen" component={LoginScreen} />
            <Stack.Screen name="SignInScreen" component={SignInScreen} />
            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
@@ -104,6 +106,7 @@ export default function App() {
             <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
             <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
+            <Stack.Screen name="PasswordUpdate" component={PasswordUpdate} />
           </Stack.Navigator>
 
         </NavigationContainer>
