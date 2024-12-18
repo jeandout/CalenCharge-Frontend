@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   cell: {
     paddingTop: 2,
-    height: 45,
+    height: 35,
     fontStyle: 'bold',
     width: "100%",
   },
