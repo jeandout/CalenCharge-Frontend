@@ -3,11 +3,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  SafeAreaView,
   Image,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Pressable,
   Switch,
   Layout,
 } from "react-native";
@@ -23,14 +25,14 @@ import {
   Button,
   Card,
   Modal,
-  Input,
   Icon,
-  Datepicker,
 } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
+import { removeUser, removeToken } from "../reducers/user";
+
 
 export default function ParametresScreen({ navigation }) {
-  
+
   const dispatch = useDispatch();
 
   const userToken = useSelector((state) => state.user.value.user.token);
@@ -47,23 +49,87 @@ export default function ParametresScreen({ navigation }) {
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
-  // Icône pour le calendrier
-  const CalendarIcon = ({ name = "calendar", ...props }) => (
-    <Icon {...props} name={name} />
-  );
+  
+  const [modalVisible, setModalVisible] = useState(false);
+
+  async function handleDelete() {
+
+    if (userToken) {
+      const response = await fetch(`${backend}/delete-account'`, {
+        method: 'delete',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ user: user_id }),
+      })
+
+      const data = await response.json();
+
+      if (!data.result && data.redirectToLogin) {
+        dispatch(removeToken());
+        navigation.navigate('LoginScreen');
+      }
+
+      if (data.result) {
+        dispatch(removeUser())
+        navigation.navigate('ParametreScreen');
+        return
+      }
+    }
+    
+    dispatch(removeUser())
+    navigation.goBack()
+  }
 
   return (
-  
+
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
         <View style={{}}>
-          <Text>Connecté en tant que : {email}</Text>
-            <Text onPress={()=>dispatch(logOut())}>(Se déconnecter)</Text>
-        </View> // AJOuteR DECONNEXION CHANGER MDP SUPP COMPTE
+          <Text style={styles.connected} > Connecté en tant que : {email}</Text>
+          <Button
+          appearance="ghost"
+          onPress={() => navigation.navigate("PasswordUpdate")}
+        >
+          <Text>Modifier votre mot de passe</Text>
+        </Button>
+          <Button style={styles.button} onPress={() => dispatch(logOut())}>
+          <Text>Se déconnecter</Text>
+          </Button>
+        
+        
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('La fenêtre modale a été fermée.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur ? </Text>
+              <Button
+                onPress={() => setModalVisible(!modalVisible)} >
+                <Text style={styles.textStyle} onPress={() => dispatch(handleDelete())}>Confirmer</Text>
+              </Button>
+              <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
+          <Text>Annuler</Text>
+        </Button>
+            </View>
+          </View>
+        </Modal>
+        <Button
+          appearance="ghost"
+          onPress={() => setModalVisible(true)}>
+          <Text>Supprimer votre profil</Text>
+        </Button>
+      
+        </View>
       ) : (
         <Button>
           <Text
-            
             onPress={() => navigation.navigate("LoginScreen")}
           >
             Se connecter / créer un compte
@@ -72,31 +138,37 @@ export default function ParametresScreen({ navigation }) {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle} category='h1'>Notifications</Text>
+        <Text style={styles.sectionTitle}>Gestion des notifications</Text>
         <View style={styles.switchRow}>
-          <Text>Hebdomadaires</Text>
+          <Text style={styles.text}>Hebdomadaires</Text>
           <Switch
+            trackColor={{ false: '#767577', true: '#E1FAEB' }}
+            thumbColor={weeklyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
             value={weeklyNotificationsEnabled}
             onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
           />
         </View>
         <View style={styles.switchRow}>
-          <Text>Mensuelles</Text>
+          <Text style={styles.text}>Mensuelles</Text>
           <Switch
+            trackColor={{ false: '#767577', true: '#E1FAEB' }}
+            thumbColor={monthlyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
             value={monthlyNotificationsEnabled}
             onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
           />
         </View>
         <View style={styles.switchRow}>
-          <Text>A chaque prélèvement</Text>
+          <Text style={styles.text}>A chaque prélèvement</Text>
           <Switch
+            trackColor={{ false: '#767577', true: '#E1FAEB' }}
+            thumbColor={chargeNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
             value={chargeNotificationsEnabled}
             onValueChange={(value) => dispatch(toggleChargeNotifications())}
           />
         </View>
       </View>
       <View>
-        
+
       </View>
       <View>
         <SelectAccount />
@@ -111,46 +183,87 @@ export default function ParametresScreen({ navigation }) {
         </Button>
       </View>
     </ScrollView>
+   
   );
 }
 
-/*<View style={styles.datePickerContainer}>
-          <Text category="label" style={styles.label}>
-            Vue Calendrier: choisir le début de période
-          </Text>
-          <Datepicker
-            placeholder="JJ/MM/AAAA"
-            date={calendarDate}
-            onSelect={setCalendarDate}
-            accessoryRight={CalendarIcon}
-            style={styles.datePicker}
-          />
-        </View>*/
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#F6FDF1',
     flex: 1,
-   flexDirection: 'column',
-    justifyContent: 'flex-start',
+    flexDirection: 'column',
     gap: 15,
     padding: 15,
-    marginTop: 40,
-    backgroundColor : '#F6FDF1'
+    paddingTop: 55,
   },
+  button: {
+    backgroundColor: '#979797',
 
+  },
+  connected: {
+    fontFamily: 'Ubuntu-Bold',
+    color: '#303632',
+    fontSize: 16, 
+    fontWeight: '500', 
+    color: '#555',
+    marginBottom: 10,
+    marginTop: 15,
+  },
+  name: {
+    fontFamily: 'Ubuntu-Bold',
+  },
   section: {
     marginBottom: 30,
     marginTop: 20,
   },
   sectionTitle: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontFamily: 'Ubuntu-Bold',
+    color: '#303632',
+    fontSize: 18, 
+    marginBottom: 15,
   },
   switchRow: {
+    fontFamily: 'Ubuntu-Regular',
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
+  text: {
+    fontFamily: 'Ubuntu-Regular',
+    color: '#979797',
+    fontSize: 15,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    borderColor: '#000000',
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontFamily: 'Ubuntu-Regular',
+    fontSize: 15,
+    lineHeight: 20,
+    padding: 10,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
   
+
 });
