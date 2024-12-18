@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { Layout, Text, Select, SelectItem, IndexPath, Datepicker, Icon } from '@ui-kitten/components';
 import { BarChart, PieChart } from 'react-native-chart-kit';
-import { selectAccount } from '../reducers/user';
 import SelectAccount from "../components/SelectAccount";
 
 
@@ -107,12 +106,12 @@ export default function RapportScreen() {
     
         // Retourner les données formatées pour le BarChart
         return {
-            ...barChartDataAllAccounts, // Inclure les labels des comptes
+            ...barChartDataAllAccounts,
             datasets: [{ data: filteredData }],
         };
     };
 
-   // Filtrer les charges en fonction du type de statistique (en incluant les récurrences)
+   // Filtrer les charges en fonction du type de statistique 
    const filteredPieChartData = chargeTypes.map((type, index) => {
     const selectedMonth = selectedDate.getMonth();
     const selectedYear = selectedDate.getFullYear();
@@ -199,7 +198,6 @@ export default function RapportScreen() {
     };
     
     // Charges du mois ou de l'année sélectionnés
-
     const currentCharges = getFilteredCharges();
     
     // Nombre de charges passées 
@@ -221,11 +219,6 @@ export default function RapportScreen() {
         return sum + (isNaN(amount) ? 0 : amount);
     }, 0).toFixed(2);
 
-
-    // Gestion du changement de compte
-    const handleAccountChange = (index) => {
-        dispatch(selectAccount(index.row));
-    };
 
     return (
         <Layout style={styles.container}>
@@ -264,14 +257,12 @@ export default function RapportScreen() {
             <ScrollView style={styles.chartContainer}>
                  {/* Informations sur les charges */}
             <View>
-            <Text category="h6" style={styles.compteTitle}>
-                    Nombre et Montant des charges
+           
+                <Text style={styles.chartTitle}>
+                    Charges passées : {pastCharges.length} / {currentCharges.length}
                 </Text>
                 <Text style={styles.chartTitle}>
-                    Nombre des Charges passées : {pastCharges.length} / {currentCharges.length}
-                </Text>
-                <Text style={styles.chartTitle}>
-                    Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
+                    Montants prélevés : {pastChargesSum}€ / {totalChargesSum}€
                 </Text>
             </View>
                 <Text category="h6" style={styles.compteTitle}>
@@ -299,12 +290,12 @@ export default function RapportScreen() {
                     width={Dimensions.get('window').width - 30}
                     height={220}
                     chartConfig={{
-                        backgroundColor: '##F6FDF1',
-                        backgroundGradientFrom: '#ffffff',
-                        backgroundGradientTo: '#ffffff',
+                        backgroundColor: '#F6FDF1',
+                        backgroundGradientFrom: '#F6FDF1',
+                        backgroundGradientTo: '#F6FDF1',
                         decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        color: (opacity = 1) => `rgba(85, 173, 155, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(151, 151, 151, ${opacity})`,
                         style: {
                             borderRadius: 16,
                         },
