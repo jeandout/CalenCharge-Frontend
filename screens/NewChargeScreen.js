@@ -39,10 +39,15 @@ export default function NewChargeScreen({ navigation }) {
   const [amount, setAmount] = useState(0);
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
-  const [date, setDate] = useState(new Date());
 
+  const getLocalMidnightDate = () => { // génère la date actuelle à minuit pour etre correctement interpreté par le datepicker et le calendrier
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  };
+
+  const [date, setDate] = useState(getLocalMidnightDate());
   const [checked, setChecked] = useState(false);
-
+  console.log(date)
   //variables pour l'affichage du composant select pour le type
   const type = [
     'Loisir',
@@ -74,31 +79,34 @@ export default function NewChargeScreen({ navigation }) {
     const newCharge = { name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList }
 
     if (CheckChargeFields(newCharge, ['name', 'amount',]) && userToken) {
-      
+
       const response = await fetch(`${backend}/charges/new`, {
         method: 'POST',
-        headers: { 'Content-type': 'application/json',
-              'Authorization': `Bearer ${userToken}` },
-        body: JSON.stringify({ charge:newCharge, account:accounts[selectedAccount] }),
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ charge: newCharge, account: accounts[selectedAccount] }),
       })
-    
+
       const data = await response.json();
 
-      if(!data.result && data.redirectToLogin){
+      if (!data.result && data.redirectToLogin) {
         dispatch(removeToken());
         navigation.navigate('LoginScreen');
       }
 
-      if(data.result){
-      dispatch(addCharge(newCharge));
-      setName('');
-      navigation.goBack()
-      return}
+      if (data.result) {
+        dispatch(addCharge(newCharge));
+        setName('');
+        navigation.goBack()
+        return
+      }
     }
 
 
     if (CheckChargeFields(newCharge, ['name', 'amount',])) {
-      dispatch(addCharge(newCharge)); 
+      dispatch(addCharge(newCharge));
       setName('');
       navigation.goBack()
     }
@@ -138,6 +146,8 @@ export default function NewChargeScreen({ navigation }) {
           date={date}
           onSelect={nextDate => setDate(nextDate)}
           accessoryRight={CalendarIcon}
+          min={new Date(2000, 0, 1)} // affichage min
+          max={new Date(2050, 11, 31)} // affichage max
         />
         <View style={styles.row}>
           <Text style={styles.text} category='p1'>Prioritaire</Text>

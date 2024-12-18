@@ -182,6 +182,8 @@ export default function UpdateChargeScreen({ navigation, route }) {
           date={date}
           onSelect={(nextDate) => setDate(nextDate)}
           accessoryRight={CalendarIcon}
+          min={new Date(2000, 0, 1)} // affichage min
+          max={new Date(2050, 11, 31)} // affichage max
         />
         <View style={styles.row}>
           <Text style={styles.text} category="p1">
