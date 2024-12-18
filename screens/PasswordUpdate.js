@@ -28,7 +28,7 @@ export default function SignUpScreen({ navigation }) {
             Alert.alert('Erreur', "Vous n'êtes pas connecté");
             return;
         }
-        console.log('token')
+        
         const response = await fetch(`${backend}/users/change-password`, {
             method: 'POST',
             headers: {
@@ -46,9 +46,15 @@ export default function SignUpScreen({ navigation }) {
 
         const data = await response.json();
 
-        if (data) {
+        if (data.result == false) {
 
-            Alert.alert('Resultat', data.message, [
+            Alert.alert('Resultat', data.message);
+            return;
+        }
+
+        if (data.result) {
+
+            Alert.alert('Succès', data.message, [
                 {text: 'OK', onPress: () => navigation.goBack()},
               ]);
         }
@@ -92,6 +98,7 @@ export default function SignUpScreen({ navigation }) {
                     secureTextEntry={showPassword}
                     value={currentPassword}
                     onChangeText={setCurrentPassword}
+                    autoCapitalize="none"
                 />
 
                 <Input
@@ -101,6 +108,7 @@ export default function SignUpScreen({ navigation }) {
                     secureTextEntry={showNewPassword}
                     value={newPassword}
                     onChangeText={setNewPassword}
+                    autoCapitalize="none"
                 />
             </View>
             <View style={{ gap: 10, }}>
