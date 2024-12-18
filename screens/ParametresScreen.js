@@ -53,15 +53,13 @@ export default function ParametresScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   async function handleDelete() {
-
-    if (userToken) {
+   
       const response = await fetch(`${backend}/delete-account'`, {
         method: 'delete',
         headers: {
           'Content-type': 'application/json',
           'Authorization': `Bearer ${userToken}`
         },
-        body: JSON.stringify({ user: user_id }),
       })
 
       const data = await response.json();
@@ -72,14 +70,10 @@ export default function ParametresScreen({ navigation }) {
       }
 
       if (data.result) {
-        dispatch(removeUser())
-        navigation.navigate('ParametreScreen');
+        dispatch(logOut());
+        setModalVisible(!modalVisible);
         return
-      }
-    }
-    
-    dispatch(removeUser())
-    navigation.goBack()
+      }    
   }
 
   return (
@@ -110,9 +104,8 @@ export default function ParametresScreen({ navigation }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur ? </Text>
-              <Button
-                onPress={() => setModalVisible(!modalVisible)} >
-                <Text style={styles.textStyle} onPress={() => dispatch(handleDelete())}>Confirmer</Text>
+              <Button>
+                <Text style={styles.textStyle} onPress={handleDelete}>Confirmer</Text>
               </Button>
               <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
           <Text>Annuler</Text>
