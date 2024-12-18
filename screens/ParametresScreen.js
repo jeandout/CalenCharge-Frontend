@@ -28,6 +28,8 @@ import {
   Icon,
 } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
+import { removeUser, removeToken } from "../reducers/user";
+
 
 export default function ParametresScreen({ navigation }) {
 
@@ -50,13 +52,49 @@ export default function ParametresScreen({ navigation }) {
   
   const [modalVisible, setModalVisible] = useState(false);
 
+  async function handleDelete() {
+
+    if (userToken) {
+      const response = await fetch(`${backend}/delete-account'`, {
+        method: 'delete',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ user: user_id }),
+      })
+
+      const data = await response.json();
+
+      if (!data.result && data.redirectToLogin) {
+        dispatch(removeToken());
+        navigation.navigate('LoginScreen');
+      }
+
+      if (data.result) {
+        dispatch(removeUser())
+        navigation.navigate('ParametreScreen');
+        return
+      }
+    }
+    
+    dispatch(removeUser())
+    navigation.goBack()
+  }
+
   return (
 
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
         <View style={{}}>
           <Text style={styles.connected} > Connecté en tant que : {email}</Text>
-          <Button onPress={() => dispatch(logOut())}>
+          <Button
+          appearance="ghost"
+          onPress={() => navigation.navigate("PasswordUpdate")}
+        >
+          <Text>Modifier votre mot de passe</Text>
+        </Button>
+          <Button style={styles.button} onPress={() => dispatch(logOut())}>
           <Text>Se déconnecter</Text>
           </Button>
         
@@ -73,9 +111,8 @@ export default function ParametresScreen({ navigation }) {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur ? </Text>
               <Button
-                style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)} >
-                <Text style={styles.textStyle} onPress={() => dispatch(logOut())}>Confirmer</Text>
+                <Text style={styles.textStyle} onPress={() => dispatch(handleDelete())}>Confirmer</Text>
               </Button>
               <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
           <Text>Annuler</Text>
@@ -85,16 +122,14 @@ export default function ParametresScreen({ navigation }) {
         </Modal>
         <Button
           appearance="ghost"
-          style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(true)}>
           <Text>Supprimer votre profil</Text>
         </Button>
       
-        </View> // AJOuteR DECONNEXION CHANGER MDP SUPP COMPTE
+        </View>
       ) : (
         <Button>
           <Text
-
             onPress={() => navigation.navigate("LoginScreen")}
           >
             Se connecter / créer un compte
@@ -155,13 +190,16 @@ export default function ParametresScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#F6FDF1',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-start',
     gap: 15,
     padding: 15,
-    marginTop: 40,
-    backgroundColor: '#F6FDF1'
+    paddingTop: 55,
+  },
+  button: {
+    backgroundColor: '#979797',
+
   },
   connected: {
     fontFamily: 'Ubuntu-Bold',
@@ -169,7 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     fontWeight: '500', 
     color: '#555',
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 15,
   },
   name: {
@@ -194,7 +232,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'Ubuntu-Regular',
-    color: '#303632',
+    color: '#979797',
     fontSize: 15,
   },
   centeredView: {
