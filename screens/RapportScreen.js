@@ -63,32 +63,46 @@ export default function RapportScreen() {
     
         // Filtrer les données pour chaque compte
         const filteredData = accounts.map((account) => {
-            const charges = account.charges.filter((charge) => {
+            const charges = account.charges.flatMap((charge) => {
                 const chargeDate = new Date(charge.date);
                 const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
     
                 switch (selectedStatistic.row) {
                     case 0: // Vue mensuelle
-                        return (
+                        if (
                             (chargeDate.getFullYear() === selectedYear &&
                                 chargeDate.getMonth() === selectedMonth) ||
                             isRecurringForMonth
-                        );
+                        ) {
+                            return [charge]; // Inclure une seule occurrence pour ce mois
+                        }
+                        break;
+    
                     case 1: // Vue annuelle
-                        return (
-                            chargeDate.getFullYear() === selectedYear ||
-                            charge.recurrenceList?.length > 0
-                        );
+                        if (chargeDate.getFullYear() === selectedYear || charge.recurrenceList) {
+                            // Répéter les charges en fonction de leur récurrence
+                            const recurrenceCount =
+                                charge.recurrence === 0 ? 12 : // Mensuel
+                                charge.recurrence === 1 ? 4 : // Trimestriel
+                                charge.recurrence === 2 ? 1 : // Annuel
+                                0;
+    
+                            return Array(recurrenceCount).fill(charge); // Répliquer les occurrences
+                        }
+                        break;
+    
                     default:
-                        return false;
+                        return [];
                 }
+    
+                return [];
             });
     
-            // Somme des montants filtrés
-            return charges.reduce(
-                (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
-                0
-            );
+            // Somme des montants filtrés pour ce compte
+            return charges.reduce((sum, charge) => {
+                const amount = parseFloat(charge.amount.toString().replace(',', '.'));
+                return sum + (isNaN(amount) ? 0 : amount);
+            }, 0);
         });
     
         // Retourner les données formatées pour le BarChart
@@ -141,36 +155,72 @@ export default function RapportScreen() {
     };
 });
 
-    // Charges du mois en cours
+    // Fonction pour calculer les charges passées et leurs montants
+    const getFilteredCharges = () => {
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
+    
+        const charges = selectedAccount.charges.flatMap((charge) => {
+            const chargeDate = new Date(charge.date);
+            const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
+    
+            switch (selectedStatistic.row) {
+                case 0: // Vue Mensuelle
+                    if (
+                        (chargeDate.getFullYear() === selectedYear &&
+                            chargeDate.getMonth() === selectedMonth) ||
+                        isRecurringForMonth
+                    ) {
+                        return [charge]; // Une seule instance pour le mois sélectionné
+                    }
+                    break;
+    
+                case 1: // Vue Annuelle
+                    if (chargeDate.getFullYear() === selectedYear || charge.recurrenceList) {
+                        // Répéter les charges récurrentes en fonction de leur fréquence
+                        const recurrenceCount =
+                            charge.recurrence === 0 ? 12 : // Mensuel : 12 occurrences
+                            charge.recurrence === 1 ? 4 : // Trimestriel : 4 occurrences
+                            charge.recurrence === 2 ? 1 : // Annuel : 1 occurrence
+                            0; // Aucun cas correspondant
+    
+                        return Array(recurrenceCount).fill(charge); // Répliquer la charge selon la récurrence
+                    }
+                    break;
+    
+                default:
+                    return [];
+            }
+    
+            return [];
+        });
+    
+        return charges;
+    };
+    
+    // Charges du mois ou de l'année sélectionnés
+
+    const currentCharges = getFilteredCharges();
+    
+    // Nombre de charges passées 
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    const currentMonthCharges = selectedAccount.charges.filter((charge) => {
+    const pastCharges = currentCharges.filter((charge) => {
         const chargeDate = new Date(charge.date);
-        const isRecurring = charge.recurrenceList?.includes(currentMonth);
-        return (
-            (chargeDate.getFullYear() === currentYear && chargeDate.getMonth() === currentMonth) ||
-            isRecurring
-        );
+        return chargeDate < currentDate; 
     });
+    
+    // Somme totale des charges 
+    const totalChargesSum = currentCharges.reduce((sum, charge) => {
+        const amount = parseFloat(charge.amount.toString().replace(',', '.'));
+        return sum + (isNaN(amount) ? 0 : amount);
+    }, 0).toFixed(2);
+    
+    // Somme des charges passées 
+    const pastChargesSum = pastCharges.reduce((sum, charge) => {
+        const amount = parseFloat(charge.amount.toString().replace(',', '.'));
+        return sum + (isNaN(amount) ? 0 : amount);
+    }, 0).toFixed(2);
 
-    // Charges passées
-    const pastCharges = currentMonthCharges.filter((charge) => {
-        const chargeDate = new Date(charge.date);
-        return chargeDate < currentDate;
-    });
-
-    // Somme totale des charges du mois en cours
-    const totalChargesSum = currentMonthCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
-        0
-    );
-
-    // Somme des charges passées
-    const pastChargesSum = pastCharges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
-        0
-    );
 
     // Gestion du changement de compte
     const handleAccountChange = (index) => {
@@ -183,10 +233,6 @@ export default function RapportScreen() {
             <View style={styles.top}>
             <SelectAccount />
             </View>
-
-            
-
-
             <View style={styles.dateRow}>
             {/* Sélecteur de statistique */}
             <View style={styles.stat}> 
@@ -213,21 +259,25 @@ export default function RapportScreen() {
                 />
             </View> 
             </View>
-            {/* Informations sur les charges */}
+           
+
+            <ScrollView style={styles.chartContainer}>
+                 {/* Informations sur les charges */}
             <View>
+            <Text category="h6" style={styles.compteTitle}>
+                    Nombre et Montant des charges
+                </Text>
                 <Text style={styles.chartTitle}>
-                    Charges passées du mois en cours : {pastCharges.length} / {currentMonthCharges.length}
+                    Nombre des Charges passées : {pastCharges.length} / {currentCharges.length}
                 </Text>
                 <Text style={styles.chartTitle}>
                     Montant des charges prélevées : {pastChargesSum}€ / {totalChargesSum}€
                 </Text>
             </View>
-
-            {/* Graphiques */}
-            <ScrollView style={styles.chartContainer}>
                 <Text category="h6" style={styles.compteTitle}>
                     Types de charges par compte sélectionné
                 </Text>
+                        {/* Graphiques */}
                 <PieChart
                     data={filteredPieChartData}
                     width={Dimensions.get('window').width - 30}
