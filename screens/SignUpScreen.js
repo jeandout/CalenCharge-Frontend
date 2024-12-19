@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { Button } from '@ui-kitten/components';
+import { View, StyleSheet, ScrollView, TextInput, Alert, TouchableWithoutFeedback } from 'react-native';
+import { Button, Layout, Text, Input, Icon } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail } from "../reducers/user";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -16,118 +15,121 @@ export default function SignUpScreen({ navigation }) {
 
   const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
+  function isEmail(emailAdress) {
+    let regex = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
+
+    if (emailAdress.match(regex))
+      return true;
+
+    else
+      return false;
+  }
+
   const handleSubmit = async () => { //UTILISER CHECKCHARGEFIELD
     if (!email || !password) {
-     Alert.alert('Erreur', 'Veuillez remplir tous les champs');
-     return;
-   }
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
 
-   const response = await fetch(`${backend}/users/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, store }),
-  })
+    if (isEmail(email) == false) {
+      Alert.alert('Erreur', "Le format du mail n'est pas correct");
+      return;
+    }
 
-  const data = await response.json();
+    const response = await fetch(`${backend}/users/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, store }),
+    })
 
-       if (!data.result) {
-        Alert.alert(data.message);
-        return;
-      }
+    const data = await response.json();
 
-  if (data.result){
-    dispatch(addToken(data.token));
-    dispatch(addEmail(email))
-    navigation.navigate('TabNavigator');
-  }
+    if (!data.result) {
+      Alert.alert(data.message);
+      return;
+    }
+
+    if (data.result) {
+      dispatch(addToken(data.token));
+      dispatch(addEmail(email))
+      navigation.navigate('TabNavigator');
+    }
 
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Inscription</Text>
-      
-      <TextInput 
-        style={styles.input} 
-        placeholder="Votre e-mail" 
-        value={email} 
-        onChangeText={setEmail} 
-        keyboardType="email-address"  // clavier type adresse mail
-        autoCapitalize="none"        // en miniscule
+  const toggleSecureEntry = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const renderIcon = (props) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon
+        {...props}
+        name={showPassword ? 'eye-off' : 'eye'}
       />
-      <View style={styles.passwordContainer}>
-            <TextInput 
-             style={styles.passwordInput} 
-             placeholder="Mot de passe" 
-             secureTextEntry={!showPassword} // permet de contrôler l'affichage du mot de passe
-             value={password} 
-             onChangeText={setPassword} 
-            />
-            <TouchableOpacity style={styles.iconContainer}
-            onPress={()=>setShowPassword(!showPassword)}>
-             <Icon
-             name={showPassword ?'eye-off':'eye'}
-             size={24}
-             color="gray"
-             />
-            </TouchableOpacity>
-       </View>     
-      <Button style={styles.button} onPress={handleSubmit}>
-        <Text>Valider</Text>
-      </Button>
-      <Button style={styles.button} onPress={() => navigation.navigate('LoginScreen')}>
-        <Text>Retour</Text>
-      </Button>
-    </ScrollView>
+    </TouchableWithoutFeedback>
+  );
+
+  return (
+    <Layout style={styles.container}>
+      <View style={styles.top}>
+        <Text category='h3' >Inscription</Text>
+      </View>
+      <View style={styles.inputs}>
+        <Input
+          style={{ width: "100%" }}
+          placeholder="Votre e-mail"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"  // clavier type adresse mail
+          autoCapitalize="none"        // en miniscule
+        />
+        <Input
+          style={{ width: "100%" }}
+          placeholder="Mot de passe"
+          accessoryRight={renderIcon}
+          secureTextEntry={showPassword} // permet de contrôler l'affichage du mot de passe
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.actions}>
+        <Button onPress={handleSubmit}>
+          <Text>Valider</Text>
+        </Button>
+        <Button status='info' onPress={() => navigation.goBack()}>
+          <Text>Retour</Text>
+        </Button>
+      </View>
+    </Layout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  passwordContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    marginBottom: 15,
-  },
-  passwordInput: {
     flex: 1,
-    height: 40,
-    paddingHorizontal: 10,
-  },
-  iconContainer: {
-    paddingHorizontal: 10,
-    justifyContent: 'center',
+    padding: 15,
+    paddingTop: 55,
     alignItems: 'center',
   },
-  button: {
-    marginTop: 20,
-    width: '100%',
+  top: {
+    flex: 1,
+    gap: 30,
+    justifyContent: 'center',
+  },
+  inputs: {
+    flex: 1,
+    padding: 30,
+    gap: 20,
+    justifyContent: 'center',
+  },
+  actions: {
+    padding: 30,
+    gap: 20,
+    flex: 1,
+    justifyContent: 'center',
+    width: "100%",
   },
 });
 
