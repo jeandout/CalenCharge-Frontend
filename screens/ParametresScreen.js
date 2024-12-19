@@ -2,14 +2,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
-  Pressable,
   Switch,
   Layout,
 } from "react-native";
@@ -19,17 +12,11 @@ import {
   toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications,
-  logOut
+  logOut,
+  removeToken
 } from "../reducers/user";
-import {
-  Button,
-  Card,
-  Modal,
-  Icon,
-} from "@ui-kitten/components";
+import { Button,Modal } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
-import { removeUser, removeToken } from "../reducers/user";
-
 
 export default function ParametresScreen({ navigation }) {
 
@@ -44,8 +31,6 @@ export default function ParametresScreen({ navigation }) {
     chargeNotificationsEnabled,
   } = useSelector((state) => state.user.value.user.settings);
 
-  const [calendarDate, setCalendarDate] = useState(new Date());
-
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
@@ -53,15 +38,12 @@ export default function ParametresScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   async function handleDelete() {
-
-    if (userToken) {
-      const response = await fetch(`${backend}/delete-account'`, {
-        method: 'delete',
+      const response = await fetch(`${backend}/delete-account`, {
+        method: 'DELETE',
         headers: {
           'Content-type': 'application/json',
           'Authorization': `Bearer ${userToken}`
         },
-        body: JSON.stringify({ user: user_id }),
       })
 
       const data = await response.json();
@@ -72,22 +54,21 @@ export default function ParametresScreen({ navigation }) {
       }
 
       if (data.result) {
-        dispatch(removeUser())
-        navigation.navigate('ParametreScreen');
+        dispatch(logOut());
+        setModalVisible(!modalVisible);
         return
-      }
-    }
-    
-    dispatch(removeUser())
-    navigation.goBack()
+      }    
+      dispatch(logOut());
+      setModalVisible(!modalVisible);
   }
+  
 
   return (
 
     <ScrollView contentContainerStyle={styles.container}>
       {userToken ? (
         <View style={{}}>
-          <Text style={styles.connected} > Connecté en tant que : {email}</Text>
+          <Text style={styles.connected} >Connecté en tant que : {email}</Text>
           <Button
           appearance="ghost"
           onPress={() => navigation.navigate("PasswordUpdate")}
@@ -109,10 +90,9 @@ export default function ParametresScreen({ navigation }) {
           }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur ? </Text>
-              <Button
-                onPress={() => setModalVisible(!modalVisible)} >
-                <Text style={styles.textStyle} onPress={() => dispatch(handleDelete())}>Confirmer</Text>
+              <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur {email} ? </Text>
+              <Button>
+                <Text style={styles.textStyle} onPress={() => handleDelete()}>Confirmer</Text>
               </Button>
               <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
           <Text>Annuler</Text>
@@ -259,6 +239,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontFamily: 'Ubuntu-Regular',
     fontSize: 15,
+    color: '#303632',
     lineHeight: 20,
     padding: 10,
     marginBottom: 15,

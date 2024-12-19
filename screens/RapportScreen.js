@@ -59,7 +59,7 @@ export default function RapportScreen() {
     const getFilteredBarChartData = () => {
         const selectedMonth = selectedDate.getMonth();
         const selectedYear = selectedDate.getFullYear();
-    
+
         // Filtrer les données pour chaque compte
         const filteredData = accounts.map((account) => {
             const charges = account.charges.flatMap((charge) => {
@@ -67,7 +67,7 @@ export default function RapportScreen() {
                 const chargeStartYear = chargeDate.getFullYear();
                 const chargeStartMonth = chargeDate.getMonth();
                 const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
-    
+
                 switch (selectedStatistic.row) {
                     case 0: // Vue mensuelle
                         if (
@@ -78,7 +78,7 @@ export default function RapportScreen() {
                             return [charge]; // Inclure une seule occurrence pour ce mois
                         }
                         break;
-    
+
                     case 1: // Vue annuelle
                         if (chargeStartYear <= selectedYear && charge.recurrenceList) {
                             // Calculer les occurrences dans l'année sélectionnée
@@ -114,21 +114,21 @@ export default function RapportScreen() {
                             return Array(recurrenceCount).fill(charge);
                         }
                         break;
-    
+
                     default:
                         return [];
                 }
-    
+
                 return [];
             });
-    
+
             // Somme des montants filtrés pour ce compte
             return charges.reduce((sum, charge) => {
                 const amount = parseFloat(charge.amount.toString().replace(',', '.'));
                 return sum + (isNaN(amount) ? 0 : amount);
             }, 0);
         });
-    
+
         // Retourner les données formatées pour le BarChart
         return {
             ...barChartDataAllAccounts, // Inclure les labels des comptes
@@ -136,10 +136,10 @@ export default function RapportScreen() {
         };
     };
 
-   // Filtrer les charges en fonction du type de statistique 
-   const filteredPieChartData = chargeTypes.map((type, index) => {
-    const selectedMonth = selectedDate.getMonth();
-    const selectedYear = selectedDate.getFullYear();
+    // Filtrer les charges en fonction du type de statistique 
+    const filteredPieChartData = chargeTypes.map((type, index) => {
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
 
     const charges = selectedAccount.charges.flatMap((charge) => {
         const chargeDate = new Date(charge.date);
@@ -226,7 +226,7 @@ export default function RapportScreen() {
     const getFilteredCharges = () => {
         const selectedMonth = selectedDate.getMonth();
         const selectedYear = selectedDate.getFullYear();
-    
+
         const charges = selectedAccount.charges.flatMap((charge) => {
             const chargeDate = new Date(charge.date);
             const chargeStartYear = chargeDate.getFullYear();
@@ -243,7 +243,7 @@ export default function RapportScreen() {
                         return [charge]; // Une seule occurrence pour le mois sélectionné
                     }
                     break;
-    
+
                 case 1: // Vue Annuelle
                     if (chargeStartYear <= selectedYear && charge.recurrenceList) {
                         const occurrences = [];
@@ -284,17 +284,17 @@ export default function RapportScreen() {
                         return occurrences;
                     }
                     break;
-    
+
                 default:
                     return [];
             }
-    
+
             return [];
         });
-    
+
         return charges;
     };
-    
+
     // Charges du mois ou de l'année sélectionnés
     const currentCharges = getFilteredCharges();
     
@@ -303,6 +303,7 @@ export default function RapportScreen() {
     const pastCharges = currentCharges.filter((charge) => {
         const chargeDate = new Date(charge.date);
         return chargeDate < currentDate;
+        
     });
     
     // Somme totale des charges
@@ -322,51 +323,51 @@ export default function RapportScreen() {
         <Layout style={styles.container}>
             {/* Sélecteur de compte */}
             <View style={styles.top}>
-            <SelectAccount />
+                <SelectAccount />
             </View>
             <View style={styles.dateRow}>
-            {/* Sélecteur de statistique */}
-            <View style={styles.stat}> 
-            <Select
-                placeholder="Default"
-                value={displayStatisticValue}
-                selectedIndex={selectedStatistic}
-                onSelect={(index) => setSelectedStatistic(index)}
-                style={styles.select}
-            >
-                {statistic.map(renderStatistic)}
-            </Select>
+                {/* Sélecteur de statistique */}
+                <View style={styles.stat}>
+                    <Select
+                        placeholder="Default"
+                        value={displayStatisticValue}
+                        selectedIndex={selectedStatistic}
+                        onSelect={(index) => setSelectedStatistic(index)}
+                        style={styles.select}
+                    >
+                        {statistic.map(renderStatistic)}
+                    </Select>
+                </View>
+
+                {/* Sélecteur de mois et année */}
+                <View style={styles.dateStat}>
+                    <Datepicker
+                        date={selectedDate}
+                        onSelect={(nextDate) => setSelectedDate(nextDate)}
+                        accessoryRight={CalendarIcon}
+                        style={styles.datePicker}
+                        min={new Date(1970, 0, 1)} // affichage min
+                        max={new Date(2050, 11, 31)} // affichage max
+                    />
+                </View>
             </View>
 
-            {/* Sélecteur de mois et année */}
-            <View style={styles.dateStat}> 
-                <Datepicker
-                    date={selectedDate}
-                    onSelect={(nextDate) => setSelectedDate(nextDate)}
-                    accessoryRight={CalendarIcon}
-                    style={styles.datePicker}
-                    min={new Date(1970, 0, 1)} // affichage min
-                    max={new Date(2050, 11, 31)} // affichage max
-                />
-            </View> 
-            </View>
-           
 
             <ScrollView style={styles.chartContainer}>
-                 {/* Informations sur les charges */}
-            <View>
-           
-                <Text style={styles.chartTitle}>
-                    Charges passées : {pastCharges.length} / {currentCharges.length}
-                </Text>
-                <Text style={styles.chartTitle}>
-                    Montants prélevés : {pastChargesSum}€ / {totalChargesSum}€
-                </Text>
-            </View>
+                {/* Informations sur les charges */}
+                <View>
+
+                    <Text style={styles.chartTitle}>
+                        Charges passées : {pastCharges.length} / {currentCharges.length}
+                    </Text>
+                    <Text style={styles.chartTitle}>
+                        Montants prélevés : {pastChargesSum}€ / {totalChargesSum}€
+                    </Text>
+                </View>
                 <Text category="h6" style={styles.compteTitle}>
                     Types de charges par compte sélectionné
                 </Text>
-                        {/* Graphiques */}
+                {/* Graphiques */}
                 <PieChart
                     data={filteredPieChartData}
                     width={Dimensions.get('window').width - 30}
@@ -384,7 +385,7 @@ export default function RapportScreen() {
                     Vue sur tous les comptes
                 </Text>
                 <BarChart
-                    data={getFilteredBarChartData()} 
+                    data={getFilteredBarChartData()}
                     width={Dimensions.get('window').width - 30}
                     height={220}
                     chartConfig={{
@@ -409,10 +410,11 @@ export default function RapportScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
         gap: 15,
         padding: 15,
-        marginTop: 40,
-        justifyContent: 'space-between',
+        paddingTop: 55,
     },
     top: {
         gap: 15,
@@ -439,7 +441,7 @@ const styles = StyleSheet.create({
     chart: {
         marginVertical: 10,
         borderRadius: 8,
-        
+
     },
     chartContainer: {
         marginTop: 20,
@@ -449,21 +451,21 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         fontWeight: 'bold',
     },
-    compteTitle:{
+    compteTitle: {
         textAlign: 'center',
         marginBottom: 10,
         paddingBlock: 10,
         fontWeight: 'bold',
         backgroundColor: '#ffffff'
     },
-    stat:{
-        flex: 3, 
+    stat: {
+        flex: 3,
     },
-    dateStat:{
-        flex: 3, 
+    dateStat: {
+        flex: 3,
     },
     text: {
-        textAlign: 'center', 
+        textAlign: 'center',
         textDecorationStyle: 'bold'
     },
 });

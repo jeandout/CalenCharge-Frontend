@@ -112,9 +112,7 @@ export const userSlice = createSlice({
             state.value.user.settings = action.payload.settings;
             state.value.user.accounts = action.payload.accounts;
         },
-        removeUser: (state, action) => {
-            state.value.user = action.payload;
-        },
+        
  
     },
 });
