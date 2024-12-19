@@ -6,7 +6,7 @@ import {
 import Charge from "../components/Charge";
 import SelectAccount from "../components/SelectAccount";
 import { useSelector } from 'react-redux';
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Button, Icon, IconElement, List, ListItem, } from '@ui-kitten/components';
 
 const addIcon = ({ name = 'plus-outline', ...props }) => (
@@ -26,6 +26,14 @@ export default function ListScreen({ navigation }) {
     const charges = accounts[selectedAccount].charges?.map((charge, i) => {
         return <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
     })
+
+      const userToken = useSelector((state) => state.user.value.user.token);
+
+  useEffect(() => {
+    if (userToken === '') {
+        navigation.replace('LoginScreen', { redirected: true });
+    }
+}, [userToken, navigation]);
 
     return (
         <View style={styles.container}>

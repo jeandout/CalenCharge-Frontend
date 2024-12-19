@@ -83,6 +83,14 @@ const nextIcon = ({ name, ...props }) => (
 
 export default function CalendarScreen({ navigation }) {
 
+  const userToken = useSelector((state) => state.user.value.user.token);
+
+  useEffect(() => {
+    if (userToken === '') {
+        navigation.replace('LoginScreen', { redirected: true });
+    }
+}, [userToken, navigation]);
+
   const LeftArrow = (arrowProps) => {
     return (
       <View style={styles.calendarNavLeft}>
