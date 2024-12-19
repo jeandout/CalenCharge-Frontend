@@ -10,7 +10,9 @@ export default function LoginScreen({ route, navigation }) {
 
   const userToken = useSelector((state) => state.user.value.user.token);
 
-  if (!userToken === '') {
+  console.log(userToken)
+
+  if (userToken !== '') {
     navigation.navigate('TabNavigator')
   }
 
