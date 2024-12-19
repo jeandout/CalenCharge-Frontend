@@ -23,6 +23,7 @@ import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
 import PasswordUpdateScreen from './screens/PasswordUpdateScreen';
+import ForgottenPasswordScreen from './screens/ForgottenPasswordScreen';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab, Layout } from '@ui-kitten/components';
@@ -129,6 +130,7 @@ export default function App() {
             <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
             <Stack.Screen name="PasswordUpdateScreen" component={PasswordUpdateScreen} />
+            <Stack.Screen name="ForgottenPasswordScreen" component={ForgottenPasswordScreen} />
           </Stack.Navigator>
 
         </NavigationContainer>
