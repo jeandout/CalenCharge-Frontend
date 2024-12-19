@@ -68,11 +68,11 @@ export default function NewAccountScreen({ navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text>Ajouter un compte bancaire :</Text>
+      <Text style={styles.text} category='h3'>Ajouter un compte bancaire </Text>
       <View style={styles.previewContainer}>
 
         {renderIcon(iconInput, { style: styles.selectedIcon })}
-        <Button onPress={() => setVisible(true)}><Text>Changer l'icône</Text></Button>
+        <Button onPress={() => setVisible(true)}><Text>Choisir une icône</Text></Button>
       </View>
 
       <Modal
@@ -116,14 +116,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ffffff",
+    gap: 15,
+    padding: 15,
+    paddingTop: 65,      
+    backgroundColor: '#F6FDF1',
   },
   input: {
-    width: "65%",
+    width: "",
     marginTop: 16,
-    borderBottomColor: "#ec6e5b",
-    borderBottomWidth: 1,
     fontSize: 16,
   },
   backdrop: {

@@ -3,7 +3,6 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
-  Layout,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +12,7 @@ import {
   toggleChargeNotifications,
   logOut,
 } from "../reducers/user";
-import { Button,Modal,Text } from "@ui-kitten/components";
+import { Button,Modal,Text, Layout } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }) {
@@ -76,7 +75,7 @@ export default function ParametresScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
     <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
       {userToken ? (
-        <View style={{}}>
+        <View >
           <Text style={styles.connected} >Connecté en tant que : {email}</Text>
           <Button
           appearance="ghost"
@@ -186,25 +185,20 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#979797',
+    fontFamily: 'Ubuntu-Bold',
+    borderColor: '#979797',
   },
   connected: {
     fontFamily: 'Ubuntu-Bold',
     color: '#303632',
     fontSize: 16, 
     fontWeight: '500', 
-    color: '#555',
     marginBottom: 10,
   },
-  name: {
-    fontFamily: 'Ubuntu-Bold',
-  },
-  section: {
-    marginBottom: 30,
-    marginTop: 20,
-  },
+  
   sectionTitle: {
     fontSize: 18, 
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: '#FFFFFF',
     padding: 10,
   },

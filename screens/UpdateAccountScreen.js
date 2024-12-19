@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAccount, removeAccount, logOut } from "../reducers/user";
-import { Button, Card, Modal, Text, Input, Icon } from "@ui-kitten/components";
+import { Button, Card, Modal, Text, Input, Icon, Layout } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
 
 export default function UpdateAccountScreen({ navigation }) {
@@ -99,21 +99,24 @@ export default function UpdateAccountScreen({ navigation }) {
   );
 
   return (
+    <Layout style={styles.container}>
+
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
+      
+      <Text style={styles.text} category='h3'>Modifier un compte bancaire</Text>
       {accounts.length>1 && (<Button
         style={styles.button}
-        status="danger"
         onPress={handleDelete}
+        appearance="ghost"
       >
         <Text>Supprimer le compte</Text>
       </Button>)}
-      <Text>Modifier un compte bancaire :</Text>
       <View style={styles.previewContainer}>
         {renderIcon(iconInput, { style: styles.selectedIcon })}
-        <Button onPress={() => setVisible(true)}>
+        <Button style={styles.button} onPress={() => setVisible(true)}>
           <Text>Changer l'icône</Text>
         </Button>
       </View>
@@ -141,42 +144,52 @@ export default function UpdateAccountScreen({ navigation }) {
       </Modal>
 
       <View style={styles.previewContainer}>
+      <Text>Nom du compte bancaire :</Text>
+
         <Input
           placeholder="Nom du compte"
           onChangeText={(value) => setAccountInput(value)}
+          status='primary'
           value={accountInput}
           style={styles.input}
         />
       </View>
-      <Button onPress={handleSubmit}>
+      <Button style={styles.button} onPress={handleSubmit}>
         <Text>Modifier le compte</Text>
       </Button>
       <Button appearance='ghost' onPress={() => navigation.goBack()}>
           <Text>Annuler</Text>
         </Button>
     </KeyboardAvoidingView>
+    </Layout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
     gap: 15,
     padding: 15,
     paddingTop: 55,    
     alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#F6FDF1',
+  },
+  text: {
+    flexDirection: 'row',
   },
   input: {
     width: "65%",
     marginTop: 16,
-    borderBottomColor: "#ec6e5b",
     borderBottomWidth: 1,
     fontSize: 16,
   },
   backdrop: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   card: {
     padding: 16,
@@ -195,8 +208,10 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 16,
   },
-  button: {
+  button:  {
+    width: 200,
     marginBottom: 16,
+    FontColor: '#979797',
   },
   previewContainer: {
     padding: 20,
