@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail, logOut } from "../reducers/user";
 
 
-export default function SignUpScreen({ navigation }) {
+export default function PasswordUpdateScreen({ navigation }) {
 
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(true);
+    const [showNewPassword, setShowNewPassword] = useState(true);
 
     const dispatch = useDispatch();
 
@@ -37,12 +37,6 @@ export default function SignUpScreen({ navigation }) {
             },
             body: JSON.stringify({ newPassword, currentPassword }),
           })
-
-        // const response = await fetch(`${backend}/users/change-password`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ newPassword, currentPassword }),
-        // })
 
         const data = await response.json();
 
@@ -139,6 +133,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         justifyContent: 'center',
         alignItems: 'center',
+        
     },
 });
 
