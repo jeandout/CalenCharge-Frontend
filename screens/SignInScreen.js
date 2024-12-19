@@ -96,7 +96,8 @@ export default function SignInScreen({ navigation }) {
           onChangeText={setPassword}
           autoCapitalize="none"
         />
-        <Text style={{ fontWeight: 700 }} onPress={() => navigation.goBack()}>Mot de passe oublié ?</Text>
+        <Text style={{ fontWeight: 700 }} onPress={() => navigation.navigate("ForgottenPasswordScreen")}>Mot de passe oublié ?</Text>
+        
       </View>
       <View style={styles.actions}>
         <Button onPress={handleSubmit}>
@@ -122,7 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 30,
     justifyContent: 'center',
-
   },
   inputs: {
     flex: 1,
@@ -137,6 +137,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: "100%",
   },
-
-
 });
