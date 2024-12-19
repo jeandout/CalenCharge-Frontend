@@ -29,15 +29,18 @@ export default function ForgottenPasswordScreen({ navigation }) {
     if (data.result) {
       Alert.alert("Nouveau mot de passe envoyé avec succès");
     }
-   };
+  };
 
   return (
     <Layout style={styles.container}>
-      <Text category="h3" style={{ textAlign: "center" }}>
-        Mot de passe oublié :
-      </Text>
+      <View style={styles.top}>
+        <Text category="h3" style={{ textAlign: "center" }}>
+          Mot de passe oublié
+        </Text>
+      </View>
 
-      <View style={{ gap: 20 }}>
+      <View style={styles.inputs}>
+        <Text style={{textAlign:'center'}} category='s1'>Veuillez saisir votre e-mail pour recevoir un nouveau mot de passe</Text>
         <Input
           style={{ width: "100%" }}
           placeholder="Votre e-mail"
@@ -46,10 +49,11 @@ export default function ForgottenPasswordScreen({ navigation }) {
           value={email}
           onChangeText={setEmail}
         />
+        
       </View>
-      <View style={{ gap: 10 }}>
-        <Button onPress={handleSubmit}>
-          <Text>Envoyer un nouveau mot de passe à cette adresse</Text>
+      <View style={styles.actions}>
+      <Button onPress={handleSubmit}>
+          <Text>Valider</Text>
         </Button>
         <Button appearance="ghost" onPress={() => navigation.goBack()}>
           <Text>Retour</Text>
@@ -62,13 +66,26 @@ export default function ForgottenPasswordScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 55,
     padding: 15,
-    justifyContent: "space-between",
+    paddingTop: 55,
+    alignItems: 'center',
   },
-  iconContainer: {
-    paddingHorizontal: 10,
-    justifyContent: "center",
-    alignItems: "center",
+  top: {
+    flex: 1,
+    gap: 30,
+    justifyContent: 'center',
+  },
+  inputs: {
+    flex: 1,
+    padding: 30,
+    gap: 20,
+    justifyContent: 'center',
+  },
+  actions: {
+    padding: 30,
+    gap: 20,
+    flex: 1,
+    justifyContent: 'center',
+    width: "100%",
   },
 });
