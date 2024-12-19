@@ -64,6 +64,8 @@ export default function RapportScreen() {
         const filteredData = accounts.map((account) => {
             const charges = account.charges.flatMap((charge) => {
                 const chargeDate = new Date(charge.date);
+                const chargeStartYear = chargeDate.getFullYear();
+                const chargeStartMonth = chargeDate.getMonth();
                 const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
     
                 switch (selectedStatistic.row) {
@@ -78,15 +80,38 @@ export default function RapportScreen() {
                         break;
     
                     case 1: // Vue annuelle
-                        if (chargeDate.getFullYear() === selectedYear || charge.recurrenceList) {
-                            // Répéter les charges en fonction de leur récurrence
-                            const recurrenceCount =
-                                charge.recurrence === 0 ? 12 : // Mensuel
-                                charge.recurrence === 1 ? 4 : // Trimestriel
-                                charge.recurrence === 2 ? 1 : // Annuel
-                                0;
+                        if (chargeStartYear <= selectedYear && charge.recurrenceList) {
+                            // Calculer les occurrences dans l'année sélectionnée
+                            let recurrenceCount = 0;
     
-                            return Array(recurrenceCount).fill(charge); // Répliquer les occurrences
+                            if (charge.recurrence === 0) {
+                                // Mensuel
+                                recurrenceCount = Math.max(
+                                    0,
+                                    12 - (chargeStartYear < selectedYear
+                                        ? 0
+                                        : chargeStartMonth)
+                                );
+                            } else if (charge.recurrence === 1) {
+                                // Trimestriel
+                                for (const month of charge.recurrenceList) {
+                                    if (
+                                        month >= (chargeStartYear < selectedYear
+                                            ? 0
+                                            : chargeStartMonth) &&
+                                        month < 12
+                                    ) {
+                                        recurrenceCount++;
+                                    }
+                                }
+                            } else if (charge.recurrence === 2) {
+                                // Annuel
+                                recurrenceCount =
+                                    chargeStartYear === selectedYear ? 1 : 0;
+                            }
+    
+                            // Répliquer les occurrences pour cette année
+                            return Array(recurrenceCount).fill(charge);
                         }
                         break;
     
@@ -106,7 +131,7 @@ export default function RapportScreen() {
     
         // Retourner les données formatées pour le BarChart
         return {
-            ...barChartDataAllAccounts,
+            ...barChartDataAllAccounts, // Inclure les labels des comptes
             datasets: [{ data: filteredData }],
         };
     };
@@ -116,28 +141,72 @@ export default function RapportScreen() {
     const selectedMonth = selectedDate.getMonth();
     const selectedYear = selectedDate.getFullYear();
 
-    const charges = selectedAccount.charges.filter((charge) => {
+    const charges = selectedAccount.charges.flatMap((charge) => {
         const chargeDate = new Date(charge.date);
         const chargeTypeMatches = charge.chargeType === index;
+        const chargeStartYear = chargeDate.getFullYear();
+        const chargeStartMonth = chargeDate.getMonth();
 
-        const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
+        if (!chargeTypeMatches) return [];
 
         switch (selectedStatistic.row) {
-            case 0: // Mensuelles
-                return (
+            case 0: // Vue Mensuelle
+                if (
                     (chargeDate.getFullYear() === selectedYear &&
                         chargeDate.getMonth() === selectedMonth) ||
-                    isRecurringForMonth
-                ) && chargeTypeMatches;
+                    (charge.recurrenceList?.includes(selectedMonth) &&
+                        chargeStartYear <= selectedYear)
+                ) {
+                    return [charge]; // Une seule occurrence pour le mois sélectionné
+                }
+                break;
 
-            case 1: // Annuelles
-                return (
-                    chargeDate.getFullYear() === selectedYear || charge.recurrenceList
-                ) && chargeTypeMatches;
+            case 1: // Vue Annuelle
+                if (chargeStartYear <= selectedYear && charge.recurrenceList) {
+                    const occurrences = [];
+
+                    if (charge.recurrence === 0) {
+                        // Mensuel : Ajouter les mois restants dans l'année sélectionnée
+                        for (
+                            let month = chargeStartYear < selectedYear
+                                ? 0
+                                : chargeStartMonth;
+                            month < 12;
+                            month++
+                        ) {
+                            if (charge.recurrenceList.includes(month)) {
+                                occurrences.push(charge);
+                            }
+                        }
+                    } else if (charge.recurrence === 1) {
+                        // Trimestriel : Ajouter les trimestres restants dans l'année sélectionnée
+                        for (
+                            let month = chargeStartYear < selectedYear
+                                ? 0
+                                : chargeStartMonth;
+                            month < 12;
+                            month += 3
+                        ) {
+                            if (charge.recurrenceList.includes(month)) {
+                                occurrences.push(charge);
+                            }
+                        }
+                    } else if (charge.recurrence === 2) {
+                        // Annuel : Ajouter une occurrence si l'année correspond
+                        if (chargeStartYear === selectedYear) {
+                            occurrences.push(charge);
+                        }
+                    }
+
+                    return occurrences;
+                }
+                break;
 
             default:
-                return false;
+                return [];
         }
+
+        return [];
     });
 
     const totalCharge = charges.reduce(
@@ -153,7 +222,6 @@ export default function RapportScreen() {
         legendFontSize: 12,
     };
 });
-
     // Fonction pour calculer les charges passées et leurs montants
     const getFilteredCharges = () => {
         const selectedMonth = selectedDate.getMonth();
@@ -161,29 +229,59 @@ export default function RapportScreen() {
     
         const charges = selectedAccount.charges.flatMap((charge) => {
             const chargeDate = new Date(charge.date);
-            const isRecurringForMonth = charge.recurrenceList?.includes(selectedMonth);
+            const chargeStartYear = chargeDate.getFullYear();
+            const chargeStartMonth = chargeDate.getMonth();
     
             switch (selectedStatistic.row) {
                 case 0: // Vue Mensuelle
                     if (
                         (chargeDate.getFullYear() === selectedYear &&
                             chargeDate.getMonth() === selectedMonth) ||
-                        isRecurringForMonth
+                        (charge.recurrenceList?.includes(selectedMonth) &&
+                            chargeStartYear <= selectedYear)
                     ) {
-                        return [charge]; // Une seule instance pour le mois sélectionné
+                        return [charge]; // Une seule occurrence pour le mois sélectionné
                     }
                     break;
     
                 case 1: // Vue Annuelle
-                    if (chargeDate.getFullYear() === selectedYear || charge.recurrenceList) {
-                        // Répéter les charges récurrentes en fonction de leur fréquence
-                        const recurrenceCount =
-                            charge.recurrence === 0 ? 12 : // Mensuel : 12 occurrences
-                            charge.recurrence === 1 ? 4 : // Trimestriel : 4 occurrences
-                            charge.recurrence === 2 ? 1 : // Annuel : 1 occurrence
-                            0; // Aucun cas correspondant
+                    if (chargeStartYear <= selectedYear && charge.recurrenceList) {
+                        const occurrences = [];
     
-                        return Array(recurrenceCount).fill(charge); // Répliquer la charge selon la récurrence
+                        if (charge.recurrence === 0) {
+                            // Mensuel : Ajouter les mois restants dans l'année sélectionnée
+                            for (
+                                let month = chargeStartYear < selectedYear
+                                    ? 0
+                                    : chargeStartMonth;
+                                month < 12;
+                                month++
+                            ) {
+                                if (charge.recurrenceList.includes(month)) {
+                                    occurrences.push(charge);
+                                }
+                            }
+                        } else if (charge.recurrence === 1) {
+                            // Trimestriel : Ajouter les trimestres restants dans l'année sélectionnée
+                            for (
+                                let month = chargeStartYear < selectedYear
+                                    ? 0
+                                    : chargeStartMonth;
+                                month < 12;
+                                month += 3
+                            ) {
+                                if (charge.recurrenceList.includes(month)) {
+                                    occurrences.push(charge);
+                                }
+                            }
+                        } else if (charge.recurrence === 2) {
+                            // Annuel : Ajouter une occurrence si l'année correspond
+                            if (chargeStartYear === selectedYear) {
+                                occurrences.push(charge);
+                            }
+                        }
+    
+                        return occurrences;
                     }
                     break;
     
@@ -200,20 +298,20 @@ export default function RapportScreen() {
     // Charges du mois ou de l'année sélectionnés
     const currentCharges = getFilteredCharges();
     
-    // Nombre de charges passées 
+    // Nombre de charges passées
     const currentDate = new Date();
     const pastCharges = currentCharges.filter((charge) => {
         const chargeDate = new Date(charge.date);
-        return chargeDate < currentDate; 
+        return chargeDate < currentDate;
     });
     
-    // Somme totale des charges 
+    // Somme totale des charges
     const totalChargesSum = currentCharges.reduce((sum, charge) => {
         const amount = parseFloat(charge.amount.toString().replace(',', '.'));
         return sum + (isNaN(amount) ? 0 : amount);
     }, 0).toFixed(2);
     
-    // Somme des charges passées 
+    // Somme des charges passées
     const pastChargesSum = pastCharges.reduce((sum, charge) => {
         const amount = parseFloat(charge.amount.toString().replace(',', '.'));
         return sum + (isNaN(amount) ? 0 : amount);
