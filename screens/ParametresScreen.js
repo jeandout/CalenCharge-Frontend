@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   Switch,
@@ -14,7 +13,7 @@ import {
   toggleChargeNotifications,
   logOut,
 } from "../reducers/user";
-import { Button,Modal } from "@ui-kitten/components";
+import { Button,Modal,Text } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }) {
@@ -75,12 +74,13 @@ export default function ParametresScreen({ navigation }) {
   return (
 
     <ScrollView contentContainerStyle={styles.container}>
+    <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
       {userToken ? (
         <View style={{}}>
           <Text style={styles.connected} >Connecté en tant que : {email}</Text>
           <Button
           appearance="ghost"
-          onPress={() => navigation.navigate("PasswordUpdate")}
+          onPress={() => navigation.navigate("PasswordUpdateScreen")}
         >
           <Text>Modifier votre mot de passe</Text>
         </Button>
@@ -127,7 +127,7 @@ export default function ParametresScreen({ navigation }) {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Gestion des notifications</Text>
+        <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
         <View style={styles.switchRow}>
           <Text style={styles.text}>Hebdomadaires</Text>
           <Switch
@@ -156,9 +156,7 @@ export default function ParametresScreen({ navigation }) {
           />
         </View>
       </View>
-      <View>
-
-      </View>
+      <Text category="h6" style={styles.sectionTitle}>Compte de charges</Text>
       <View>
         <SelectAccount />
         <Button
@@ -188,7 +186,6 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#979797',
-
   },
   connected: {
     fontFamily: 'Ubuntu-Bold',
@@ -197,7 +194,6 @@ const styles = StyleSheet.create({
     fontWeight: '500', 
     color: '#555',
     marginBottom: 10,
-    marginTop: 15,
   },
   name: {
     fontFamily: 'Ubuntu-Bold',
@@ -207,21 +203,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sectionTitle: {
-    fontFamily: 'Ubuntu-Bold',
-    color: '#303632',
     fontSize: 18, 
     marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    padding: 10,
   },
   switchRow: {
-    fontFamily: 'Ubuntu-Regular',
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
   text: {
-    fontFamily: 'Ubuntu-Regular',
-    color: '#979797',
     fontSize: 15,
   },
   centeredView: {
@@ -246,9 +239,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontFamily: 'Ubuntu-Regular',
     fontSize: 15,
-    color: '#303632',
     lineHeight: 20,
     padding: 10,
     marginBottom: 15,

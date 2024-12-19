@@ -151,6 +151,9 @@ export default function UpdateAccountScreen({ navigation }) {
       <Button onPress={handleSubmit}>
         <Text>Modifier le compte</Text>
       </Button>
+      <Button appearance='ghost' onPress={() => navigation.goBack()}>
+          <Text>Annuler</Text>
+        </Button>
     </KeyboardAvoidingView>
   );
 }
@@ -158,9 +161,12 @@ export default function UpdateAccountScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    gap: 15,
+    padding: 15,
+    paddingTop: 55,    
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#ffffff",
   },
   input: {
     width: "65%",
@@ -176,11 +182,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
   },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
   icon: {
     width: 50,
     height: 50,
@@ -190,7 +191,6 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
     marginBottom: 16,
-    tintColor: "#303632",
   },
   closeButton: {
     marginTop: 16,
