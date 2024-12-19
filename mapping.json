@@ -1,21 +1,32 @@
 {
-    "strict": {
-      "text-font-family": "Ubuntu-Regular",
+  
+  "strict": {
+    "text-font-size": 12,
+    "text-font-weight": "400",
+    "text-font-family": "Ubuntu-Regular",
 
-      "text-heading-1-font-size": 36,
-      "text-heading-1-font-weight": "800",
-      "text-heading-1-font-family": "Ubuntu-Bold",
+    "text-heading-1-font-size": 36,
+    "text-heading-1-font-weight": "800",
+    "text-heading-1-font-family": "Ubuntu-Bold",
 
-      "text-subtitle-1-font-size": 15,
-      "text-subtitle-1-font-weight": "600",
-      "text-subtitle-1-font-family": "Ubuntu-SemiBold",
+    "text-heading-3-font-size": 25,
+    "text-heading-3-font-weight": "600",
+    "text-heading-3-font-family": "Ubuntu-Bold",
 
-      "text-paragraph-1-font-size": 15,
-      "text-paragraph-1-font-weight": "400",
-      "text-paragraph-1-font-family": "Ubuntu-Regular",
+    "text-subtitle-1-font-size": 15,
+    "text-subtitle-1-font-weight": "600",
+    "text-subtitle-1-font-family": "Ubuntu-Regular",
+
+    "text-paragraph-1-font-size": 15,
+    "text-paragraph-1-font-weight": "400",
+    "text-paragraph-1-font-family": "Ubuntu-Regular",
 
     "text-caption-1-font-size": 12,
     "text-caption-1-font-weight": "400",
-    "text-caption-1-font-family": "Ubuntu-Regular"
-    }
+    "text-caption-1-font-family": "Ubuntu-Regular",
+
+    "text-label-font-size": 10,
+    "text-label-font-weight": "400",
+    "text-label-font-family": "Ubuntu-Regular"
   }
+}

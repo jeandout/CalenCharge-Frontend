@@ -80,6 +80,7 @@ export default function App() {
     Font.loadAsync({
       'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
       'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+      
     }).then(() => setFontsLoaded(true));
   }, []);
 
