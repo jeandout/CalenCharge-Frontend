@@ -97,6 +97,7 @@ export default function SignInScreen({ navigation }) {
           autoCapitalize="none"
         />
         <Text style={{ fontWeight: 700 }} onPress={() => navigation.navigate("ForgottenPasswordScreen")}>Mot de passe oublié ?</Text>
+        
       </View>
       <View style={styles.actions}>
         <Button onPress={handleSubmit}>
