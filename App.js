@@ -31,12 +31,32 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { useState, useEffect } from "react";
 
+//Persistore
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persistStore, persistReducer } from 'redux-persist'
+import { combineReducers } from 'redux';
+import { PersistGate } from 'redux-persist/integration/react';
+
 import NotificationsHandler from './NotificationsHandler'; // Import des notifications
 
 
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+};
+
+const rootReducer = combineReducers({
+  user,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const store = configureStore({
-  reducer: { user }
-})
+  reducer: persistedReducer,
+});
+
+const persistor = persistStore(store);
+
 // Définition des icônes
 const CalendarIcon = (props) => <Icon {...props} name="calendar-outline" />;
 const ListIcon = (props) => <Icon {...props} name="list-outline" />;
@@ -93,6 +113,7 @@ export default function App() {
     
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} customMapping={mapping}>
       <Provider store={store}>
+      <PersistGate persistor={persistor}>
       <NotificationsHandler />
         <NavigationContainer > 
 
@@ -110,7 +131,7 @@ export default function App() {
           </Stack.Navigator>
 
         </NavigationContainer>
-       
+        </PersistGate>
       </Provider>
 
     </ApplicationProvider>

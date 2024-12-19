@@ -84,7 +84,7 @@ export default function ParametresScreen({ navigation }) {
         >
           <Text>Modifier votre mot de passe</Text>
         </Button>
-          <Button style={styles.button} onPress={() => dispatch(logOut())}>
+          <Button style={styles.button} onPress={() => {dispatch(logOut()); navigation.navigate('LoginScreen')}}>
           <Text>Se déconnecter</Text>
           </Button>
         
