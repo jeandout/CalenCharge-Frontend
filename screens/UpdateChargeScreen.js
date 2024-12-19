@@ -39,7 +39,7 @@ export default function UpdateChargeScreen({ navigation, route }) {
 
   const [requieredFieldStatus, setRequieredFieldStatus] = useState('basic')
 
-  const [amount, setAmount] = useState(propsFromCharge.amount);
+  const [amount, setAmount] = useState(propsFromCharge.amount.toString());
 
   const [selectedRecurrence, setSelectedRecurrence] = useState(
     new IndexPath(propsFromCharge.recurrence)

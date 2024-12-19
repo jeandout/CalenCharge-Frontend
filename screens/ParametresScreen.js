@@ -80,7 +80,7 @@ export default function ParametresScreen({ navigation }) {
           <Text style={styles.connected} >Connecté en tant que : {email}</Text>
           <Button
           appearance="ghost"
-          onPress={() => navigation.navigate("PasswordUpdate")}
+          onPress={() => navigation.navigate("PasswordUpdateScreen")}
         >
           <Text>Modifier votre mot de passe</Text>
         </Button>
