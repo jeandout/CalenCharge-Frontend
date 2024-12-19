@@ -393,7 +393,7 @@ export default function RapportScreen() {
                         backgroundGradientFrom: '#F6FDF1',
                         backgroundGradientTo: '#F6FDF1',
                         decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(85, 173, 155, ${opacity})`,
+                        color: (opacity = 1) => `rgba(151, 151, 151, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(151, 151, 151, ${opacity})`,
                         style: {
                             borderRadius: 16,
