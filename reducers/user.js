@@ -5,7 +5,6 @@ const initialState = {
 
         user: {
             email: null,
-            google_credentials: null,
             settings: {
                 weeklyNotificationsEnabled: false,
                 monthlyNotificationsEnabled: false,
@@ -40,7 +39,6 @@ const initialState = {
 const logOutState = {
         user: {
             email: null,
-            google_credentials: null,
             settings: {
                 weeklyNotificationsEnabled: false,
                 monthlyNotificationsEnabled: false,

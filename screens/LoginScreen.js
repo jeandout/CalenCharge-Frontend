@@ -1,20 +1,31 @@
 import { Button } from '@ui-kitten/components'
-import React from 'react'
-import {View, StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native'
+import React, { useEffect } from 'react';
+import {View, StyleSheet, Text, ScrollView, Alert} from 'react-native'
 import { useDispatch, useSelector } from "react-redux";
 import { addToken } from "../reducers/user";
 
 //utiliser navigation.canGoBack ? pour afficher une alerte si on a été redirigé
 
-export default function LoginScreen({ navigation }){
+export default function LoginScreen({ route, navigation }){
 
   const userToken = useSelector((state) => state.user.value.user.token);
 
-  if(userToken || userToken===null){
+  if(!userToken===''){
     navigation.navigate('TabNavigator')
   }
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+        const { redirected } = route.params || {};
+        if (redirected) {
+            Alert.alert("Votre session a expiré, veuillez vous reconnecter.");
+        }
+    });
+
+    return unsubscribe; // Nettoyer l'écouteur à la désactivation de l'écran
+}, [navigation, route]);
 
     return(
         <ScrollView contentContainerStyle={styles.container}>

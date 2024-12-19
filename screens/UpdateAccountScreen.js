@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAccount, removeAccount, removeToken } from "../reducers/user";
+import { updateAccount, removeAccount, logOut } from "../reducers/user";
 import { Button, Card, Modal, Text, Input, Icon } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
 
@@ -42,8 +42,8 @@ export default function UpdateAccountScreen({ navigation }) {
         const data = await response.json();
 
         if(!data.result && data.redirectToLogin){
-          dispatch(removeToken());
-          navigation.navigate('LoginScreen');
+          dispatch(logOut())
+          navigation.goBack();
         }
         
         if(data.result){
@@ -73,11 +73,9 @@ export default function UpdateAccountScreen({ navigation }) {
   
     const data = await response.json();
 
-    console.log(userToken)
-
     if(!data.result && data.redirectToLogin){
-      dispatch(removeToken());
-      navigation.navigate('LoginScreen');
+      dispatch(logOut());
+      navigation.goBack();
     }
 
     if(data.result){

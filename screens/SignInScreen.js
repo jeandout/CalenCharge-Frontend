@@ -20,7 +20,6 @@ export default function SignInScreen({ navigation }) {
      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
      return;
    }
-
       const response = await fetch(`${backend}/users/signin`, {
        method: 'POST',
        headers: { 'Content-Type': 'application/json' },

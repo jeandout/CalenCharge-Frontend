@@ -8,7 +8,7 @@ import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, I
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCharge, removeToken } from "../reducers/user";
+import { addCharge, logOut } from "../reducers/user";
 import SelectAccount from "../components/SelectAccount";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 import CheckChargeFields from "../components/CheckChargeFields";
@@ -91,8 +91,8 @@ export default function NewChargeScreen({ navigation }) {
       const data = await response.json();
 
       if (!data.result && data.redirectToLogin) {
-        dispatch(removeToken());
-        navigation.navigate('LoginScreen');
+        dispatch(logOut());
+        navigation.goBack();
       }
 
       if (data.result) {

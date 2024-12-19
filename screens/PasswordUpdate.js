@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Alert, TouchableWithoutFeedback } from 'react-native';
 import { Button, Text, Layout, Input, Icon, IconElement } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
-import { addToken, addEmail } from "../reducers/user";
+import { addToken, addEmail, logOut } from "../reducers/user";
 
 
 export default function SignUpScreen({ navigation }) {
@@ -45,6 +45,11 @@ export default function SignUpScreen({ navigation }) {
         // })
 
         const data = await response.json();
+
+        if (!data.result && data.redirectToLogin) {
+            dispatch(logOut());
+            navigation.goBack();
+          }
 
         if (data.result == false) {
 

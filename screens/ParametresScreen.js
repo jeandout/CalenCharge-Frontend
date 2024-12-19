@@ -6,24 +6,30 @@ import {
   Switch,
   Layout,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications,
   logOut,
-  removeToken
 } from "../reducers/user";
 import { Button,Modal } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }) {
 
+  useEffect(() => {
+    if (userToken === '') {
+        navigation.replace('LoginScreen', { redirected: true });
+    }
+}, [userToken, navigation]);
+
   const dispatch = useDispatch();
 
   const userToken = useSelector((state) => state.user.value.user.token);
   const email = useSelector((state) => state.user.value.user.email);
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const {
     weeklyNotificationsEnabled,
@@ -35,10 +41,11 @@ export default function ParametresScreen({ navigation }) {
     navigation.navigate("NewAccount");
   }
   
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);  
 
   async function handleDelete() {
-      const response = await fetch(`${backend}/delete-account`, {
+
+      const response = await fetch(`${backend}/users/delete-account`, {
         method: 'DELETE',
         headers: {
           'Content-type': 'application/json',
@@ -48,9 +55,11 @@ export default function ParametresScreen({ navigation }) {
 
       const data = await response.json();
 
+      console.log(data)
+
       if (!data.result && data.redirectToLogin) {
-        dispatch(removeToken());
-        navigation.navigate('LoginScreen');
+        dispatch(logOut());
+        navigation.goBack();
       }
 
       if (data.result) {
@@ -91,8 +100,8 @@ export default function ParametresScreen({ navigation }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur {email} ? </Text>
-              <Button>
-                <Text style={styles.textStyle} onPress={() => handleDelete()}>Confirmer</Text>
+              <Button onPress={() => handleDelete()}>
+                <Text style={styles.textStyle}>Confirmer</Text>
               </Button>
               <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
           <Text>Annuler</Text>
