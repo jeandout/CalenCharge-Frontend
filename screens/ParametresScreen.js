@@ -10,7 +10,7 @@ import {
   toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications,
-  logOut,
+  logOut, removeToken
 } from "../reducers/user";
 import { Button,Modal,Text, Layout } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
@@ -53,8 +53,6 @@ export default function ParametresScreen({ navigation }) {
 
       const data = await response.json();
 
-      console.log(data)
-
       if (!data.result && data.redirectToLogin) {
         dispatch(logOut());
         navigation.goBack();
@@ -83,7 +81,7 @@ export default function ParametresScreen({ navigation }) {
         >
           <Text>Modifier votre mot de passe</Text>
         </Button>
-          <Button style={styles.button} onPress={() => {dispatch(logOut()); navigation.navigate('LoginScreen')}}>
+          <Button style={styles.button} onPress={() => {dispatch(logOut()); navigation.replace('LoginScreen')}}>
           <Text>Se déconnecter</Text>
           </Button>
         
@@ -118,7 +116,7 @@ export default function ParametresScreen({ navigation }) {
       ) : (
         <Button>
           <Text
-            onPress={() => navigation.navigate("LoginScreen")}
+            onPress={() => {dispatch(removeToken());navigation.replace("LoginScreen")}}
           >
             Se connecter / créer un compte
           </Text>
