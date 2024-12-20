@@ -116,7 +116,7 @@ export default function App() {
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} customMapping={mapping}>
       <Provider store={store}>
       <PersistGate persistor={persistor}>
-      <NotificationsHandler />
+      {/* <NotificationsHandler /> */}
         <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >

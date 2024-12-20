@@ -124,7 +124,7 @@ export default function ParametresScreen({ navigation }) {
             </Button>
           )}
 
-          <View >
+          <View style={{ gap: 10 }}>
             <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
             <View style={styles.switchRow}>
               <Text style={styles.text}>Hebdomadaires</Text>
