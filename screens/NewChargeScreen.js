@@ -3,8 +3,12 @@ import {
   StyleSheet,
   SafeAreaView,
   Switch,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Button, } from '@ui-kitten/components';
+import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, Spinner, Button, } from '@ui-kitten/components';
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,6 +43,8 @@ export default function NewChargeScreen({ navigation }) {
   const [amount, setAmount] = useState(0);
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const getLocalMidnightDate = () => { // génère la date actuelle à minuit pour etre correctement interpreté par le datepicker et le calendrier
     const now = new Date();
@@ -79,6 +85,7 @@ export default function NewChargeScreen({ navigation }) {
 
     if (CheckChargeFields(newCharge, ['name', 'amount',]) && userToken) {
 
+      setIsLoading(true);
       const response = await fetch(`${backend}/charges/new`, {
         method: 'POST',
         headers: {
@@ -113,7 +120,8 @@ export default function NewChargeScreen({ navigation }) {
   }
 
   return (
-    <Layout style={styles.container} level={'1'}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
         <SelectAccount />
@@ -175,14 +183,24 @@ export default function NewChargeScreen({ navigation }) {
         
       </View>
       <View style={styles.actions}>
-        <Button onPress={() => handleSubmit()}>
+      {isLoading ? ( // Afficher le Spinner si en cours de chargement
+          <View style={styles.loading}>
+          <Spinner size="large" />
+          </View>
+        ) : (
+          <>       
+          <Button onPress={() => handleSubmit()}>
           <Text>Ajouter</Text>
         </Button>
         <Button appearance='ghost' onPress={() => navigation.goBack()}>
           <Text>Annuler</Text>
         </Button>
+        </>
+         )};
       </View>
-    </Layout>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 }
 const styles = StyleSheet.create({
@@ -191,6 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 15,
     paddingTop: 55,
+    backgroundColor: "#F6FDF1",
   },
   inputs: {
     gap: 20,

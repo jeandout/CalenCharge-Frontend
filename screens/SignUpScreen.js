@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TextInput, Alert, TouchableWithoutFeedback } from 'react-native';
-import { Button, Layout, Text, Input, Icon } from '@ui-kitten/components';
+import { Button, Layout, Text, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail } from "../reducers/user";
 
@@ -8,6 +8,8 @@ export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const dispatch = useDispatch();
 
@@ -35,7 +37,7 @@ export default function SignUpScreen({ navigation }) {
       Alert.alert('Erreur', "Le format du mail n'est pas correct");
       return;
     }
-
+    setIsLoading(true);
     const response = await fetch(`${backend}/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -95,12 +97,20 @@ export default function SignUpScreen({ navigation }) {
         />
       </View>
       <View style={styles.actions}>
+      {isLoading ? ( // Afficher le Spinner si en cours de chargement
+          <View style={styles.loading}>
+          <Spinner size="large" />
+          </View>
+        ) : (
+          <>
         <Button onPress={handleSubmit}>
           <Text>Valider</Text>
         </Button>
         <Button status='info' onPress={() => navigation.goBack()}>
           <Text>Retour</Text>
         </Button>
+        </>
+      )};
       </View>
     </Layout>
   );
@@ -130,6 +140,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     width: "100%",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

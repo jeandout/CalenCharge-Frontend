@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableWithoutFeedback, } from 'react-native';
-import { Button, Input, Text, Layout, Icon } from '@ui-kitten/components';
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
+import { Button, Input, Text, Layout, Icon, Spinner } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail, syncDB } from "../reducers/user";
 
@@ -8,6 +8,7 @@ export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ export default function SignInScreen({ navigation }) {
       Alert.alert('Erreur', "Le format du mail n'est pas correct");
       return;
     }
-
+    setIsLoading(true);
     const response = await fetch(`${backend}/users/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -73,8 +74,7 @@ export default function SignInScreen({ navigation }) {
   );
 
   return (
-    <Layout level='1' style={styles.container}>
-
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.top}>
         <Text category='h3'>Connexion</Text>
       </View>
@@ -100,15 +100,22 @@ export default function SignInScreen({ navigation }) {
         
       </View>
       <View style={styles.actions}>
-        <Button onPress={handleSubmit}>
+      {isLoading ? ( // Afficher le Spinner si en cours de chargement
+          <View style={styles.loading}>
+          <Spinner size="large" />
+          </View>
+        ) : (
+          <>
+        <Button style={styles.button} onPress={handleSubmit}>
           <Text >Valider</Text>
         </Button>
-        <Button status='info' onPress={() => navigation.goBack()}>
+        <Button style={styles.button} status='info' onPress={() => navigation.goBack()}>
           <Text >Retour</Text>
         </Button>
-      </View>
-
-    </Layout>
+        </>
+    )}
+    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -118,6 +125,7 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 55,
     alignItems: 'center',
+    backgroundColor: "#F6FDF1",
   },
   top: {
     flex: 1,
@@ -136,5 +144,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     width: "100%",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
