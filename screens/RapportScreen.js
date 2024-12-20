@@ -83,7 +83,7 @@ export default function RapportScreen() {
                         if (chargeStartYear <= selectedYear && charge.recurrenceList) {
                             // Calculer les occurrences dans l'année sélectionnée
                             let recurrenceCount = 0;
-    
+
                             if (charge.recurrence === 0) {
                                 // Mensuel
                                 recurrenceCount = Math.max(
@@ -109,7 +109,7 @@ export default function RapportScreen() {
                                 recurrenceCount =
                                     chargeStartYear === selectedYear ? 1 : 0;
                             }
-    
+
                             // Répliquer les occurrences pour cette année
                             return Array(recurrenceCount).fill(charge);
                         }
@@ -141,97 +141,14 @@ export default function RapportScreen() {
         const selectedMonth = selectedDate.getMonth();
         const selectedYear = selectedDate.getFullYear();
 
-    const charges = selectedAccount.charges.flatMap((charge) => {
-        const chargeDate = new Date(charge.date);
-        const chargeTypeMatches = charge.chargeType === index;
-        const chargeStartYear = chargeDate.getFullYear();
-        const chargeStartMonth = chargeDate.getMonth();
-
-        if (!chargeTypeMatches) return [];
-
-        switch (selectedStatistic.row) {
-            case 0: // Vue Mensuelle
-                if (
-                    (chargeDate.getFullYear() === selectedYear &&
-                        chargeDate.getMonth() === selectedMonth) ||
-                    (charge.recurrenceList?.includes(selectedMonth) &&
-                        chargeStartYear <= selectedYear)
-                ) {
-                    return [charge]; // Une seule occurrence pour le mois sélectionné
-                }
-                break;
-
-            case 1: // Vue Annuelle
-                if (chargeStartYear <= selectedYear && charge.recurrenceList) {
-                    const occurrences = [];
-
-                    if (charge.recurrence === 0) {
-                        // Mensuel : Ajouter les mois restants dans l'année sélectionnée
-                        for (
-                            let month = chargeStartYear < selectedYear
-                                ? 0
-                                : chargeStartMonth;
-                            month < 12;
-                            month++
-                        ) {
-                            if (charge.recurrenceList.includes(month)) {
-                                occurrences.push(charge);
-                            }
-                        }
-                    } else if (charge.recurrence === 1) {
-                        // Trimestriel : Ajouter les trimestres restants dans l'année sélectionnée
-                        for (
-                            let month = chargeStartYear < selectedYear
-                                ? 0
-                                : chargeStartMonth;
-                            month < 12;
-                            month += 3
-                        ) {
-                            if (charge.recurrenceList.includes(month)) {
-                                occurrences.push(charge);
-                            }
-                        }
-                    } else if (charge.recurrence === 2) {
-                        // Annuel : Ajouter une occurrence si l'année correspond
-                        if (chargeStartYear === selectedYear) {
-                            occurrences.push(charge);
-                        }
-                    }
-
-                    return occurrences;
-                }
-                break;
-
-            default:
-                return [];
-        }
-
-        return [];
-    });
-
-    const totalCharge = charges.reduce(
-        (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
-        0
-    );
-
-    return {
-        name: type.name,
-        charge: totalCharge,
-        color: type.color,
-        legendFontColor: '#7F7F7F',
-        legendFontSize: 12,
-    };
-});
-    // Fonction pour calculer les charges passées et leurs montants
-    const getFilteredCharges = () => {
-        const selectedMonth = selectedDate.getMonth();
-        const selectedYear = selectedDate.getFullYear();
-
         const charges = selectedAccount.charges.flatMap((charge) => {
             const chargeDate = new Date(charge.date);
+            const chargeTypeMatches = charge.chargeType === index;
             const chargeStartYear = chargeDate.getFullYear();
             const chargeStartMonth = chargeDate.getMonth();
-    
+
+            if (!chargeTypeMatches) return [];
+
             switch (selectedStatistic.row) {
                 case 0: // Vue Mensuelle
                     if (
@@ -247,7 +164,7 @@ export default function RapportScreen() {
                 case 1: // Vue Annuelle
                     if (chargeStartYear <= selectedYear && charge.recurrenceList) {
                         const occurrences = [];
-    
+
                         if (charge.recurrence === 0) {
                             // Mensuel : Ajouter les mois restants dans l'année sélectionnée
                             for (
@@ -280,7 +197,90 @@ export default function RapportScreen() {
                                 occurrences.push(charge);
                             }
                         }
-    
+
+                        return occurrences;
+                    }
+                    break;
+
+                default:
+                    return [];
+            }
+
+            return [];
+        });
+
+        const totalCharge = charges.reduce(
+            (sum, charge) => sum + parseFloat(charge.amount.toString().replace(',', '.')),
+            0
+        );
+
+        return {
+            name: type.name,
+            charge: totalCharge,
+            color: type.color,
+            legendFontColor: '#7F7F7F',
+            legendFontSize: 12,
+        };
+    });
+    // Fonction pour calculer les charges passées et leurs montants
+    const getFilteredCharges = () => {
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
+
+        const charges = selectedAccount.charges.flatMap((charge) => {
+            const chargeDate = new Date(charge.date);
+            const chargeStartYear = chargeDate.getFullYear();
+            const chargeStartMonth = chargeDate.getMonth();
+
+            switch (selectedStatistic.row) {
+                case 0: // Vue Mensuelle
+                    if (
+                        (chargeDate.getFullYear() === selectedYear &&
+                            chargeDate.getMonth() === selectedMonth) ||
+                        (charge.recurrenceList?.includes(selectedMonth) &&
+                            chargeStartYear <= selectedYear)
+                    ) {
+                        return [charge]; // Une seule occurrence pour le mois sélectionné
+                    }
+                    break;
+
+                case 1: // Vue Annuelle
+                    if (chargeStartYear <= selectedYear && charge.recurrenceList) {
+                        const occurrences = [];
+
+                        if (charge.recurrence === 0) {
+                            // Mensuel : Ajouter les mois restants dans l'année sélectionnée
+                            for (
+                                let month = chargeStartYear < selectedYear
+                                    ? 0
+                                    : chargeStartMonth;
+                                month < 12;
+                                month++
+                            ) {
+                                if (charge.recurrenceList.includes(month)) {
+                                    occurrences.push(charge);
+                                }
+                            }
+                        } else if (charge.recurrence === 1) {
+                            // Trimestriel : Ajouter les trimestres restants dans l'année sélectionnée
+                            for (
+                                let month = chargeStartYear < selectedYear
+                                    ? 0
+                                    : chargeStartMonth;
+                                month < 12;
+                                month += 3
+                            ) {
+                                if (charge.recurrenceList.includes(month)) {
+                                    occurrences.push(charge);
+                                }
+                            }
+                        } else if (charge.recurrence === 2) {
+                            // Annuel : Ajouter une occurrence si l'année correspond
+                            if (chargeStartYear === selectedYear) {
+                                occurrences.push(charge);
+                            }
+                        }
+
                         return occurrences;
                     }
                     break;
@@ -297,21 +297,21 @@ export default function RapportScreen() {
 
     // Charges du mois ou de l'année sélectionnés
     const currentCharges = getFilteredCharges();
-    
+
     // Nombre de charges passées
     const currentDate = new Date();
     const pastCharges = currentCharges.filter((charge) => {
         const chargeDate = new Date(charge.date);
         return chargeDate < currentDate;
-        
+
     });
-    
+
     // Somme totale des charges
     const totalChargesSum = currentCharges.reduce((sum, charge) => {
         const amount = parseFloat(charge.amount.toString().replace(',', '.'));
         return sum + (isNaN(amount) ? 0 : amount);
     }, 0).toFixed(2);
-    
+
     // Somme des charges passées
     const pastChargesSum = pastCharges.reduce((sum, charge) => {
         const amount = parseFloat(charge.amount.toString().replace(',', '.'));
@@ -322,47 +322,55 @@ export default function RapportScreen() {
     return (
         <Layout style={styles.container}>
             {/* Sélecteur de compte */}
-            <View style={styles.top}>
-                <SelectAccount />
-            </View>
+            <SelectAccount />
             <View style={styles.dateRow}>
                 {/* Sélecteur de statistique */}
-                <View style={styles.stat}>
-                    <Select
-                        placeholder="Default"
-                        value={displayStatisticValue}
-                        selectedIndex={selectedStatistic}
-                        onSelect={(index) => setSelectedStatistic(index)}
-                        style={styles.select}
-                    >
-                        {statistic.map(renderStatistic)}
-                    </Select>
-                </View>
-
+                <Select
+                    style={{ flex: 1 }}
+                    placeholder="Default"
+                    value={displayStatisticValue}
+                    selectedIndex={selectedStatistic}
+                    onSelect={(index) => setSelectedStatistic(index)}
+                >
+                    {statistic.map(renderStatistic)}
+                </Select>
                 {/* Sélecteur de mois et année */}
-                <View style={styles.dateStat}>
-                    <Datepicker
-                        date={selectedDate}
-                        onSelect={(nextDate) => setSelectedDate(nextDate)}
-                        accessoryRight={CalendarIcon}
-                        style={styles.datePicker}
-                        min={new Date(1970, 0, 1)} // affichage min
-                        max={new Date(2050, 11, 31)} // affichage max
-                    />
-                </View>
+                <Datepicker
+                    style={{ flex: 1 }}
+                    date={selectedDate}
+                    onSelect={(nextDate) => setSelectedDate(nextDate)}
+                    accessoryRight={CalendarIcon}
+                    min={new Date(1970, 0, 1)} // affichage min
+                    max={new Date(2050, 11, 31)} // affichage max
+                />
             </View>
 
 
             <ScrollView style={styles.chartContainer}>
                 {/* Informations sur les charges */}
-                <View>
-
-                    <Text style={styles.chartTitle}>
-                        Charges passées : {pastCharges.length} / {currentCharges.length}
-                    </Text>
-                    <Text style={styles.chartTitle}>
-                        Montants prélevés : {pastChargesSum}€ / {totalChargesSum}€
-                    </Text>
+                <View style={styles.infos}>
+                    <View style={styles.stats}>
+                        <Text category='s1' style={styles.chartTitle}>
+                            Charges passées : 
+                        </Text>
+                    </View>
+                    <View style={styles.stats}>
+                        <Text category='s1' style={{fontWeight:900,}} >
+                            {pastCharges.length} / {currentCharges.length}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.infos}>
+                    <View style={styles.stats}>
+                        <Text category='s1' style={styles.chartTitle}>
+                            Montants prélevés : 
+                        </Text>
+                    </View>
+                    <View style={styles.stats}>
+                        <Text category='s1' style={{fontWeight:900,}}>
+                            {pastChargesSum}€ / {totalChargesSum}€
+                        </Text>
+                    </View>
                 </View>
                 <Text category="h6" style={styles.compteTitle}>
                     Types de charges par compte sélectionné
@@ -416,16 +424,11 @@ const styles = StyleSheet.create({
         padding: 15,
         paddingTop: 55,
     },
-    top: {
-        gap: 15,
-    },
-    select: {
-        marginVertical: 10,
-    },
     dateRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: 10,
     },
     datePickerContainer: {
         flex: 1,
@@ -441,31 +444,30 @@ const styles = StyleSheet.create({
     chart: {
         marginVertical: 10,
         borderRadius: 8,
-
     },
     chartContainer: {
-        marginTop: 20,
+        marginTop: 0,
     },
     chartTitle: {
-        textAlign: 'left',
-        marginBottom: 10,
-        fontWeight: 'bold',
+        textAlign: 'right',
     },
     compteTitle: {
-        textAlign: 'center',
+        marginTop: 15,
         marginBottom: 10,
         paddingBlock: 10,
-        fontWeight: 'bold',
         backgroundColor: '#ffffff'
-    },
-    stat: {
-        flex: 3,
-    },
-    dateStat: {
-        flex: 3,
     },
     text: {
         textAlign: 'center',
         textDecorationStyle: 'bold'
+    },
+    stats: {
+        flex: 1,
+        gap:15,
+    },
+    infos:{
+        flexDirection: 'row',
+        gap:5,
+        alignItems:'flex-end',
     },
 });
