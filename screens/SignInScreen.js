@@ -112,7 +112,7 @@ export default function SignInScreen({ navigation }) {
         <Button style={styles.button} onPress={handleSubmit}>
           <Text >Valider</Text>
         </Button>
-        <Button style={styles.button} status='info' onPress={() => navigation.navigate('LoginScreen')}>
+        <Button style={styles.button} status='info' onPress={() => navigation.replace('LoginScreen')}>
           <Text >Retour</Text>
         </Button>
         </>

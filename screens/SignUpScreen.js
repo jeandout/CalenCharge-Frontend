@@ -109,7 +109,7 @@ export default function SignUpScreen({ navigation }) {
         <Button onPress={handleSubmit}>
           <Text>Valider</Text>
         </Button>
-        <Button status='info' onPress={() => navigation.navigate('LoginScreen')}>
+        <Button status='info' onPress={() => navigation.replace('LoginScreen')}>
           <Text>Retour</Text>
         </Button>
         </>
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 55,
     alignItems: 'center',
+    backgroundColor: "#F6FDF1",
   },
   top: {
     flex: 1,
