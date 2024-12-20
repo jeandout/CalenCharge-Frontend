@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     compteTitle: {
         marginTop: 15,
         marginBottom: 10,
-        paddingBlock: 10,
+        paddingVertical:10,
         backgroundColor: '#ffffff'
     },
     text: {
