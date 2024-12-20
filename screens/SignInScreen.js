@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
 import { Button, Input, Text, Layout, Icon, Spinner } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail, syncDB } from "../reducers/user";
@@ -75,6 +75,8 @@ export default function SignInScreen({ navigation }) {
   );
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.top}>
         <Text category='h3'>Connexion</Text>
@@ -117,6 +119,8 @@ export default function SignInScreen({ navigation }) {
     )}
     </View>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 }
 

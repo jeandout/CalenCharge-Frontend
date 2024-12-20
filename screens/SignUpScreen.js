@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TextInput, Alert, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, ScrollView, TextInput, Alert, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Layout, Text, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail } from "../reducers/user";
@@ -75,7 +75,8 @@ export default function SignUpScreen({ navigation }) {
   );
 
   return (
-    <Layout style={styles.container}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.top}>
         <Text category='h3' >Inscription</Text>
       </View>
@@ -114,8 +115,9 @@ export default function SignUpScreen({ navigation }) {
         </>
       )};
       </View>
-    </Layout>
-  );
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+     );
 }
 
 const styles = StyleSheet.create({
