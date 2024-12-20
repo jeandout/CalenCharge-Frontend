@@ -201,7 +201,6 @@ export default function CalendarScreen({ navigation }) {
           </>
         )
       }
-
     }
 
     return (
