@@ -4,12 +4,21 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAccount, removeAccount, logOut } from "../reducers/user";
 import { Button, Card, Modal, Text, Input, Icon, Layout } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
+
+const Trash = (props) => (
+  <Icon
+    {...props}
+    name='trash-2-outline'
+  />
+);
 
 export default function UpdateAccountScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -99,8 +108,7 @@ export default function UpdateAccountScreen({ navigation }) {
   );
 
   return (
-    <Layout style={styles.container}>
-
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
@@ -108,9 +116,10 @@ export default function UpdateAccountScreen({ navigation }) {
       
       <Text style={styles.text} category='h3'>Modifier un compte bancaire</Text>
       {accounts.length>1 && (<Button
-        style={styles.button}
-        onPress={handleDelete}
-        appearance="ghost"
+      status="danger"
+      onPress={handleDelete}
+      accessoryRight={Trash}
+      size='small'
       >
         <Text>Supprimer le compte</Text>
       </Button>)}
@@ -145,7 +154,6 @@ export default function UpdateAccountScreen({ navigation }) {
 
       <View style={styles.previewContainer}>
       <Text>Nom du compte bancaire :</Text>
-
         <Input
           placeholder="Nom du compte"
           onChangeText={(value) => setAccountInput(value)}
@@ -161,7 +169,8 @@ export default function UpdateAccountScreen({ navigation }) {
           <Text>Annuler</Text>
         </Button>
     </KeyboardAvoidingView>
-    </Layout>
+    </TouchableWithoutFeedback>
+
   );
 }
 
@@ -176,6 +185,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flexDirection: 'row',
+    justifyContent: "center",
   },
   input: {
     width: "65%",
@@ -211,7 +221,7 @@ const styles = StyleSheet.create({
   button:  {
     width: 200,
     marginBottom: 16,
-    FontColor: '#979797',
+    color: '#979797',
   },
   previewContainer: {
     padding: 20,

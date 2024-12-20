@@ -98,6 +98,7 @@ export default function NewChargeScreen({ navigation }) {
       const data = await response.json();
 
       if (!data.result && data.redirectToLogin) {
+        setIsLoading(false);
         dispatch(logOut());
         navigation.goBack();
       }

@@ -1,4 +1,7 @@
-import { View, StyleSheet, SafeAreaView, Switch } from "react-native";
+import { View, StyleSheet, SafeAreaView, Switch, TouchableWithoutFeedback,
+  Platform,
+  KeyboardAvoidingView,
+  Keyboard, } from "react-native";
 import {
   Layout,
   Text,
@@ -8,7 +11,6 @@ import {
   IndexPath,
   Datepicker,
   Icon,
-  IconElement,
   Button,
 } from "@ui-kitten/components";
 
@@ -159,8 +161,11 @@ export default function UpdateChargeScreen({ navigation, route }) {
   }
   
   return (
-    <Layout style={styles.container} level={'1'}>
-      <View style={styles.inputs}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}>
+        <View style={styles.inputs}>
         <Text style={styles.text} category="h3">
           Modifier une charge
         </Text>
@@ -232,7 +237,8 @@ export default function UpdateChargeScreen({ navigation, route }) {
           <Text>Annuler</Text>
         </Button>
       </View>
-    </Layout>
+      </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
   );
 }
 const styles = StyleSheet.create({
@@ -241,6 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 15,
     paddingTop:55,
+    backgroundColor: '#F6FDF1',
   },
   inputs: {
     gap: 15,
