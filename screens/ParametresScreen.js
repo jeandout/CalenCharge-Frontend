@@ -12,16 +12,16 @@ import {
   toggleChargeNotifications,
   logOut, removeToken
 } from "../reducers/user";
-import { Button,Modal,Text, Layout } from "@ui-kitten/components";
+import { Button, Modal, Text, Layout } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }) {
 
   useEffect(() => {
     if (userToken === '') {
-        navigation.replace('LoginScreen', { redirected: true });
+      navigation.replace('LoginScreen', { redirected: true });
     }
-}, [userToken, navigation]);
+  }, [userToken, navigation]);
 
   const dispatch = useDispatch();
 
@@ -38,137 +38,139 @@ export default function ParametresScreen({ navigation }) {
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
-  
-  const [modalVisible, setModalVisible] = useState(false);  
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   async function handleDelete() {
 
-      const response = await fetch(`${backend}/users/delete-account`, {
-        method: 'DELETE',
-        headers: {
-          'Content-type': 'application/json',
-          'Authorization': `Bearer ${userToken}`
-        },
-      })
+    const response = await fetch(`${backend}/users/delete-account`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${userToken}`
+      },
+    })
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!data.result && data.redirectToLogin) {
-        dispatch(logOut());
-        navigation.goBack();
-      }
+    if (!data.result && data.redirectToLogin) {
+      dispatch(logOut());
+      navigation.goBack();
+    }
 
-      if (data.result) {
-        dispatch(logOut());
-        setModalVisible(!modalVisible);
-        return
-      }    
+    if (data.result) {
       dispatch(logOut());
       setModalVisible(!modalVisible);
+      return
+    }
+    dispatch(logOut());
+    setModalVisible(!modalVisible);
   }
-  
+
 
   return (
-  <Layout style={styles.container}> 
-    <ScrollView >
-    <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
-      {userToken ? (
-        <View >
-          <Text style={styles.connected} >Connecté en tant que : {email}</Text>
-          <Button
-          appearance="ghost"
-          onPress={() => navigation.navigate("PasswordUpdateScreen")}
-        >
-          <Text>Modifier votre mot de passe</Text>
-        </Button>
-          <Button style={styles.button} onPress={() => {dispatch(logOut()); navigation.replace('LoginScreen')}}>
-          <Text>Se déconnecter</Text>
-          </Button>
-        
-        
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('La fenêtre modale a été fermée.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur {email} ? </Text>
-              <Button onPress={() => handleDelete()}>
-                <Text style={styles.textStyle}>Confirmer</Text>
+    <Layout style={styles.container}>
+      <ScrollView >
+        <View style={{ gap: 15 }}>
+          <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
+          {userToken ? (
+            <View style={{ gap: 10 }}>
+              <Text category ='h5' >Connecté en tant que : {email}</Text>
+              <Button
+                appearance="ghost"
+                onPress={() => navigation.navigate("PasswordUpdateScreen")}
+              >
+                <Text>Modifier votre mot de passe</Text>
               </Button>
-              <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
-          <Text>Annuler</Text>
-        </Button>
+              <Button style={styles.button} onPress={() => { dispatch(logOut()); navigation.replace('LoginScreen') }}>
+                <Text>Se déconnecter</Text>
+              </Button>
+
+
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  Alert.alert('La fenêtre modale a été fermée.');
+                  setModalVisible(!modalVisible);
+                }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur {email} ? </Text>
+                    <Button onPress={() => handleDelete()}>
+                      <Text style={styles.textStyle}>Confirmer</Text>
+                    </Button>
+                    <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
+                      <Text>Annuler</Text>
+                    </Button>
+                  </View>
+                </View>
+              </Modal>
+              <Button
+                appearance="ghost"
+                onPress={() => setModalVisible(true)}>
+                <Text>Supprimer votre profil</Text>
+              </Button>
+
+            </View>
+          ) : (
+            <Button>
+              <Text
+                onPress={() => { dispatch(removeToken()); navigation.replace("LoginScreen") }}
+              >
+                Se connecter / créer un compte
+              </Text>
+            </Button>
+          )}
+
+          <View >
+            <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>Hebdomadaires</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={weeklyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={weeklyNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>Mensuelles</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={monthlyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={monthlyNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>A chaque prélèvement</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={chargeNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={chargeNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleChargeNotifications())}
+              />
             </View>
           </View>
-        </Modal>
-        <Button
-          appearance="ghost"
-          onPress={() => setModalVisible(true)}>
-          <Text>Supprimer votre profil</Text>
-        </Button>
-      
+          <Text category="h6" style={styles.sectionTitle}>Compte de charges</Text>
+          <View style={{gap:10}}>
+            <SelectAccount />
+            <Button
+              appearance="ghost"
+              onPress={() => navigation.navigate("UpdateAccount")}
+            >
+              <Text>Modifier ou supprimer le compte</Text>
+            </Button>
+            <Button onPress={handleSubmit}>
+              <Text>Ajouter un nouveau compte</Text>
+            </Button>
+          </View>
         </View>
-      ) : (
-        <Button>
-          <Text
-            onPress={() => {dispatch(removeToken());navigation.replace("LoginScreen")}}
-          >
-            Se connecter / créer un compte
-          </Text>
-        </Button>
-      )}
-
-      <View>
-        <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
-        <View style={styles.switchRow}>
-          <Text style={styles.text}>Hebdomadaires</Text>
-          <Switch
-            trackColor={{ false: '#767577', true: '#E1FAEB' }}
-            thumbColor={weeklyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
-            value={weeklyNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
-          />
-        </View>
-        <View style={styles.switchRow}>
-          <Text style={styles.text}>Mensuelles</Text>
-          <Switch
-            trackColor={{ false: '#767577', true: '#E1FAEB' }}
-            thumbColor={monthlyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
-            value={monthlyNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
-          />
-        </View>
-        <View style={styles.switchRow}>
-          <Text style={styles.text}>A chaque prélèvement</Text>
-          <Switch
-            trackColor={{ false: '#767577', true: '#E1FAEB' }}
-            thumbColor={chargeNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
-            value={chargeNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleChargeNotifications())}
-          />
-        </View>
-      </View>
-      <Text category="h6" style={styles.sectionTitle}>Compte de charges</Text>
-      <View>
-        <SelectAccount />
-        <Button
-          appearance="ghost"
-          onPress={() => navigation.navigate("UpdateAccount")}
-        >
-          <Text>Modifier ou supprimer le compte</Text>
-        </Button>
-        <Button onPress={handleSubmit}>
-          <Text>Ajouter un nouveau compte</Text>
-        </Button>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </Layout>
-   
+
   );
 }
 
@@ -187,23 +189,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Ubuntu-Bold',
     borderColor: '#979797',
   },
-  connected: {
-    fontFamily: 'Ubuntu-Bold',
-    color: '#303632',
-    fontSize: 16, 
-    fontWeight: '500', 
-    marginBottom: 10,
-  },
   sectionTitle: {
-    marginBottom: 10,
     backgroundColor: '#FFFFFF',
-    paddingVertical:10,
+    paddingVertical: 10,
   },
   switchRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
   text: {
     fontSize: 15,
@@ -236,6 +229,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
-  
+
 
 });
