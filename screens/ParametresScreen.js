@@ -71,8 +71,8 @@ export default function ParametresScreen({ navigation }) {
   
 
   return (
-
-    <ScrollView contentContainerStyle={styles.container}>
+  <Layout Style={styles.container}> 
+    <ScrollView>
     <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
       {userToken ? (
         <View >
@@ -169,6 +169,7 @@ export default function ParametresScreen({ navigation }) {
         </Button>
       </View>
     </ScrollView>
+    </Layout>
    
   );
 }
@@ -177,9 +178,8 @@ export default function ParametresScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F6FDF1',
-    flex: 1,
     flexDirection: 'column',
-    gap: 15,
+    gap: 20,
     padding: 15,
     paddingTop: 55,
   },

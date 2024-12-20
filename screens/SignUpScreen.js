@@ -37,7 +37,7 @@ export default function SignUpScreen({ navigation }) {
       Alert.alert('Erreur', "Le format du mail n'est pas correct");
       return;
     }
-    setIsLoading(true);
+    setIsLoading(true || false: 5000);
     const response = await fetch(`${backend}/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
