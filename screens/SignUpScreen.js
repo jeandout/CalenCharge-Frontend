@@ -37,7 +37,8 @@ export default function SignUpScreen({ navigation }) {
       Alert.alert('Erreur', "Le format du mail n'est pas correct");
       return;
     }
-    setIsLoading(true || false: 5000);
+    setIsLoading(true);
+   
     const response = await fetch(`${backend}/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -47,6 +48,7 @@ export default function SignUpScreen({ navigation }) {
     const data = await response.json();
 
     if (!data.result) {
+      setIsLoading(false);
       Alert.alert(data.message);
       return;
     }
@@ -106,7 +108,7 @@ export default function SignUpScreen({ navigation }) {
         <Button onPress={handleSubmit}>
           <Text>Valider</Text>
         </Button>
-        <Button status='info' onPress={() => navigation.goBack()}>
+        <Button status='info' onPress={() => navigation.navigate('LoginScreen')}>
           <Text>Retour</Text>
         </Button>
         </>

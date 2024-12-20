@@ -46,6 +46,7 @@ export default function SignInScreen({ navigation }) {
     const data = await response.json();
 
     if (!data.result) {
+      setIsLoading(false);
       Alert.alert(data.message);
       return;
     }
@@ -109,7 +110,7 @@ export default function SignInScreen({ navigation }) {
         <Button style={styles.button} onPress={handleSubmit}>
           <Text >Valider</Text>
         </Button>
-        <Button style={styles.button} status='info' onPress={() => navigation.goBack()}>
+        <Button style={styles.button} status='info' onPress={() => navigation.navigate('LoginScreen')}>
           <Text >Retour</Text>
         </Button>
         </>

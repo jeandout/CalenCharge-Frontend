@@ -10,8 +10,6 @@ export default function LoginScreen({ route, navigation }) {
 
   const userToken = useSelector((state) => state.user.value.user.token);
 
-  console.log(userToken)
-
   if (userToken !== '') {
     navigation.replace('TabNavigator')
   }
@@ -22,7 +20,7 @@ export default function LoginScreen({ route, navigation }) {
     const unsubscribe = navigation.addListener('focus', () => {
       const { redirected } = route.params || {};
       if (redirected) {
-        Alert.alert("Votre session a expiré, veuillez vous reconnecter.");
+        Alert.alert("Vous avez été déconnecté ou votre session à expiré.");
       }
     });
 

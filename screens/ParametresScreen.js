@@ -123,7 +123,7 @@ export default function ParametresScreen({ navigation }) {
         </Button>
       )}
 
-      <View style={styles.section}>
+      <View>
         <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
         <View style={styles.switchRow}>
           <Text style={styles.text}>Hebdomadaires</Text>
@@ -175,9 +175,10 @@ export default function ParametresScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F6FDF1',
+    flex: 1,
     flexDirection: 'column',
-    gap: 20,
+    justifyContent: 'space-between',
+    gap: 85,
     padding: 15,
     paddingTop: 55,
   },
@@ -195,7 +196,6 @@ const styles = StyleSheet.create({
   },
   
   sectionTitle: {
-    fontSize: 18, 
     marginBottom: 10,
     backgroundColor: '#FFFFFF',
     padding: 10,
