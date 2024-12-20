@@ -54,10 +54,10 @@ export default function SignInScreen({ navigation }) {
       dispatch(addToken(data.token));
       dispatch(addEmail(email))
       dispatch(syncDB({ settings: data.settings, accounts: data.accounts }))
-      navigation.navigate('TabNavigator');
+      navigation.replace('TabNavigator');
     }
 
-    navigation.navigate('TabNavigator');
+    navigation.replace('TabNavigator');
   };
 
   const toggleSecureEntry = () => {

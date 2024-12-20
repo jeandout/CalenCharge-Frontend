@@ -13,7 +13,7 @@ export default function LoginScreen({ route, navigation }) {
   console.log(userToken)
 
   if (userToken !== '') {
-    navigation.navigate('TabNavigator')
+    navigation.replace('TabNavigator')
   }
 
   const dispatch = useDispatch();
@@ -36,13 +36,13 @@ export default function LoginScreen({ route, navigation }) {
         <Text category='h3'>Le CalenCharge</Text>
       </View>
       <View style={styles.actions}>
-        <Button onPress={() => navigation.navigate('SignInScreen')}>
+        <Button onPress={() => navigation.replace('SignInScreen')}>
           <Text >Se connecter</Text>
         </Button>
-        <Button status='info' onPress={() => navigation.navigate('SignUpScreen')}>
+        <Button status='info' onPress={() => navigation.replace('SignUpScreen')}>
           <Text >S'inscrire</Text>
         </Button>
-        <Button appearance='ghost' onPress={() => { dispatch(addToken(null)); navigation.navigate('TabNavigator') }}>
+        <Button appearance='ghost' onPress={() => { dispatch(addToken(null)); navigation.replace('TabNavigator') }}>
           <Text >Continuer sans se connecter</Text>
         </Button>
       </View>

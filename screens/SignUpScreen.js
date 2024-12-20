@@ -54,7 +54,7 @@ export default function SignUpScreen({ navigation }) {
     if (data.result) {
       dispatch(addToken(data.token));
       dispatch(addEmail(email))
-      navigation.navigate('TabNavigator');
+      navigation.replace('TabNavigator');
     }
 
   };
