@@ -83,14 +83,6 @@ const nextIcon = ({ name, ...props }) => (
 
 export default function CalendarScreen({ navigation }) {
 
-  const userToken = useSelector((state) => state.user.value.user.token);
-
-  useEffect(() => {
-    if (userToken === '') {
-        navigation.replace('LoginScreen', { redirected: true });
-    }
-}, [userToken, navigation]);
-
   const LeftArrow = (arrowProps) => {
     return (
       <View style={styles.calendarNavLeft}>
@@ -161,16 +153,14 @@ export default function CalendarScreen({ navigation }) {
       return chargeDate.slice(-2) === formattedDate.slice(-2) && chargedThisMonth() && allreadyCreated();  // Compare the date
     });
 
-    const dayStyle = calendarDate.date.getDate() == thisDay.getDate() && calendarDate.date.getMonth() == thisDay.getMonth() ? { backgroundColor: theme['color-primary-500'], color: 'white', borderRadius: 4, paddingHorizontal: 5, } : {}
+    const dayStyle = calendarDate.date.getDate() == thisDay.getDate() && calendarDate.date.getMonth() == thisDay.getMonth() ? { backgroundColor: theme['color-primary-500'], borderRadius: 50, color: 'white' } : {}
 
     //TODO: selectedDay à utiliser pour surligner le jour selectionné
 
     const calendarChargeDisplay = () => { //permet d'afficher les charges dans le calendrier dynamiquement en fonction de leur nombre
 
       if (chargesForDay.length == 1) { // Si une seule charge
-
         return (
-
           chargesForDay.map((charge, i) => (
             <Text key={i} style={[styles.chargeText, { backgroundColor: (charge.priority ? theme['color-warning-500'] : theme['color-primary-200']) }]}  >
               {`${charge.amount}€`}
@@ -178,29 +168,15 @@ export default function CalendarScreen({ navigation }) {
           ))
         )
       } else if (chargesForDay.length > 1) { // Si plus d'une charge, affichage du nombre de charge pour ce jour
-        let sumOfChargesAmounts = 0
-        let priorities = false
-        for (let charge of chargesForDay) {
-
-          sumOfChargesAmounts = sumOfChargesAmounts + parseInt(charge.amount)
-          if (charge.priority) {
-            priorities = true
-          }
-        }
         return (
           <>
-            <View style={[styles.chargeText, { backgroundColor: (priorities ? theme['color-warning-500'] : theme['color-primary-200']) }]}>
-              <Text style={{ textAlign: 'center' }}>
-                {`${sumOfChargesAmounts}€`}
-              </Text>
-
-              <Text style={styles.counter}>
-                {`${chargesForDay.length} charges`}
-              </Text>
-            </View>
-          </>
+          <Text style={[styles.chargeText,{ backgroundColor:theme['color-primary-200'], justifyContent:'center',borderWidth: 2, borderColor: theme['color-primary-500'],}]}>
+          {`+ ${chargesForDay.length}`}
+          </Text>
+        </>
         )
       }
+
     }
 
     return (
@@ -228,38 +204,38 @@ export default function CalendarScreen({ navigation }) {
   }
 
   const goToday = () => { //used to reset the calendar view to current day
+    console.log('clicked')
     const today = new Date()
     setDate(today)
 
   }
 
   const handleCharges = (daylyCharges, daySelected) => { // used to display charges list from calendar day
-
     setSelectedDay(daySelected)
-    setChargesList(chargesList.filter(e => e == 0))
 
-    if (daylyCharges.length === 0) { //si la date cliqué n'a pas de charge
-      setChargeListDay(chargeListDay.filter(e => e == 0))
-    } else if (daylyCharges[0].date === chargeListDay[0]) { // NE FONCTIONNE PAS 
-      setChargeListDay(chargeListDay.filter(e => e == 0))
+    if (daylyCharges[0] === undefined || daylyCharges[0].date == chargeListDay[0]) { //si la date cliqué à déja été cliqué
+      setChargesList([])
+      setChargeListDay(chargeListDay.shift()) //POURQUOI JE PEUX PAS RESET AVEC [] ???
+
+
+
     } else { //ajout des taches de la date cliquée
-      setChargesList(...chargesList, daylyCharges)
-      setChargeListDay(chargeListDay.filter(e => e == 0))
-      setChargeListDay([...chargeListDay, daylyCharges[0].date]) //ajout de la date cliquée dans le tableau de date cliquée
+      const newChargesList = (
+        <View>
+
+          {daylyCharges.map((charge, i) => (
+            <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
+          ))}
+        </View>
+      )
+
+      setChargesList(newChargesList)
+      setChargeListDay(chargeListDay.shift())
+      setChargeListDay(chargeListDay.push(daylyCharges[0].date)) //ajout de la date cliquée dans le tableau de date cliquée
+
     }
+
   };
-
-
-
-  const chargesListTodisplay = (
-    <View>
-
-      {chargesList.map((charge, i) => (
-        <Charge key={i} navigationCharge={navigation} name={charge.name} amount={charge.amount} date={charge.date} recurrence={charge.recurrence} chargeType={charge.chargeType} priority={charge.priority} />
-      ))}
-    </View>
-  )
-
 
   return (
     <Layout style={styles.container}>
@@ -275,10 +251,10 @@ export default function CalendarScreen({ navigation }) {
             renderArrowLeft={LeftArrow}
             renderArrowRight={RightArrow}
             onVisibleDateChange={lastDate}
-            min={new Date(2000, 0, 1)} // affichage min
+            min={new Date(1970, 0, 1)} // affichage min
             max={new Date(2050, 11, 31)} // affichage max
           />
-          {chargesListTodisplay}
+          {chargesList}
         </View>
       </ScrollView>
 
@@ -298,7 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 15,
     padding: 15,
-    paddingTop: 55,
+    marginTop: 40,
 
 
   },
@@ -314,7 +290,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   date: {
-    // aspectRatio: 1,
+    aspectRatio: 1,
     textAlign: 'center',
   },
   calendarNavLeft: {
@@ -327,7 +303,7 @@ const styles = StyleSheet.create({
   },
   cell: {
     paddingTop: 2,
-    height: 35,
+    height: 45,
     fontStyle: 'bold',
     width: "100%",
   },
@@ -339,12 +315,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 2,
     borderRadius: 7,
-  },
-  counter: {
-    fontSize: 9,
-    paddingRight: 2,
-    textAlign: 'right',
-    fontWeight: 900,
+
   },
   addButton: {
     position: 'absolute',

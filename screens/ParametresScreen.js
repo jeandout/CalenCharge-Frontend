@@ -1,40 +1,33 @@
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Switch,
-  Layout,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   toggleWeeklyNotifications,
   toggleMonthlyNotifications,
   toggleChargeNotifications,
-  logOut
+  logOut, removeToken
 } from "../reducers/user";
-import {
-  Button,
-  Card,
-  Modal,
-  Input,
-  Icon,
-  Datepicker,
-} from "@ui-kitten/components";
+import { Button, Modal, Text, Layout } from "@ui-kitten/components";
 import SelectAccount from "../components/SelectAccount";
 
 export default function ParametresScreen({ navigation }) {
-  
+
+  useEffect(() => {
+    if (userToken === '') {
+      navigation.replace('LoginScreen', { redirected: true });
+    }
+  }, [userToken, navigation]);
+
   const dispatch = useDispatch();
 
   const userToken = useSelector((state) => state.user.value.user.token);
   const email = useSelector((state) => state.user.value.user.email);
+  const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const {
     weeklyNotificationsEnabled,
@@ -42,115 +35,200 @@ export default function ParametresScreen({ navigation }) {
     chargeNotificationsEnabled,
   } = useSelector((state) => state.user.value.user.settings);
 
-  const [calendarDate, setCalendarDate] = useState(new Date());
-
   function handleSubmit() {
     navigation.navigate("NewAccount");
   }
-  // Icône pour le calendrier
-  const CalendarIcon = ({ name = "calendar", ...props }) => (
-    <Icon {...props} name={name} />
-  );
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  async function handleDelete() {
+
+    const response = await fetch(`${backend}/users/delete-account`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${userToken}`
+      },
+    })
+
+    const data = await response.json();
+
+    if (!data.result && data.redirectToLogin) {
+      dispatch(logOut());
+      navigation.goBack();
+    }
+
+    if (data.result) {
+      dispatch(logOut());
+      setModalVisible(!modalVisible);
+      return
+    }
+    dispatch(logOut());
+    setModalVisible(!modalVisible);
+  }
+
 
   return (
-  
-    <ScrollView contentContainerStyle={styles.container}>
-      {userToken ? (
-        <View style={{}}>
-          <Text>Connecté en tant que : {email}</Text>
-            <Text onPress={()=>dispatch(logOut())}>(Se déconnecter)</Text>
-        </View> // AJOuteR DECONNEXION CHANGER MDP SUPP COMPTE
-      ) : (
-        <Button>
-          <Text
-            
-            onPress={() => navigation.navigate("LoginScreen")}
-          >
-            Se connecter / créer un compte
-          </Text>
-        </Button>
-      )}
+    <Layout style={styles.container}>
+      <ScrollView >
+        <View style={{ gap: 15 }}>
+          <Text category="h6" style={styles.sectionTitle}>Gestion de connexion</Text>
+          {userToken ? (
+            <View style={{ gap: 10 }}>
+              <Text category ='h5' >Connecté en tant que : {email}</Text>
+              <Button
+                appearance="ghost"
+                onPress={() => navigation.navigate("PasswordUpdateScreen")}
+              >
+                <Text>Modifier votre mot de passe</Text>
+              </Button>
+              <Button style={styles.button} onPress={() => { dispatch(logOut()); navigation.replace('LoginScreen') }}>
+                <Text>Se déconnecter</Text>
+              </Button>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle} category='h1'>Notifications</Text>
-        <View style={styles.switchRow}>
-          <Text>Hebdomadaires</Text>
-          <Switch
-            value={weeklyNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
-          />
+
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  Alert.alert('La fenêtre modale a été fermée.');
+                  setModalVisible(!modalVisible);
+                }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>Voulez-vous vraiment supprimer votre profil utilisateur {email} ? </Text>
+                    <Button onPress={() => handleDelete()}>
+                      <Text style={styles.textStyle}>Confirmer</Text>
+                    </Button>
+                    <Button appearance='ghost' onPress={() => setModalVisible(!modalVisible)}>
+                      <Text>Annuler</Text>
+                    </Button>
+                  </View>
+                </View>
+              </Modal>
+              <Button
+                appearance="ghost"
+                onPress={() => setModalVisible(true)}>
+                <Text>Supprimer votre profil</Text>
+              </Button>
+
+            </View>
+          ) : (
+            <Button>
+              <Text
+                onPress={() => { dispatch(removeToken()); navigation.replace("LoginScreen") }}
+              >
+                Se connecter / créer un compte
+              </Text>
+            </Button>
+          )}
+
+          <View >
+            <Text category="h6" style={styles.sectionTitle}>Gestion des notifications</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>Hebdomadaires</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={weeklyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={weeklyNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleWeeklyNotifications())}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>Mensuelles</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={monthlyNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={monthlyNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.text}>A chaque prélèvement</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: '#E1FAEB' }}
+                thumbColor={chargeNotificationsEnabled ? '#55AD9B' : '#f4f3f4'}
+                value={chargeNotificationsEnabled}
+                onValueChange={(value) => dispatch(toggleChargeNotifications())}
+              />
+            </View>
+          </View>
+          <Text category="h6" style={styles.sectionTitle}>Compte de charges</Text>
+          <View style={{gap:10}}>
+            <SelectAccount />
+            <Button
+              appearance="ghost"
+              onPress={() => navigation.navigate("UpdateAccount")}
+            >
+              <Text>Modifier ou supprimer le compte</Text>
+            </Button>
+            <Button onPress={handleSubmit}>
+              <Text>Ajouter un nouveau compte</Text>
+            </Button>
+          </View>
         </View>
-        <View style={styles.switchRow}>
-          <Text>Mensuelles</Text>
-          <Switch
-            value={monthlyNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleMonthlyNotifications())}
-          />
-        </View>
-        <View style={styles.switchRow}>
-          <Text>A chaque prélèvement</Text>
-          <Switch
-            value={chargeNotificationsEnabled}
-            onValueChange={(value) => dispatch(toggleChargeNotifications())}
-          />
-        </View>
-      </View>
-      <View>
-        
-      </View>
-      <View>
-        <SelectAccount />
-        <Button
-          appearance="ghost"
-          onPress={() => navigation.navigate("UpdateAccount")}
-        >
-          <Text>Modifier ou supprimer le compte</Text>
-        </Button>
-        <Button onPress={handleSubmit}>
-          <Text>Ajouter un nouveau compte</Text>
-        </Button>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </Layout>
+
   );
 }
 
-/*<View style={styles.datePickerContainer}>
-          <Text category="label" style={styles.label}>
-            Vue Calendrier: choisir le début de période
-          </Text>
-          <Datepicker
-            placeholder="JJ/MM/AAAA"
-            date={calendarDate}
-            onSelect={setCalendarDate}
-            accessoryRight={CalendarIcon}
-            style={styles.datePicker}
-          />
-        </View>*/
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   flexDirection: 'column',
-    justifyContent: 'flex-start',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     gap: 15,
     padding: 15,
-    marginTop: 40,
-    backgroundColor : '#F6FDF1'
+    paddingTop: 55,
   },
-
-  section: {
-    marginBottom: 30,
-    marginTop: 20,
+  button: {
+    backgroundColor: '#979797',
+    fontFamily: 'Ubuntu-Bold',
+    borderColor: '#979797',
   },
   sectionTitle: {
-    fontSize: 18,
-    marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 10,
   },
   switchRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
-  
+  text: {
+    fontSize: 15,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    borderColor: '#000000',
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 15,
+    lineHeight: 20,
+    padding: 10,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+
+
 });

@@ -4,12 +4,21 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAccount, removeAccount, removeToken } from "../reducers/user";
-import { Button, Card, Modal, Text, Input, Icon } from "@ui-kitten/components";
+import { updateAccount, removeAccount, logOut } from "../reducers/user";
+import { Button, Card, Modal, Text, Input, Icon, Layout } from "@ui-kitten/components";
 import iconsMap from "../assets/iconsMap";
+
+const Trash = (props) => (
+  <Icon
+    {...props}
+    name='trash-2-outline'
+  />
+);
 
 export default function UpdateAccountScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -42,8 +51,8 @@ export default function UpdateAccountScreen({ navigation }) {
         const data = await response.json();
 
         if(!data.result && data.redirectToLogin){
-          dispatch(removeToken());
-          navigation.navigate('LoginScreen');
+          dispatch(logOut())
+          navigation.goBack();
         }
         
         if(data.result){
@@ -73,11 +82,9 @@ export default function UpdateAccountScreen({ navigation }) {
   
     const data = await response.json();
 
-    console.log(userToken)
-
     if(!data.result && data.redirectToLogin){
-      dispatch(removeToken());
-      navigation.navigate('LoginScreen');
+      dispatch(logOut());
+      navigation.goBack();
     }
 
     if(data.result){
@@ -101,21 +108,24 @@ export default function UpdateAccountScreen({ navigation }) {
   );
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
+      
+      <Text style={styles.text} category='h3'>Modifier un compte bancaire</Text>
       {accounts.length>1 && (<Button
-        style={styles.button}
-        status="danger"
-        onPress={handleDelete}
+      status="danger"
+      onPress={handleDelete}
+      accessoryRight={Trash}
+      size='small'
       >
         <Text>Supprimer le compte</Text>
       </Button>)}
-      <Text>Modifier un compte bancaire :</Text>
       <View style={styles.previewContainer}>
         {renderIcon(iconInput, { style: styles.selectedIcon })}
-        <Button onPress={() => setVisible(true)}>
+        <Button style={styles.button} onPress={() => setVisible(true)}>
           <Text>Changer l'icône</Text>
         </Button>
       </View>
@@ -143,45 +153,57 @@ export default function UpdateAccountScreen({ navigation }) {
       </Modal>
 
       <View style={styles.previewContainer}>
+      <Text>Nom du compte bancaire :</Text>
         <Input
           placeholder="Nom du compte"
           onChangeText={(value) => setAccountInput(value)}
+          status='primary'
           value={accountInput}
           style={styles.input}
         />
       </View>
-      <Button onPress={handleSubmit}>
+      <Button style={styles.button} onPress={handleSubmit}>
         <Text>Modifier le compte</Text>
       </Button>
+      <Button appearance='ghost' onPress={() => navigation.goBack()}>
+          <Text>Annuler</Text>
+        </Button>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 15,
+    padding: 15,
+    paddingTop: 55,    
     alignItems: "center",
+    backgroundColor: '#F6FDF1',
+  },
+  text: {
+    flexDirection: 'row',
     justifyContent: "center",
-    backgroundColor: "#ffffff",
   },
   input: {
     width: "65%",
     marginTop: 16,
-    borderBottomColor: "#ec6e5b",
     borderBottomWidth: 1,
     fontSize: 16,
   },
   backdrop: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
   card: {
     padding: 16,
     borderRadius: 8,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
   },
   icon: {
     width: 50,
@@ -192,13 +214,14 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
     marginBottom: 16,
-    tintColor: "#303632",
   },
   closeButton: {
     marginTop: 16,
   },
-  button: {
+  button:  {
+    width: 200,
     marginBottom: 16,
+    color: '#979797',
   },
   previewContainer: {
     padding: 20,

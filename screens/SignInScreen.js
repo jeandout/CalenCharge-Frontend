@@ -1,137 +1,163 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { Button } from '@ui-kitten/components';
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import { Button, Input, Text, Layout, Icon, Spinner } from '@ui-kitten/components';
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addEmail, syncDB } from "../reducers/user";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const dispatch = useDispatch();
 
   const backend = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
+  function isEmail(emailAdress) {
+    let regex = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
+
+    if (emailAdress.match(regex))
+      return true;
+
+    else
+      return false;
+  }
+
   const handleSubmit = async () => {
 
     if (!email || !password) { //UTILISER CHECKCHARGEFIELD
-     Alert.alert('Erreur', 'Veuillez remplir tous les champs');
-     return;
-   }
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
 
-      const response = await fetch(`${backend}/users/signin`, {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({email, password}),
-     })
-   
-     const data = await response.json();
+    if (isEmail(email) == false) {
+      Alert.alert('Erreur', "Le format du mail n'est pas correct");
+      return;
+    }
+    setIsLoading(true);
+    const response = await fetch(`${backend}/users/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
 
-     if (!data.result) {
+    const data = await response.json();
+
+    if (!data.result) {
+      setIsLoading(false);
       Alert.alert(data.message);
       return;
     }
-   
-     if (data.result){
-       dispatch(addToken(data.token));
-       dispatch(addEmail(email))
-       dispatch(syncDB({settings:data.settings,accounts:data.accounts}))
-       navigation.navigate('TabNavigator');
-     }
 
-    navigation.navigate('TabNavigator');
+    if (data.result) {
+      dispatch(addToken(data.token));
+      dispatch(addEmail(email))
+      dispatch(syncDB({ settings: data.settings, accounts: data.accounts }))
+      navigation.replace('TabNavigator');
+    }
+
+    navigation.replace('TabNavigator');
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Connexion</Text>
-      
-      <TextInput 
-        style={styles.input} 
-        placeholder="Votre e-mail" 
-        keyboardType="email-address" // clavier type adresse mail
-        autoCapitalize="none"       // en miniscule
-        value={email} 
-        onChangeText={setEmail} 
+  const toggleSecureEntry = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const renderIcon = (props) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon
+        {...props}
+        name={showPassword ? 'eye-off' : 'eye'}
       />
-      
-      <View style={styles.passwordContainer}>
-       <TextInput 
-        style={styles.passwordInput} 
-        placeholder="Mot de passe" 
-        secureTextEntry={!showPassword} // permet de contrôler l'affichage du mot de passe
-        value={password} 
-        onChangeText={setPassword} 
-       />
-       <TouchableOpacity style={styles.iconContainer}
-       onPress={()=>setShowPassword(!showPassword)}> 
-        <Icon
-        name={showPassword ?'eye-off':'eye'}
-        size={24}
-        color="gray"
-        />
-       </TouchableOpacity>
+    </TouchableWithoutFeedback>
+  );
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+      <View style={styles.top}>
+        <Text category='h3'>Connexion</Text>
       </View>
-      
-      <Button style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Valider</Text>
-      </Button>
-      
-      <Button style={styles.button} onPress={() => navigation.navigate('LoginScreen')}>
-        <Text style={styles.buttonText}>Retour</Text>
-      </Button>
-    </ScrollView>
+      <View style={styles.inputs}>
+        <Input
+          style={{ width: "100%" }}
+          placeholder="Votre e-mail"
+          keyboardType="email-address" // clavier type adresse mail
+          autoCapitalize="none"       // en miniscule
+          value={email}
+          onChangeText={setEmail}
+        />
+        <Input
+          style={{ width: "100%" }}
+          placeholder="Mot de passe"
+          accessoryRight={renderIcon}
+          secureTextEntry={showPassword}
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+        />
+        <Text style={{ fontWeight: 700 }} onPress={() => navigation.navigate("ForgottenPasswordScreen")}>Mot de passe oublié ?</Text>
+        
+      </View>
+      <View style={styles.actions}>
+      {isLoading ? ( // Afficher le Spinner si en cours de chargement
+          <View style={styles.loading}>
+          <Spinner size="large" />
+          </View>
+        ) : (
+          <>
+        <Button style={styles.button} onPress={handleSubmit}>
+          <Text >Valider</Text>
+        </Button>
+        <Button style={styles.button} status='info' onPress={() => navigation.navigate('LoginScreen')}>
+          <Text >Retour</Text>
+        </Button>
+        </>
+    )}
+    </View>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  passwordContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    marginBottom: 15,
-  },
-  passwordInput: {
     flex: 1,
-    height: 40,
-    paddingHorizontal: 10,
+    padding: 15,
+    paddingTop: 55,
+    alignItems: 'center',
+    backgroundColor: "#F6FDF1",
   },
-  iconContainer: {
-    paddingHorizontal: 10,
+  top: {
+    flex: 1,
+    gap: 30,
+    justifyContent: 'center',
+  },
+  inputs: {
+    flex: 1,
+    padding: 30,
+    gap: 20,
+    justifyContent: 'center',
+  },
+  actions: {
+    padding: 30,
+    gap: 20,
+    flex: 1,
+    justifyContent: 'center',
+    width: "100%",
+  },
+  loading: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    marginTop: 20,
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  
 });

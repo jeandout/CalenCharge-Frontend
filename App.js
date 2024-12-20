@@ -22,6 +22,8 @@ import RapportScreen from './screens/RapportScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import SignInScreen from './screens/SignInScreen';
+import PasswordUpdateScreen from './screens/PasswordUpdateScreen';
+import ForgottenPasswordScreen from './screens/ForgottenPasswordScreen';
 
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Icon, IconRegistry, BottomNavigation, BottomNavigationTab, Layout } from '@ui-kitten/components';
@@ -30,12 +32,32 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { useState, useEffect } from "react";
 
+//Persistore
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persistStore, persistReducer } from 'redux-persist'
+import { combineReducers } from 'redux';
+import { PersistGate } from 'redux-persist/integration/react';
+
 import NotificationsHandler from './NotificationsHandler'; // Import des notifications
 
 
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+};
+
+const rootReducer = combineReducers({
+  user,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const store = configureStore({
-  reducer: { user }
-})
+  reducer: persistedReducer,
+});
+
+const persistor = persistStore(store);
+
 // Définition des icônes
 const CalendarIcon = (props) => <Icon {...props} name="calendar-outline" />;
 const ListIcon = (props) => <Icon {...props} name="list-outline" />;
@@ -79,6 +101,7 @@ export default function App() {
     Font.loadAsync({
       'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
       'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+      
     }).then(() => setFontsLoaded(true));
   }, []);
 
@@ -92,10 +115,12 @@ export default function App() {
     
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }} customMapping={mapping}>
       <Provider store={store}>
+      <PersistGate persistor={persistor}>
       <NotificationsHandler />
         <NavigationContainer > 
 
           <Stack.Navigator screenOptions={{ headerShown: false }} >
+          
            <Stack.Screen name="LoginScreen" component={LoginScreen} />
            <Stack.Screen name="SignInScreen" component={SignInScreen} />
            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
@@ -104,10 +129,12 @@ export default function App() {
             <Stack.Screen name="UpdateCharge" component={UpdateChargeScreen} />
             <Stack.Screen name="NewAccount" component={NewAccountScreen} />
             <Stack.Screen name="UpdateAccount" component={UpdateAccountScreen} />
+            <Stack.Screen name="PasswordUpdateScreen" component={PasswordUpdateScreen} />
+            <Stack.Screen name="ForgottenPasswordScreen" component={ForgottenPasswordScreen} />
           </Stack.Navigator>
 
         </NavigationContainer>
-       
+        </PersistGate>
       </Provider>
 
     </ApplicationProvider>

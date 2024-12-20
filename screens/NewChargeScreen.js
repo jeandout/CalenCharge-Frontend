@@ -3,12 +3,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Switch,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, IconElement, Button, } from '@ui-kitten/components';
+import { Layout, Text, Input, Select, SelectItem, IndexPath, Datepicker, Icon, Spinner, Button, } from '@ui-kitten/components';
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCharge, removeToken } from "../reducers/user";
+import { addCharge, logOut } from "../reducers/user";
 import SelectAccount from "../components/SelectAccount";
 import MonthOccurrenceGenerator from "../components/MonthOccurrenceGenerator";
 import CheckChargeFields from "../components/CheckChargeFields";
@@ -39,10 +43,16 @@ export default function NewChargeScreen({ navigation }) {
   const [amount, setAmount] = useState(0);
   const [selectedRecurrence, setSelectedRecurrence] = useState(new IndexPath(0));
   const [selectedChargeType, setSelectedChargeType] = useState(new IndexPath(0));
-  const [date, setDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
+
+  const getLocalMidnightDate = () => { // génère la date actuelle à minuit pour etre correctement interpreté par le datepicker et le calendrier
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  };
+
+  const [date, setDate] = useState(getLocalMidnightDate());
   const [checked, setChecked] = useState(false);
-
   //variables pour l'affichage du composant select pour le type
   const type = [
     'Loisir',
@@ -74,31 +84,36 @@ export default function NewChargeScreen({ navigation }) {
     const newCharge = { name, recurrence: selectedRecurrence.row, chargeType: selectedChargeType.row, date: date.toISOString(), priority: checked, amount, recurrenceList }
 
     if (CheckChargeFields(newCharge, ['name', 'amount',]) && userToken) {
-      
+
+      setIsLoading(true);
       const response = await fetch(`${backend}/charges/new`, {
         method: 'POST',
-        headers: { 'Content-type': 'application/json',
-              'Authorization': `Bearer ${userToken}` },
-        body: JSON.stringify({ charge:newCharge, account:accounts[selectedAccount] }),
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({ charge: newCharge, account: accounts[selectedAccount] }),
       })
-    
+
       const data = await response.json();
 
-      if(!data.result && data.redirectToLogin){
-        dispatch(removeToken());
-        navigation.navigate('LoginScreen');
+      if (!data.result && data.redirectToLogin) {
+        setIsLoading(false);
+        dispatch(logOut());
+        navigation.goBack();
       }
 
-      if(data.result){
-      dispatch(addCharge(newCharge));
-      setName('');
-      navigation.goBack()
-      return}
+      if (data.result) {
+        dispatch(addCharge(newCharge));
+        setName('');
+        navigation.goBack()
+        return
+      }
     }
 
 
     if (CheckChargeFields(newCharge, ['name', 'amount',])) {
-      dispatch(addCharge(newCharge)); 
+      dispatch(addCharge(newCharge));
       setName('');
       navigation.goBack()
     }
@@ -106,17 +121,20 @@ export default function NewChargeScreen({ navigation }) {
   }
 
   return (
-    <Layout style={styles.container} level={'1'}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.inputs}>
         <Text style={styles.text} category='h3'>Ajouter une nouvelle charge</Text>
         <SelectAccount />
         <Input
+          label="Nom de la charge"
           status={requieredFieldStatus}
           placeholder='Nom'
           value={name}
           onChangeText={nextValue => setName(nextValue)}
         />
         <Select
+          label="Type de charge"
           placeholder='Default'
           value={displayTypeValue}
           selectedIndex={selectedChargeType}
@@ -124,21 +142,26 @@ export default function NewChargeScreen({ navigation }) {
         >
           {type.map(renderType)}
         </Select>
-        <Select
-          placeholder='Default'
-          value={displayRecurrenceValue}
-          selectedIndex={selectedRecurrence}
-          onSelect={index => setSelectedRecurrence(index)}
-        >
-          {recurrence.map(renderRecurrence)}
-        </Select>
-        <Datepicker
-          label="Début de la récurrence"
-          placeholder='Pick Date'
-          date={date}
-          onSelect={nextDate => setDate(nextDate)}
-          accessoryRight={CalendarIcon}
-        />
+        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'end' }}>
+          <Select style={{ flex: 1 }}
+            label="Récurrence"
+            placeholder='Default'
+            value={displayRecurrenceValue}
+            selectedIndex={selectedRecurrence}
+            onSelect={index => setSelectedRecurrence(index)}
+          >
+            {recurrence.map(renderRecurrence)}
+          </Select>
+          <Datepicker style={{ flex: 1 }}
+            label="Début de la récurrence"
+            placeholder='Pick Date'
+            date={date}
+            onSelect={nextDate => setDate(nextDate)}
+            accessoryRight={CalendarIcon}
+            min={new Date(2000, 0, 1)} // affichage min
+            max={new Date(2050, 11, 31)} // affichage max
+          />
+        </View>
         <View style={styles.row}>
           <Text style={styles.text} category='p1'>Prioritaire</Text>
           <Switch
@@ -148,7 +171,8 @@ export default function NewChargeScreen({ navigation }) {
             onValueChange={(value) => setChecked(value)}
           />
         </View>
-        <Input
+        <View style={{alignItems:'center'}}><Input style={{width:"30%"}}
+        label="Montant"
           status={requieredFieldStatus}
           keyboardType="numeric"
           size='large'
@@ -156,23 +180,37 @@ export default function NewChargeScreen({ navigation }) {
           value={amount}
           onChangeText={nextValue => setAmount(nextValue)}
         />
+        </View>
+        
       </View>
       <View style={styles.actions}>
-        <Button onPress={() => handleSubmit()}>
+      {isLoading ? ( // Afficher le Spinner si en cours de chargement
+          <View style={styles.loading}>
+          <Spinner size="large" />
+          </View>
+        ) : (
+          <>       
+          <Button onPress={() => handleSubmit()}>
           <Text>Ajouter</Text>
         </Button>
         <Button appearance='ghost' onPress={() => navigation.goBack()}>
           <Text>Annuler</Text>
         </Button>
+        </>
+         )};
       </View>
-    </Layout>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: "space-between",
     padding: 15,
+    paddingTop: 55,
+    backgroundColor: "#F6FDF1",
   },
   inputs: {
     gap: 20,
@@ -185,6 +223,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 5,
+    width: "100%",
   },
   text: {
     textAlign: 'center',
